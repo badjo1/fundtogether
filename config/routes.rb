@@ -9,6 +9,15 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # Redirect www to non-www in production
+  if Rails.env.production?
+    constraints subdomain: 'www' do
+      match "/(*path)", to: redirect { |params, req|
+        "https://#{req.domain}#{req.fullpath}"
+      }, via: :all
+    end
+  end
+
   # Defines the root path route ("/")
   root "pages#home"
 end
