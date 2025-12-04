@@ -1,2 +1,44 @@
-<h1>Fund Together App</h1>
-<img src="/icon.svg" style="width: 50%; height: auto;" />
+<!-- Login Screen -->
+<div id="loginScreen" class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full text-center animate-slide-in">
+        <div class="mb-6">
+            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            	<img src="/icon.svg" class="w-13 h-13" />
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">FUND TOGETHER</h1>
+            <p class="text-gray-600">Transparante groepsfinanciën op de blockchain</p>
+        </div>
+        
+        <div class="space-y-4 mb-6">
+            <div class="flex items-center space-x-3 text-left">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+                <span class="text-gray-700">Gnosis Safe multisig beveiliging</span>
+            </div>
+            <div class="flex items-center space-x-3 text-left">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-gray-700">Monerium EURe fiat integratie</span>
+            </div>
+            <div class="flex items-center space-x-3 text-left">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="text-gray-700">Transparante on-chain boekhouding</span>
+            </div>
+        </div>
+
+        <button onclick="connectWallet()" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+            </svg>
+            <span>Verbind Wallet</span>
+        </button>
+        
+        <p class="text-xs text-gray-500 mt-4">
+            Ondersteund: MetaMask, WalletConnect, Coinbase Wallet
+        </p>
+    </div>
+</div>
