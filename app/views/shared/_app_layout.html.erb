@@ -1,0 +1,45 @@
+<!-- app/views/shared/_app_layout.html.erb -->
+<!-- Wrapper voor alle app pages met sidebar en topbar -->
+
+<div class="min-h-screen bg-gray-50 flex" data-controller="dapp">
+  <!-- Sidebar -->
+  <%= render 'shared/sidebar' %>
+
+  <!-- Mobile Overlay -->
+  <div data-dapp-target="overlay" data-action="click->dapp#toggleSidebar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+
+  <!-- Main Content -->
+  <main class="flex-1 lg:ml-64">
+    <!-- Top Bar -->
+    <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8">
+      <button data-action="click->dapp#toggleSidebar" class="lg:hidden text-gray-600 hover:text-gray-900">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      
+      <div class="flex items-center space-x-4 ml-auto">
+        <div class="text-right">
+          <p class="text-sm text-gray-600">Jouw Saldo</p>
+          <p class="font-bold text-gray-900" data-dapp-target="userBalance">
+            <% if @current_account && @current_user_member %>
+              €<%= sprintf('%.2f', current_account.member_balance(current_user_member)) %>
+            <% else %>
+              €150.25
+            <% end %>
+          </p>
+        </div>
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+          <span class="text-white font-bold text-sm">
+            <%= @current_user_member&.name&.first&.upcase || 'U' %>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="p-4 lg:p-8">
+      <%= yield %>
+    </div>
+  </main>
+</div>

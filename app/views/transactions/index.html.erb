@@ -1,0 +1,145 @@
+<!-- app/views/transactions/index.html.erb -->
+    <%= render layout: 'shared/app_layout' do %>
+      <div class="space-y-6">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <h2 class="text-2xl font-bold text-gray-900">Alle Transacties</h2>
+          <div class="flex space-x-3">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+              </svg>
+              <span>Filter</span>
+            </button>
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              <span>Nieuwe Transactie</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+              <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option>Alle transacties</option>
+                <option>Stortingen</option>
+                <option>Uitgaven</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option>Alle statussen</option>
+                <option>Bevestigd</option>
+                <option>In behandeling</option>
+                <option>Mislukt</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Token</label>
+              <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option>Alle tokens</option>
+                <option>EURe</option>
+                <option>DUMMY</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions List -->
+        <div class="space-y-3">
+          <% 
+            # Dummy data - in productie zou dit van de database komen
+            transactions = [
+              { id: 1, type: 'deposit', amount: 100, token: 'EURe', from: 'Jij', description: 'Initial deposit', time: '2025-12-04 14:30', status: 'confirmed' },
+              { id: 2, type: 'expense', amount: 45.50, token: 'EURe', from: 'Alice', description: 'Groceries', split: ['Alice', 'Bob', 'Jij'], time: '2025-12-04 13:15', status: 'confirmed' },
+              { id: 3, type: 'deposit', amount: 200, token: 'DUMMY', from: 'Bob', description: 'Group dinner fund', time: '2025-12-04 12:00', status: 'pending' },
+              { id: 4, type: 'expense', amount: 30.25, token: 'EURe', from: 'Jij', description: 'Utilities', split: 'Alle leden', time: '2025-12-04 10:45', status: 'confirmed' },
+              { id: 5, type: 'deposit', amount: 75, token: 'EURe', from: 'Charlie', description: 'Monthly contribution', time: '2025-12-03 18:20', status: 'confirmed' },
+              { id: 6, type: 'expense', amount: 120.80, token: 'EURe', from: 'Bob', description: 'Restaurant dinner', split: ['Alice', 'Bob', 'Charlie', 'Jij'], time: '2025-12-03 20:15', status: 'confirmed' },
+              { id: 7, type: 'expense', amount: 15.50, token: 'DUMMY', from: 'Alice', description: 'Coffee supplies', split: 'Alle leden', time: '2025-12-02 09:30', status: 'failed' },
+              { id: 8, type: 'deposit', amount: 300, token: 'EURe', from: 'Jij', description: 'Rent payment', time: '2025-12-01 08:00', status: 'confirmed' },
+            ]
+          %>
+
+          <% transactions.each do |tx| %>
+            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="p-2 rounded-lg <%= tx[:type] == 'deposit' ? 'bg-green-100' : 'bg-red-100' %> flex-shrink-0">
+                    <% if tx[:type] == 'deposit' %>
+                      <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                      </svg>
+                    <% else %>
+                      <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                    <% end %>
+                  </div>
+                  
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold text-gray-900"><%= tx[:description] %></h4>
+                    <p class="text-sm text-gray-500 mt-1">
+                      <%= tx[:type] == 'deposit' ? 'Gestort door' : 'Betaald door' %> <%= tx[:from] %> • <%= tx[:time] %>
+                    </p>
+                    <% if tx[:split] %>
+                      <p class="text-xs text-gray-400 mt-1">
+                        Gesplitst: <%= tx[:split].is_a?(Array) ? tx[:split].join(', ') : tx[:split] %>
+                      </p>
+                    <% end %>
+                    
+                    <!-- Transaction Hash -->
+                    <div class="mt-2 flex items-center gap-2">
+                      <span class="text-xs text-gray-400 font-mono">0x742d...f3a8</span>
+                      <button class="text-xs text-blue-600 hover:text-blue-700">Bekijk op Etherscan</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-right flex-shrink-0">
+                  <p class="font-bold text-lg <%= tx[:type] == 'deposit' ? 'text-green-600' : 'text-red-600' %>">
+                    <%= tx[:type] == 'deposit' ? '+' : '−' %>€<%= sprintf('%.2f', tx[:amount]) %>
+                  </p>
+                  <p class="text-xs text-gray-500 mt-1"><%= tx[:token] %></p>
+                  <% case tx[:status]
+                     when 'confirmed' %>
+                    <span class="inline-block px-2 py-1 text-xs rounded-full mt-2 bg-green-100 text-green-800 font-medium">
+                      Bevestigd
+                    </span>
+                  <% when 'pending' %>
+                    <span class="inline-block px-2 py-1 text-xs rounded-full mt-2 bg-yellow-100 text-yellow-800 font-medium">
+                      In behandeling
+                    </span>
+                  <% when 'failed' %>
+                    <span class="inline-block px-2 py-1 text-xs rounded-full mt-2 bg-red-100 text-red-800 font-medium">
+                      Mislukt
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex items-center justify-between bg-white rounded-lg p-4 border border-gray-100">
+          <p class="text-sm text-gray-600">Toont 1-8 van 24 transacties</p>
+          <div class="flex gap-2">
+            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" disabled>
+              Vorige
+            </button>
+            <button class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">1</button>
+            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
+            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Volgende
+            </button>
+          </div>
+        </div>
+      </div>
+    <% end %>

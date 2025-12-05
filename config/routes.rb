@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "transactions/index"
   get "settings/index"
   get "members/index"
   resource :session
