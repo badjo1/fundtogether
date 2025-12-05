@@ -22,4 +22,9 @@ Rails.application.routes.draw do
 
   #Defines the root path route ("/")
   root "pages#home"
+  get :dashboard, to: "pages#dashboard"
+  resources :transactions, only: [:index, :create]
+  resources :members, only: [:index, :create]
+  get 'settings', to: 'settings#index'
+
 end
