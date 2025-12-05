@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "settings/index"
   get "members/index"
   resource :session
   resources :passwords, param: :token

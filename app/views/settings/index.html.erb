@@ -1,0 +1,328 @@
+<!-- app/views/settings/index.html.erb -->
+
+<div class="min-h-screen bg-gray-50 flex" data-controller="dapp">
+  <!-- Sidebar -->
+  <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out" data-dapp-target="sidebar">
+    <div class="flex items-center justify-between h-16 px-4 bg-gray-800">
+      <div class="flex items-center space-x-2">
+        <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <h1 class="text-lg font-bold text-white">En/Of-Rekening</h1>
+      </div>
+      <button data-action="click->dapp#toggleSidebar" class="lg:hidden text-gray-400 hover:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <nav class="mt-8 px-4 space-y-2">
+      <%= link_to dashboard_path, class: "flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-left transition-all duration-200 text-gray-300 hover:bg-gray-800 hover:text-white" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+        </svg>
+        <span class="font-medium">Dashboard</span>
+      <% end %>
+      
+      <%= link_to transactions_path, class: "flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-left transition-all duration-200 text-gray-300 hover:bg-gray-800 hover:text-white" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <span class="font-medium">Transacties</span>
+      <% end %>
+      
+      <%= link_to members_path, class: "flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-left transition-all duration-200 text-gray-300 hover:bg-gray-800 hover:text-white" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <span class="font-medium">Groepsleden</span>
+      <% end %>
+      
+      <%= link_to settings_path, class: "flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-left transition-all duration-200 bg-blue-600 text-white shadow-lg" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span class="font-medium">Instellingen</span>
+      <% end %>
+    </nav>
+
+    <div class="absolute bottom-4 left-4 right-4">
+      <div class="bg-gray-800 rounded-lg p-3">
+        <p class="text-xs text-gray-400 mb-1">Verbonden als:</p>
+        <p class="text-sm text-white font-medium truncate" data-dapp-target="walletAddress">Niet verbonden</p>
+      </div>
+      <button data-action="click->dapp#disconnectWallet" class="w-full mt-3 text-gray-400 hover:text-white text-sm flex items-center justify-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        <span>Uitloggen</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Overlay -->
+  <div data-dapp-target="overlay" data-action="click->dapp#toggleSidebar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+
+  <!-- Main Content -->
+  <main class="flex-1 lg:ml-64">
+    <!-- Top Bar -->
+    <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8">
+      <button data-action="click->dapp#toggleSidebar" class="lg:hidden text-gray-600 hover:text-gray-900">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      
+      <div class="flex items-center space-x-4 ml-auto">
+        <div class="text-right">
+          <p class="text-sm text-gray-600">Jouw Saldo</p>
+          <p class="font-bold text-gray-900" data-dapp-target="userBalance">€150.25</p>
+        </div>
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+          <span class="text-white font-bold text-sm">J</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Settings Content -->
+    <div class="p-4 lg:p-8">
+      <div class="space-y-6">
+        <h2 class="text-2xl font-bold text-gray-900">Instellingen</h2>
+
+        <!-- Group Settings -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-6">Accountinstellingen</h3>
+          
+          <%= form_with url: settings_path, method: :patch, local: true do |f| %>
+            <div class="space-y-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Accountnaam</label>
+                <input type="text" name="account[name]" value="Huisgenoten Amsterdam" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <p class="text-xs text-gray-500 mt-1">De naam van je account zoals andere deze zien</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Accountbeschrijving</label>
+                <textarea name="account[description]" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">Een account voor het delen van huishoudelijke kosten</textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Standaard splitsmethode</label>
+                <select name="account[split_method]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="equal">Gelijk verdelen</option>
+                  <option value="proportional">Op basis van saldo</option>
+                  <option value="manual">Handmatig</option>
+                  <option value="percentage">Op basis van percentage</option>
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Hoe uitgaven standaard worden verdeeld</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Minimum storting</label>
+                <div class="relative">
+                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+                  <input type="number" name="account[min_deposit]" value="10" step="0.01" class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p class="font-medium text-gray-900">Automatische EURe conversie</p>
+                  <p class="text-sm text-gray-500">Converteer automatisch DUMMY tokens naar EURe</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" name="account[auto_convert]" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p class="font-medium text-gray-900">Notificaties</p>
+                  <p class="text-sm text-gray-500">Ontvang meldingen bij nieuwe transacties</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" name="account[notifications]" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div class="flex gap-3">
+                <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium transition-colors">
+                  Wijzigingen Opslaan
+                </button>
+                <button type="button" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
+                  Annuleren
+                </button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Smart Contract Settings -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-6">Smart Contract Instellingen</h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+                <div>
+                  <p class="font-medium text-green-900">Gnosis Safe Multisig</p>
+                  <p class="text-sm text-green-700 font-mono">0x742d...3f8a</p>
+                </div>
+              </div>
+              <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Actief</span>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                  <p class="font-medium text-blue-900">Monerium EURe Token</p>
+                  <p class="text-sm text-blue-700 font-mono">0x8ba1...d432</p>
+                </div>
+              </div>
+              <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Verbonden</span>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <div>
+                  <p class="font-medium text-purple-900">Dummy Test Token</p>
+                  <p class="text-sm text-purple-700 font-mono">0x95ad...d079</p>
+                </div>
+              </div>
+              <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">Gedeployed</span>
+            </div>
+
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-gray-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="flex-1">
+                  <p class="font-medium text-gray-900">Netwerk</p>
+                  <p class="text-sm text-gray-600 mt-1">Ethereum Mainnet (Chain ID: 1)</p>
+                  <p class="text-sm text-gray-600">Gas prijs: ~25 Gwei</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security & Privacy -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-6">Beveiliging & Privacy</h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <p class="font-medium text-gray-900">Twee-factor authenticatie</p>
+                <p class="text-sm text-gray-500">Extra beveiliging voor je account</p>
+              </div>
+              <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
+                Inschakelen
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <p class="font-medium text-gray-900">Transactie handtekeningen</p>
+                <p class="text-sm text-gray-500">Vereist handtekening voor elke transactie</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <p class="font-medium text-gray-900">Privacy modus</p>
+                <p class="text-sm text-gray-500">Verberg saldi in de interface</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-red-200">
+          <h3 class="text-lg font-bold text-red-900 mb-6">Gevarenzone</h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+              <div>
+                <p class="font-medium text-gray-900">Account verlaten</p>
+                <p class="text-sm text-gray-500">Je verlaat deze account permanent</p>
+              </div>
+              <button class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium">
+                Account Verlaten
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+              <div>
+                <p class="font-medium text-gray-900">Account verwijderen</p>
+                <p class="text-sm text-gray-500">Permanent verwijderen van deze account (alleen admin)</p>
+              </div>
+              <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium">
+                Account Verwijderen
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Data -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-6">Data Beheer</h3>
+          
+          <div class="space-y-4">
+            <button class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                </svg>
+                <div class="text-left">
+                  <p class="font-medium text-gray-900">Exporteer transacties</p>
+                  <p class="text-sm text-gray-500">Download als CSV</p>
+                </div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+
+            <button class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <div class="text-left">
+                  <p class="font-medium text-gray-900">Genereer rapport</p>
+                  <p class="text-sm text-gray-500">Financieel overzicht PDF</p>
+                </div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
