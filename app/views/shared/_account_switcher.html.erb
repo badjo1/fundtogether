@@ -1,0 +1,21 @@
+<!-- Current Account Badge (smaller version) -->
+<% if current_account %>
+  <div class="mx-4 mt-4 p-3 bg-gray-800 rounded-lg border border-gray-700">
+    <p class="text-xs text-gray-400 mb-1">Huidige Account</p>
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+        <span class="text-white font-bold text-xs">
+          <%= current_account.name.first.upcase %>
+        </span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-white font-medium text-sm truncate">
+          <%= current_account.name %>
+        </p>
+        <p class="text-gray-400 text-xs">
+          <%= current_account.active_members.count %> leden
+        </p>
+      </div>
+    </div>
+  </div>
+<% end %>
