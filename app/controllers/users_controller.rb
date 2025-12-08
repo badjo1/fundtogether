@@ -1,4 +1,4 @@
-class MembersController < ApplicationController
+class UsersController < ApplicationController
   allow_unauthenticated_access
   
   def index

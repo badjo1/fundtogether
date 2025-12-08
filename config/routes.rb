@@ -1,14 +1,31 @@
 Rails.application.routes.draw do
-  get "transactions/index"
-  get "settings/index"
-  get "members/index"
-  resource :session
-  resources :passwords, param: :token
+
+
+ root 'pages#home'
+  
   resources :accounts do
     member do
       post :switch
     end
   end
+  
+  # Dashboard
+  get 'dashboard', to: 'pages#dashboard'
+  
+  # Transactions
+  resources :transactions, only: [:index, :create, :show, :update]
+  
+  resources :users, only: [:index, :create, :show, :update, :destroy]
+  post 'users/invite', to: 'users#invite'
+  delete 'users/:id/remove', to: 'users#remove'
+  
+  # Settings
+  get 'settings', to: 'settings#index'
+  patch 'settings', to: 'settings#update'
+
+
+  resource :session
+  resources :passwords, param: :token
 
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -29,12 +46,5 @@ Rails.application.routes.draw do
       }, via: :all
     end
   end
-
-  #Defines the root path route ("/")
-  root "pages#home"
-  get :dashboard, to: "pages#dashboard"
-  resources :transactions, only: [:index, :create]
-  resources :members, only: [:index, :create]
-  get 'settings', to: 'settings#index'
 
 end

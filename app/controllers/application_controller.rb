@@ -7,11 +7,11 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
 
-  helper_method :current_user_member, :current_account
+  helper_method :current_user, :current_account
   
   private
   
-  def current_user_member
+  def current_user
   end
   
   def current_account
