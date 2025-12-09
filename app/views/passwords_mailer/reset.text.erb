@@ -1,4 +1,20 @@
-You can reset your password on
+Wachtwoord Resetten - Fund Together
+=====================================
+
+Hallo,
+
+We hebben een verzoek ontvangen om het wachtwoord van je Fund Together account te resetten.
+
+Klik op onderstaande link om je wachtwoord te resetten:
 <%= edit_password_url(@user.password_reset_token) %>
 
-This link will expire in <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
+Let op: Deze link is <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %> geldig.
+Na het resetten word je automatisch uitgelogd op alle apparaten.
+
+Als je geen wachtwoord reset hebt aangevraagd, kun je deze e-mail negeren. Je account blijft veilig.
+
+Met vriendelijke groet,
+Het Fund Together Team
+
+---
+© <%= Date.current.year %> Fund Together. Alle rechten voorbehouden.
