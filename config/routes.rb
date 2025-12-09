@@ -23,9 +23,16 @@ Rails.application.routes.draw do
   get 'settings', to: 'settings#index'
   patch 'settings', to: 'settings#update'
 
-
   resource :session
   resources :passwords, param: :token
+
+    # Authentication routes
+  get  "login",    to: "sessions#new"
+  post "login",    to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
+  
+  get  "register", to: "registrations#new"
+  post "register", to: "registrations#create"
 
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
