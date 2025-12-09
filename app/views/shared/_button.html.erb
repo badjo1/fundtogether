@@ -1,0 +1,68 @@
+<%#
+  Shared Button Partial
+  
+  Parameters:
+  - text: Button text (required)
+  - variant: 'primary' (default), 'secondary', 'danger', 'success', 'outline'
+  - icon: 'login', 'register', 'plus', 'save', 'wallet', 'arrow-right', or nil
+  - type: 'submit' (default), 'button'
+  - href: If provided, renders as a link instead of button
+  - full_width: true (default) or false
+  - disabled: true or false
+  - data: Hash for data attributes
+  
+  Usage:
+    render 'shared/button', text: 'Inloggen', icon: 'login'
+    render 'shared/button', text: 'Opslaan', variant: 'success', icon: 'save'
+    render 'shared/button', text: 'Bekijk meer', href: some_path, icon: 'arrow-right'
+%>
+
+<%
+  text = local_assigns[:text] || 'Button'
+  variant = local_assigns[:variant] || 'primary'
+  icon = local_assigns[:icon]
+  type = local_assigns[:type] || 'submit'
+  href = local_assigns[:href]
+  full_width = local_assigns.fetch(:full_width, true)
+  disabled = local_assigns[:disabled] || false
+  data = local_assigns[:data] || {}
+  
+  # Base classes
+  base_classes = "inline-flex items-center justify-center px-4 py-3 rounded-lg font-medium transition-colors focus:ring-4"
+  base_classes += " w-full" if full_width
+  base_classes += " opacity-50 cursor-not-allowed" if disabled
+  
+  # Variant classes
+  variant_classes = case variant
+  when 'primary'
+    "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-300"
+  when 'secondary'
+    "bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-300"
+  when 'danger'
+    "bg-red-600 text-white hover:bg-red-700 focus:ring-red-300"
+  when 'success'
+    "bg-green-600 text-white hover:bg-green-700 focus:ring-green-300"
+  when 'outline'
+    "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-300"
+  else
+    "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-300"
+  end
+  
+  all_classes = "#{base_classes} #{variant_classes}"
+%>
+
+<% if href.present? %>
+  <%= link_to href, class: all_classes, data: data do %>
+    <% if icon.present? %>
+      <%= render "shared/icons/#{icon}" %>
+    <% end %>
+    <span><%= text %></span>
+  <% end %>
+<% else %>
+  <button type="<%= type %>" class="<%= all_classes %>" <%= 'disabled' if disabled %> <% data.each do |key, value| %>data-<%= key %>="<%= value %>"<% end %>>
+    <% if icon.present? %>
+      <%= render "shared/icons/#{icon}" %>
+    <% end %>
+    <span><%= text %></span>
+  </button>
+<% end %>

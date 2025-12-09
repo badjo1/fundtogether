@@ -1,0 +1,53 @@
+<%#
+  Flash Messages Partial
+  
+  Parameters:
+  - model: Optional ActiveRecord model to show validation errors
+  
+  Usage:
+  render 'shared/flash_messages' 
+  render 'shared/flash_messages', model: @user
+%>
+
+<% model = local_assigns[:model] %>
+
+<%# Flash alert (error) %>
+<% if flash[:alert] %>
+  <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+    <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <p class="text-red-800 text-sm"><%= flash[:alert] %></p>
+  </div>
+<% end %>
+
+<%# Flash notice (success) %>
+<% if flash[:notice] %>
+  <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+    <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <p class="text-green-800 text-sm"><%= flash[:notice] %></p>
+  </div>
+<% end %>
+
+<%# Model validation errors %>
+<% if model&.errors&.any? %>
+  <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+    <div class="flex items-start gap-3">
+      <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <div>
+        <h3 class="text-red-800 font-medium text-sm mb-2">
+          Er <%= model.errors.count == 1 ? 'is' : 'zijn' %> <%= pluralize(model.errors.count, "fout", "fouten") %>:
+        </h3>
+        <ul class="list-disc list-inside text-red-700 text-sm space-y-1">
+          <% model.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>
