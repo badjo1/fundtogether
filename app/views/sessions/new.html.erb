@@ -18,13 +18,13 @@
       <%= form_with url: login_path, method: :post, local: true, class: "space-y-6" do |f| %>
         <!-- Email Field -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+          <label for="email_address" class="block text-sm font-medium text-gray-700 mb-2">
             Email
           </label>
           <input 
             type="email" 
-            name="email" 
-            id="email" 
+            name="email_address" 
+            id="email_address" 
             required 
             autofocus
             autocomplete="email"

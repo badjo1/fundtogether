@@ -8,11 +8,11 @@
   >
     <div class="text-right hidden sm:block">
       <p class="text-sm font-medium text-gray-900">
-        <%= current_user&.name || 'Gebruiker' %>
+        <%= Current.user&.name || 'Gebruiker' %>
       </p>
       <p class="text-xs text-gray-500">
         <% if current_account %>
-          €<%= sprintf('%.2f', current_account.member_balance(current_user)) %>
+          €<%= sprintf('%.2f', current_account.member_balance(Current.user)) %>
         <% else %>
           Geen account
         <% end %>
@@ -20,7 +20,7 @@
     </div>
     <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
       <span class="text-white font-bold text-sm">
-        <%= current_user&.name&.first&.upcase || 'U' %>
+        <%= Current.user&.name&.first&.upcase || 'U' %>
       </span>
     </div>
     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,15 +38,15 @@
       <div class="flex items-center gap-3">
         <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
           <span class="text-white font-bold text-lg">
-            <%= current_user&.name&.first&.upcase || 'U' %>
+            <%= Current.user&.name&.first&.upcase || 'U' %>
           </span>
         </div>
         <div class="flex-1 min-w-0">
           <p class="font-semibold text-gray-900 truncate">
-            <%= current_user&.name || 'Gebruiker' %>
+            <%= Current.user&.name || 'Gebruiker' %>
           </p>
           <p class="text-sm text-gray-500 truncate" data-dapp-target="walletAddress">
-            <%= current_user&.short_address || 'Niet verbonden' %>
+            <%= Current.user&.short_address || 'Niet verbonden' %>
           </p>
         </div>
       </div>
@@ -84,8 +84,8 @@
         Wissel van Account
       </p>
       <div class="max-h-48 overflow-y-auto space-y-1">
-        <% if current_user %>
-          <% current_user.accounts.each do |account| %>
+        <% if Current.user %>
+          <% Current.user.accounts.each do |account| %>
             <% next if account == current_account %>
             <%= link_to switch_account_path(account), method: :post, 
                 class: "flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors group" do %>

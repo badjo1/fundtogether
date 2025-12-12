@@ -10,9 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_02_164354) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_12_143954) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "account_memberships", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.boolean "active", default: true
+    t.integer "balance_cents", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "joined_at"
+    t.string "role", default: "member", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["account_id", "user_id"], name: "index_account_memberships_on_account_id_and_user_id", unique: true
+    t.index ["account_id"], name: "index_account_memberships_on_account_id"
+    t.index ["role"], name: "index_account_memberships_on_role"
+    t.index ["user_id", "active"], name: "index_account_memberships_on_user_id_and_active"
+    t.index ["user_id"], name: "index_account_memberships_on_user_id"
+  end
+
+  create_table "accounts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.string "split_method", default: "equal", null: false
+    t.datetime "updated_at", null: false
+    t.string "wallet_address"
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -26,10 +51,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_164354) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
+    t.string "name", null: false
     t.string "password_digest", null: false
     t.datetime "updated_at", null: false
+    t.string "wallet_address"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["wallet_address"], name: "index_users_on_wallet_address", unique: true
   end
 
+  add_foreign_key "account_memberships", "accounts"
+  add_foreign_key "account_memberships", "users"
   add_foreign_key "sessions", "users"
 end
