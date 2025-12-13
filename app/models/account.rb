@@ -1,14 +1,18 @@
 class Account < ApplicationRecord
-  # Associations - UPDATED: members → users
+  attr_accessor :min_deposit, :auto_convert, :notifications
+
   has_many :account_memberships, dependent: :destroy
   has_many :users, through: :account_memberships
   has_many :transactions, dependent: :destroy
   has_many :invitations, dependent: :destroy
+  belongs_to :current_account, class_name: 'Account', optional: true
+
+
   
   # Validations
   validates :name, presence: true, length: { minimum: 3, maximum: 100 }
-  validates :wallet_address, presence: true, uniqueness: true, 
-            format: { with: /\A0x[a-fA-F0-9]{40}\z/, message: "must be a valid Ethereum address" }
+  # validates :wallet_address, presence: true, uniqueness: true, 
+  #           format: { with: /\A0x[a-fA-F0-9]{40}\z/, message: "must be a valid Ethereum address" }
   validates :split_method, presence: true, 
             inclusion: { in: %w[equal proportional manual percentage] }
   validates :min_deposit, numericality: { greater_than_or_equal_to: 0 }
@@ -38,18 +42,18 @@ class Account < ApplicationRecord
   end
   
   def user_balance(user)
-    account_memberships.find_by(user: user)&.balance || 0
+    account_memberships.find_by(user: user)&.balance_cents || 0
   end
   
   def user_role(user)
     account_memberships.find_by(user: user)&.role
   end
   
-  def add_user(user, role: 'member', balance: 0)
+  def add_member(user, role: 'member', balance: 0)
     account_memberships.create!(
       user: user,
       role: role,
-      balance: balance,
+      balance_cents: balance,
       active: true,
       joined_at: Time.current
     )

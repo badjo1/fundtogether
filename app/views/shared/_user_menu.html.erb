@@ -12,7 +12,7 @@
       </p>
       <p class="text-xs text-gray-500">
         <% if current_account %>
-          €<%= sprintf('%.2f', current_account.member_balance(Current.user)) %>
+          €<%= sprintf('%.2f', current_account.user_balance(Current.user)) %>
         <% else %>
           Geen account
         <% end %>
@@ -67,8 +67,8 @@
               <%= current_account.name %>
             </p>
             <p class="text-xs text-gray-500">
-              <%= current_account.active_members.count %> leden • 
-              €<%= sprintf('%.2f', current_account.member_balance(current_user)) %>
+              <%= current_account.active_users.count %> leden • 
+              €<%= sprintf('%.2f', current_account.user_balance(current_user)) %>
             </p>
           </div>
           <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -99,8 +99,8 @@
                   <%= account.name %>
                 </p>
                 <p class="text-xs text-gray-500">
-                  <%= account.active_members.count %> leden • 
-                  €<%= sprintf('%.2f', account.member_balance(current_user)) %>
+                  <%= account.active_users.count %> leden • 
+                  €<%= sprintf('%.2f', account.user_balance(current_user)) %>
                 </p>
               </div>
               <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">

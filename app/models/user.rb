@@ -7,6 +7,8 @@ class User < ApplicationRecord
            foreign_key: 'from_user_id', dependent: :nullify
   has_many :received_transactions, class_name: 'Transaction', 
            foreign_key: 'to_user_id', dependent: :nullify
+  belongs_to :current_account, class_name: 'Account', optional: true
+
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
@@ -54,8 +56,15 @@ class User < ApplicationRecord
     "#{wallet_address[0..5]}...#{wallet_address[-4..]}"
   end
   
-  def current_account
-    accounts.first
+   # Wissel naar een andere account
+  def switch_to_account(account)
+    return false unless accounts.include?(account)
+    update(current_account: account)
+  end
+
+  # Stel eerste account in als current als er geen is
+  def ensure_current_account
+    update(current_account: accounts.first) if current_account.nil? && accounts.any?
   end
 
 end

@@ -1,0 +1,134 @@
+<%= render layout: 'shared/public_layout' do %>
+
+  <div class="w-full max-w-lg">
+    <!-- Logo/Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-4">
+        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold text-white mb-2">Nieuwe Account</h1>
+      <p class="text-blue-200">Maak een groepsaccount aan om samen te sparen</p>
+    </div>
+
+    <!-- Create Account Card -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <% if @account.errors.any? %>
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h3 class="text-red-800 font-medium text-sm mb-2">Er zijn <%= pluralize(@account.errors.count, "fout", "fouten") %>:</h3>
+          <ul class="list-disc list-inside text-red-700 text-sm space-y-1">
+            <% @account.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with model: @account, local: true, class: "space-y-6" do |f| %>
+        <!-- Account Name -->
+        <div>
+          <label for="account_name" class="block text-sm font-medium text-gray-700 mb-2">
+            Accountnaam *
+          </label>
+          <%= f.text_field :name, 
+              required: true,
+              autofocus: true,
+              placeholder: "bijv. Huisgenoten Amsterdam",
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" %>
+          <p class="text-xs text-gray-500 mt-1">De naam van je groepsaccount</p>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="account_description" class="block text-sm font-medium text-gray-700 mb-2">
+            Beschrijving
+          </label>
+          <%= f.text_area :description, 
+              rows: 3,
+              placeholder: "Waar is deze account voor?",
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none" %>
+        </div>
+
+        <!-- Split Method -->
+        <div>
+          <label for="account_split_method" class="block text-sm font-medium text-gray-700 mb-2">
+            Standaard splitsmethode
+          </label>
+          <%= f.select :split_method, 
+              [
+                ['Gelijk verdelen', 'equal'],
+                ['Op basis van saldo', 'proportional'],
+                ['Handmatig', 'manual'],
+                ['Op basis van percentage', 'percentage']
+              ],
+              {},
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" %>
+          <p class="text-xs text-gray-500 mt-1">Hoe uitgaven standaard worden verdeeld</p>
+        </div>
+
+        <!-- Minimum Deposit -->
+        <div>
+          <label for="account_min_deposit" class="block text-sm font-medium text-gray-700 mb-2">
+            Minimum storting
+          </label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+            <%= f.number_field :min_deposit, 
+                step: 0.01,
+                min: 0,
+                value: @account.min_deposit || 10.00,
+                class: "w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" %>
+          </div>
+        </div>
+
+        <!-- Toggle Options -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div>
+              <p class="font-medium text-gray-900">Automatische EURe conversie</p>
+              <p class="text-sm text-gray-500">Converteer automatisch tokens naar EURe</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <%= f.check_box :auto_convert, class: "sr-only peer", checked: true %>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div>
+              <p class="font-medium text-gray-900">Notificaties</p>
+              <p class="text-sm text-gray-500">Ontvang meldingen bij nieuwe transacties</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <%= f.check_box :notifications, class: "sr-only peer", checked: true %>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit"
+          class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors focus:ring-4 focus:ring-blue-300 flex items-center justify-center space-x-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>Account Aanmaken</span>
+        </button>
+      <% end %>
+
+      <!-- Cancel Link -->
+      <div class="text-center mt-6">
+        <%= link_to "← Terug naar Dashboard", dashboard_path, class: "text-gray-600 hover:text-gray-800 text-sm" %>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="mt-6 text-center text-blue-100 text-sm">
+      <p>Na het aanmaken kun je andere leden uitnodigen</p>
+    </div>
+  </div>
+
+<% end %>

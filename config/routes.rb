@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   
   resources :accounts do
     member do
-      post :switch
+      get :switch
     end
   end
   

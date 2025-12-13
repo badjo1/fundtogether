@@ -5,7 +5,7 @@ class AccountMembership < ApplicationRecord
   
   # Validations
   validates :role, presence: true, inclusion: { in: %w[admin member viewer] }
-  validates :balance, numericality: { greater_than_or_equal_to: 0 }
+  validates :balance_cents, numericality: { greater_than_or_equal_to: 0 }
   validates :user_id, uniqueness: { scope: :account_id, message: "is already in this account" }
   
   # Enums
@@ -27,11 +27,15 @@ class AccountMembership < ApplicationRecord
   def decrement_balance(amount)
     decrement!(:balance, amount)
   end
+
+  def admin?
+    role == 'admin'
+  end
   
   private
   
   def set_defaults
-    self.balance ||= 0.0
+    self.balance_cents ||= 0.0
     self.role ||= 'member'
     self.active = true if active.nil?
     self.joined_at ||= Time.current
