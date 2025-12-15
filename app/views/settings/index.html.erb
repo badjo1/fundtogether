@@ -1,7 +1,7 @@
 <!-- app/views/settings/index.html.erb -->
 
     <%= render layout: 'shared/app_layout' do %>
-      <div class="space-y-6">
+      <div class="space-y-6" data-controller="confirm-modal">
         <h2 class="text-2xl font-bold text-gray-900">Instellingen</h2>
 
         <!-- Group Settings -->
@@ -177,22 +177,32 @@
           <h3 class="text-lg font-bold text-red-900 mb-6">Gevarenzone</h3>
           
           <div class="space-y-4">
+            <!-- Account Verlaten -->
             <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
               <div>
                 <p class="font-medium text-gray-900">Account verlaten</p>
                 <p class="text-sm text-gray-500">Je verlaat deze account permanent</p>
               </div>
-              <button class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium">
+              <button 
+                type="button"
+                data-action="click->confirm-modal#openLeave"
+                class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium"
+              >
                 Account Verlaten
               </button>
             </div>
 
+            <!-- Account Verwijderen -->
             <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
               <div>
                 <p class="font-medium text-gray-900">Account verwijderen</p>
                 <p class="text-sm text-gray-500">Permanent verwijderen van deze account (alleen admin)</p>
               </div>
-              <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium">
+              <button 
+                type="button"
+                data-action="click->confirm-modal#openDelete"
+                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium"
+              >
                 Account Verwijderen
               </button>
             </div>
@@ -233,6 +243,152 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </button>
+          </div>
+        </div>
+
+        <!-- Leave Account Modal -->
+        <div 
+          data-confirm-modal-target="leaveModal"
+          class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+        >
+          <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="p-3 bg-yellow-100 rounded-full">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900">Account Verlaten</h3>
+            </div>
+            
+            <p class="text-gray-600 mb-4">
+              Weet je zeker dat je dit account wilt verlaten? Je verliest toegang tot:
+            </p>
+            
+            <ul class="text-sm text-gray-600 mb-6 space-y-2">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Alle groepstransacties en -geschiedenis</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Je saldo binnen dit account</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Toegang tot gedeelde smart contracts</span>
+              </li>
+            </ul>
+            
+            <p class="text-sm text-gray-500 mb-6">
+              Het account blijft bestaan voor andere leden.
+            </p>
+            
+            <div class="flex gap-3">
+              <button 
+                type="button"
+                data-action="click->confirm-modal#closeLeave"
+                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+              >
+                Annuleren
+              </button>
+              <% if defined?(current_account) && current_account %>
+                <%= button_to leave_account_path(current_account), 
+                    method: :delete, 
+                    class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium" do %>
+                  Ja, verlaat account
+                <% end %>
+              <% else %>
+                <button type="button" disabled class="flex-1 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed">
+                  Ja, verlaat account
+                </button>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Account Modal -->
+        <div 
+          data-confirm-modal-target="deleteModal"
+          class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+        >
+          <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="p-3 bg-red-100 rounded-full">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900">Account Permanent Verwijderen</h3>
+            </div>
+            
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <p class="text-red-800 text-sm font-medium">
+                ⚠️ Let op: Deze actie kan niet ongedaan worden gemaakt!
+              </p>
+            </div>
+            
+            <p class="text-gray-600 mb-4">
+              Het volgende wordt permanent verwijderd:
+            </p>
+            
+            <ul class="text-sm text-gray-600 mb-6 space-y-2">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Alle transacties en financiële geschiedenis</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Alle ledengegevens en saldi</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Smart contract koppelingen</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Alle accountinstellingen</span>
+              </li>
+            </ul>
+            
+            <p class="text-sm text-red-600 font-medium mb-6">
+              Alle leden verliezen toegang tot dit account.
+            </p>
+            
+            <div class="flex gap-3">
+              <button 
+                type="button"
+                data-action="click->confirm-modal#closeDelete"
+                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+              >
+                Annuleren
+              </button>
+              <% if defined?(current_account) && current_account %>
+                <%= button_to account_path(current_account), 
+                    method: :delete, 
+                    class: "flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium" do %>
+                  Permanent Verwijderen
+                <% end %>
+              <% else %>
+                <button type="button" disabled class="flex-1 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed">
+                  Permanent Verwijderen
+                </button>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>

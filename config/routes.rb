@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :accounts do
     member do
       get :switch
+      delete :leave
     end
   end
   

@@ -5,9 +5,6 @@ class Account < ApplicationRecord
   has_many :users, through: :account_memberships
   has_many :transactions, dependent: :destroy
   has_many :invitations, dependent: :destroy
-  belongs_to :current_account, class_name: 'Account', optional: true
-
-
   
   # Validations
   validates :name, presence: true, length: { minimum: 3, maximum: 100 }

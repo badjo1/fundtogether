@@ -8,13 +8,8 @@ class Invitation < ApplicationRecord
             inclusion: { in: %w[pending accepted rejected expired] }
   validates :token, presence: true, uniqueness: true
   
-  enum status: {
-    pending: 'pending',
-    accepted: 'accepted',
-    rejected: 'rejected',
-    expired: 'expired'
-  }
-  
+  enum :status, [:pending, :accepted, :rejected, :expired]
+   
   before_validation :generate_token, on: :create
   
   scope :pending, -> { where(status: 'pending') }
