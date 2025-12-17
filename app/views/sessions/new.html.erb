@@ -13,8 +13,6 @@
 
     <!-- Login Card -->
     <div class="bg-white rounded-2xl shadow-2xl p-8">
-      <%= render 'shared/flash_messages' %>
-
       <%= form_with url: login_path, method: :post, local: true, class: "space-y-6" do |f| %>
         <!-- Email Field -->
         <div>

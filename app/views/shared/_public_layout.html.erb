@@ -1,3 +1,12 @@
+<!-- app/views/shared/_public_layout.html.erb -->
+
 <div class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 min-h-screen flex items-center justify-center p-4">
-	<%= yield %>
+  <div class="w-full flex flex-col items-center">
+    <!-- Flash Messages for public pages -->
+    <div class="w-full max-w-md mb-4">
+      <%= render 'shared/flash_messages' %>
+    </div>
+    
+    <%= yield %>
+  </div>
 </div>
