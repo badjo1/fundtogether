@@ -21,11 +21,11 @@ class AccountMembership < ApplicationRecord
   
   # Instance methods
   def increment_balance(amount)
-    increment!(:balance, amount)
+    increment!(:balance_cents, amount)
   end
-  
+
   def decrement_balance(amount)
-    decrement!(:balance, amount)
+    decrement!(:balance_cents, amount)
   end
 
   def admin?
@@ -33,9 +33,9 @@ class AccountMembership < ApplicationRecord
   end
   
   private
-  
+
   def set_defaults
-    self.balance_cents ||= 0.0
+    self.balance_cents ||= 0
     self.role ||= 'member'
     self.active = true if active.nil?
     self.joined_at ||= Time.current

@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
-  allow_unauthenticated_access
-  
   def index
+    @users = current_account&.active_users || []
   end
 end

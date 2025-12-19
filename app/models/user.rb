@@ -32,7 +32,7 @@ class User < ApplicationRecord
   end
   
   def balance_in_account(account)
-    account_memberships.find_by(account: account)&.balance || 0
+    account_memberships.find_by(account: account)&.balance_cents || 0
   end
   
   def role_in_account(account)
@@ -48,7 +48,7 @@ class User < ApplicationRecord
   end
   
   def display_name
-    name || email.split('@').first
+    name || email_address.split('@').first
   end
   
   def short_address

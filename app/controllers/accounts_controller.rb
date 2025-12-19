@@ -100,9 +100,9 @@ class AccountsController < ApplicationController
   end
 
   def authorize_admin!
-    # unless current_account_membership&.admin?
-    #   redirect_to settings_path, alert: "Alleen admins kunnen het account verwijderen"
-    # end
+    unless current_account_membership&.admin?
+      redirect_to settings_path, alert: "Alleen admins kunnen het account verwijderen"
+    end
   end
 
   def current_account_membership

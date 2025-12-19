@@ -25,7 +25,7 @@ class Account < ApplicationRecord
   
   # Instance methods - UPDATED: member → user
   def total_balance
-    account_memberships.sum(:balance)
+    account_memberships.sum(:balance_cents)
   end
   
   def active_users
