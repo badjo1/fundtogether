@@ -18,8 +18,4 @@ class ApplicationController < ActionController::Base
     current_user&.current_account
   end
 
-  def switch_account_path(account)
-    switch_account_path(account)
-  end
-
 end
