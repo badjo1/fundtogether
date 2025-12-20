@@ -4,17 +4,17 @@
   Parameters:
   - text: Button text (required)
   - variant: 'primary' (default), 'secondary', 'danger', 'success', 'outline'
-  - icon: 'login', 'register', 'plus', 'save', 'wallet', 'arrow-right', or nil
+  - icon: icon name (e.g., :user, :plus, :arrow_right) or nil
   - type: 'submit' (default), 'button'
   - href: If provided, renders as a link instead of button
   - full_width: true (default) or false
   - disabled: true or false
   - data: Hash for data attributes
-  
+
   Usage:
-    render 'shared/button', text: 'Inloggen', icon: 'login'
-    render 'shared/button', text: 'Opslaan', variant: 'success', icon: 'save'
-    render 'shared/button', text: 'Bekijk meer', href: some_path, icon: 'arrow-right'
+    render 'shared/button', text: 'Inloggen', icon: :user
+    render 'shared/button', text: 'Opslaan', variant: 'success', icon: :check
+    render 'shared/button', text: 'Bekijk meer', href: some_path, icon: :arrow_right
 %>
 
 <%
@@ -54,14 +54,14 @@
 <% if href.present? %>
   <%= link_to href, class: all_classes, data: data do %>
     <% if icon.present? %>
-      <%= render "shared/icons/#{icon}" %>
+      <%= icon icon.to_sym, class: "w-5 h-5 mr-2" %>
     <% end %>
     <span><%= text %></span>
   <% end %>
 <% else %>
   <button type="<%= type %>" class="<%= all_classes %>" <%= 'disabled' if disabled %> <% data.each do |key, value| %>data-<%= key %>="<%= value %>"<% end %>>
     <% if icon.present? %>
-      <%= render "shared/icons/#{icon}" %>
+      <%= icon icon.to_sym, class: "w-5 h-5 mr-2" %>
     <% end %>
     <span><%= text %></span>
   </button>

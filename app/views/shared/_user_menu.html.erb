@@ -69,9 +69,7 @@
               €<%= sprintf('%.2f', current_account.user_balance(current_user)) %>
             </p>
           </div>
-          <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-          </svg>
+          <%= icon :check, class: "w-5 h-5 text-green-500 flex-shrink-0" %>
         </div>
       </div>
     <% end %>
@@ -101,9 +99,7 @@
                   €<%= sprintf('%.2f', account.user_balance(current_user)) %>
                 </p>
               </div>
-              <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
+              <%= icon :chevron_right, class: "w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" %>
             <% end %>
           <% end %>
         <% end %>
@@ -111,9 +107,7 @@
       
       <%= link_to new_account_path, class: "flex items-center gap-2 px-2 py-2 mt-2 rounded-lg hover:bg-blue-50 transition-colors text-blue-600 group" do %>
         <div class="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 transition-colors">
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
+          <%= icon :plus, class: "w-5 h-5 text-blue-600" %>
         </div>
         <span class="font-medium text-sm">Nieuwe Account</span>
       <% end %>
