@@ -9,7 +9,7 @@ class AccountMembership < ApplicationRecord
   validates :user_id, uniqueness: { scope: :account_id, message: "is already in this account" }
   
   # Enums
-  enum :role, [:admin, :member, :viewer]
+  enum :role, { admin: 'admin', member: 'member', viewer: 'viewer' }
 
   # Callbacks
   before_validation :set_defaults, on: :create

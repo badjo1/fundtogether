@@ -54,12 +54,19 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # Preview emails in browser instead of logs
+  gem "letter_opener"
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  # Pin minitest to 5.x for Rails 8.1.1 compatibility
+  gem "minitest", "~> 5.26"
 end
 
 gem "tailwindcss-rails", "~> 4.4"
+
+gem "rqrcode", "~> 3.1"

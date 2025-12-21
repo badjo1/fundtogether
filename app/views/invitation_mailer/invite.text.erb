@@ -1,0 +1,20 @@
+Je bent uitgenodigd! - Fund Together
+=====================================
+
+Hallo,
+
+<%= @inviter.name %> heeft je uitgenodigd om lid te worden van <%= @account.name %> op Fund Together.
+
+Klik op onderstaande link om de uitnodiging te bekijken:
+<%= @invitation_url %>
+
+Let op: Deze uitnodiging is geldig tot <%= @invitation.expires_at.strftime('%d %b %Y om %H:%M') %>.
+Daarna verloopt de link automatisch.
+
+Als je deze uitnodiging niet verwachtte, kun je deze e-mail gewoon negeren.
+
+Met vriendelijke groet,
+Het Fund Together Team
+
+---
+© <%= Date.current.year %> Fund Together. Alle rechten voorbehouden.

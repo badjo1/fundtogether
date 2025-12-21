@@ -1,0 +1,27 @@
+<!-- app/views/invitations/_qr_code.html.erb -->
+<%
+  # Generate QR code using rqrcode gem
+  # Install with: bundle add rqrcode
+  begin
+    require 'rqrcode'
+    qrcode = RQRCode::QRCode.new(url)
+    svg = qrcode.as_svg(
+      color: "000",
+      shape_rendering: "crispEdges",
+      module_size: 4,
+      standalone: true,
+      use_path: true
+    )
+%>
+  <%= svg.html_safe %>
+<%
+  rescue LoadError
+    # Fallback if rqrcode is not installed
+%>
+  <div class="text-center p-8 text-gray-500">
+    <p class="text-sm">QR code generator not installed</p>
+    <p class="text-xs mt-1">Run: <code class="bg-gray-100 px-2 py-1 rounded">bundle add rqrcode</code></p>
+  </div>
+<%
+  end
+%>

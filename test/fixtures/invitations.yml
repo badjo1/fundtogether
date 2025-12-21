@@ -1,0 +1,42 @@
+# test/fixtures/invitations.yml
+pending:
+  account: one
+  invited_by: one
+  email: "newuser@example.com"
+  status: pending
+  token: "validtoken123456789012345678901234567890123456789012345678901234"
+  created_at: <%= 1.hour.ago %>
+  email_verified_at: <%= 30.minutes.ago %>
+
+expired:
+  account: one
+  invited_by: one
+  email: "expired@example.com"
+  status: pending
+  token: "expiredtoken123456789012345678901234567890123456789012345678901"
+  created_at: <%= 25.hours.ago %>
+
+accepted:
+  account: two
+  invited_by: one
+  email: "accepted@example.com"
+  status: accepted
+  token: "acceptedtoken12345678901234567890123456789012345678901234567890"
+  created_at: <%= 2.hours.ago %>
+  email_verified_at: <%= 2.hours.ago %>
+
+rejected:
+  account: two
+  invited_by: one
+  email: "rejected@example.com"
+  status: rejected
+  token: "rejectedtoken12345678901234567890123456789012345678901234567890"
+  created_at: <%= 3.hours.ago %>
+
+expired_status:
+  account: two
+  invited_by: one
+  email: "expiredstatus@example.com"
+  status: pending
+  token: "expiredstatustoken1234567890123456789012345678901234567890123"
+  created_at: <%= 30.hours.ago %>

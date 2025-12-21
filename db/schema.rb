@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_15_154815) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_20_170258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,12 +42,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_15_154815) do
   create_table "invitations", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.datetime "created_at", null: false
-    t.string "email", null: false
+    t.string "email"
+    t.datetime "email_verification_sent_at"
+    t.string "email_verification_token"
+    t.datetime "email_verified_at"
     t.bigint "invited_by_id", null: false
+    t.string "invitee_name"
     t.string "status"
     t.string "token"
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_invitations_on_account_id"
+    t.index ["email_verification_token"], name: "index_invitations_on_email_verification_token", unique: true
     t.index ["invited_by_id"], name: "index_invitations_on_invited_by_id"
   end
 

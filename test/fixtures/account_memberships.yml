@@ -1,0 +1,16 @@
+# test/fixtures/account_memberships.yml
+one:
+  user: one
+  account: one
+  role: admin
+  balance_cents: 10000
+  active: true
+  joined_at: <%= 1.month.ago %>
+
+two:
+  user: two
+  account: one
+  role: member
+  balance_cents: 5000
+  active: true
+  joined_at: <%= 2.weeks.ago %>

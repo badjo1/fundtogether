@@ -1,0 +1,60 @@
+<!-- app/views/invitations/_form.html.erb -->
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50" data-action="click->modal#clickOutside">
+  <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <h3 class="text-xl font-bold text-gray-900">Lid Uitnodigen</h3>
+      <button type="button" data-action="click->modal#close" class="text-gray-400 hover:text-gray-600">
+        <%= icon :x, class: "w-6 h-6" %>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6">
+      <%= form_with model: invitation, url: invitations_path, method: :post do |f| %>
+        <div class="space-y-4">
+          <!-- Email Field (Optional) -->
+          <div>
+            <label for="invitation_email" class="block text-sm font-medium text-gray-700 mb-2">
+              E-mailadres <span class="text-gray-500 font-normal text-xs">(optioneel)</span>
+            </label>
+            <%= f.email_field :email,
+                class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                placeholder: "naam@example.com" %>
+            <p class="mt-1 text-xs text-gray-500">
+              Of laat leeg om te delen via WhatsApp, Link of QR code
+            </p>
+            <% if invitation.errors[:email].any? %>
+              <p class="mt-1 text-sm text-red-600"><%= invitation.errors[:email].first %></p>
+            <% end %>
+          </div>
+
+          <!-- Info Box -->
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex gap-3">
+              <%= icon :info, class: "w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" %>
+              <div class="text-sm text-blue-800">
+                <p class="font-medium mb-1">Keuze uit 4 delen opties:</p>
+                <ul class="text-blue-700 space-y-1 mt-2">
+                  <li>• <strong>Direct Email</strong> - Vul email in en verstuur direct</li>
+                  <li>• <strong>WhatsApp</strong> - Deel via WhatsApp Web</li>
+                  <li>• <strong>Link Kopiëren</strong> - Voor andere apps</li>
+                  <li>• <strong>QR Code</strong> - Om te scannen</li>
+                </ul>
+                <p class="mt-2 text-xs text-blue-600">✓ Uitnodiging geldig voor 24 uur</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex gap-3 mt-6">
+          <button type="button" data-action="click->modal#close" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+            Annuleren
+          </button>
+          <%= f.submit "Uitnodiging Aanmaken", class: "flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

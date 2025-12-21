@@ -576,6 +576,65 @@ export default class extends Controller {
 </div>
 ```
 
+### JavaScript Best Practices
+
+**❌ NOOIT HTML in JavaScript:**
+```javascript
+// ❌ Fout - geen HTML strings in JavaScript
+export default class extends Controller {
+  open() {
+    const html = `
+      <div class="modal">
+        <h1>Title</h1>
+        <p>Content</p>
+      </div>
+    `
+    this.element.innerHTML = html
+  }
+}
+```
+
+**✅ Gebruik server-side rendering of hidden elements:**
+```javascript
+// ✅ Goed - manipuleer bestaande DOM elementen
+export default class extends Controller {
+  static targets = ["modal"]
+
+  open() {
+    this.modalTarget.classList.remove("hidden")
+  }
+
+  close() {
+    this.modalTarget.classList.add("hidden")
+  }
+}
+```
+
+```erb
+<!-- Hidden modal in view, JavaScript toont/verbergt -->
+<div data-controller="modal">
+  <button data-action="modal#open">Open Modal</button>
+
+  <div data-modal-target="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50">
+    <div class="bg-white rounded-lg p-6">
+      <h1>Modal Title</h1>
+      <button data-action="modal#close">Sluiten</button>
+    </div>
+  </div>
+</div>
+```
+
+**Voordelen:**
+- HTML blijft in ERB templates (maintainability)
+- Server-side rendering (SEO, accessibility)
+- Geen duplicatie van HTML structuur
+- Tailwind classes blijven in templates
+
+**Alternatieven voor dynamische content:**
+- Gebruik Turbo Streams voor server-rendered updates
+- Fetch partials via AJAX en inject met `insertAdjacentHTML`
+- Data attributes voor dynamische waarden
+
 ---
 
 ## Rails Conventions

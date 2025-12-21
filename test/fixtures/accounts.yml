@@ -1,0 +1,12 @@
+# test/fixtures/accounts.yml
+one:
+  name: "Test Account One"
+  wallet_address: "0x742d35Cc9c0532f3cF5C1b5F9e1b5cF9c0532f3c"
+  split_method: equal
+  description: "Test account for testing"
+
+two:
+  name: "Test Account Two"
+  wallet_address: "0x8ba1f109551bD432cF5C1b5F9e1b5cF9c0532f3d"
+  split_method: proportional
+  description: "Second test account"

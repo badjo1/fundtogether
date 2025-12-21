@@ -3,10 +3,10 @@
       <div class="space-y-6">
         <div class="flex items-center justify-between flex-wrap gap-4">
           <h2 class="text-2xl font-bold text-gray-900">Groepsleden</h2>
-          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+          <%= button_to invitations_path, method: :post, class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2" do %>
             <%= icon :plus, class: "w-4 h-4" %>
             <span>Lid Uitnodigen</span>
-          </button>
+          <% end %>
         </div>
 
         <!-- Group Stats -->
@@ -112,40 +112,53 @@
         <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold text-gray-900">Uitstaande Uitnodigingen</h3>
-            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium">2 In behandeling</span>
+            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium">
+              <%= @pending_invitations.count %> In behandeling
+            </span>
           </div>
 
-          <div class="space-y-3">
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                  <%= icon :user, class: "w-5 h-5 text-gray-600" %>
+          <% if @pending_invitations.any? %>
+            <div class="space-y-3">
+              <% @pending_invitations.each do |invitation| %>
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div class="flex items-center gap-3 flex-1">
+                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                      <%= icon :user, class: "w-5 h-5 text-gray-600" %>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-medium text-gray-900"><%= invitation.email %></p>
+                      <p class="text-sm text-gray-500">
+                        Uitgenodigd op <%= invitation.created_at.strftime('%d %b %Y om %H:%M') %>
+                      </p>
+                      <% if invitation.time_remaining > 0 %>
+                        <p class="text-xs text-yellow-600 mt-1">
+                          <%= icon :warning, class: "w-3 h-3 inline" %>
+                          Verloopt over <%= distance_of_time_in_words(invitation.time_remaining) %>
+                        </p>
+                      <% end %>
+                    </div>
+                  </div>
+                  <%= button_to invitation_path(invitation),
+                      method: :delete,
+                      class: "px-3 py-1 text-sm text-red-600 hover:text-red-700 font-medium",
+                      data: { turbo_confirm: "Weet je zeker dat je deze uitnodiging wilt annuleren?" } do %>
+                    Annuleren
+                  <% end %>
                 </div>
-                <div>
-                  <p class="font-medium text-gray-900">david@example.com</p>
-                  <p class="text-sm text-gray-500">Uitgenodigd op 1 dec 2024</p>
-                </div>
-              </div>
-              <button class="px-3 py-1 text-sm text-red-600 hover:text-red-700 font-medium">
-                Annuleren
-              </button>
+              <% end %>
             </div>
-
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                  <%= icon :user, class: "w-5 h-5 text-gray-600" %>
-                </div>
-                <div>
-                  <p class="font-medium text-gray-900">emma@example.com</p>
-                  <p class="text-sm text-gray-500">Uitgenodigd op 28 nov 2024</p>
-                </div>
+          <% else %>
+            <div class="text-center py-8">
+              <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <%= icon :user, class: "w-8 h-8 text-gray-400" %>
               </div>
-              <button class="px-3 py-1 text-sm text-red-600 hover:text-red-700 font-medium">
-                Annuleren
-              </button>
+              <p class="text-gray-500 mb-4">Geen uitstaande uitnodigingen</p>
+              <%= button_to invitations_path, method: :post, class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-flex items-center gap-2" do %>
+                <%= icon :plus, class: "w-5 h-5" %>
+                <span>Lid Uitnodigen</span>
+              <% end %>
             </div>
-          </div>
+          <% end %>
         </div>
 
         <!-- Activity Overview -->

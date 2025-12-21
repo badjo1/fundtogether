@@ -19,6 +19,27 @@ Rails.application.routes.draw do
   resources :users, only: [:index, :create, :show, :update, :destroy]
   post 'users/invite', to: 'users#invite'
   delete 'users/:id/remove', to: 'users#remove'
+
+  # Invitations
+  resources :invitations, only: [:create, :destroy]
+
+  # Invitation success met share opties (WhatsApp, QR, Copy, Email)
+  get 'invitations/success', to: 'invitations#success', as: :invitation_success
+
+  # Stap 1: Invitation openen (kan email vragen als niet ingevuld)
+  get 'invitations/:token/open', to: 'invitations#open', as: :open_invitation
+
+  # Stap 2: Email verificatie (voor WhatsApp/QR/Link flows)
+  post 'invitations/:token/request_verification', to: 'invitations#request_email_verification', as: :request_email_verification_invitation
+  get 'invitations/:token/verify/:verification_token', to: 'invitations#verify_email', as: :verify_invitation_email
+
+  # Stap 3: Accept/Reject pagina (na verificatie)
+  get 'invitations/:token/accept', to: 'invitations#show_accept', as: :accept_invitation
+  post 'invitations/:token/accept', to: 'invitations#accept', as: :process_invitation
+  post 'invitations/:token/reject', to: 'invitations#reject', as: :reject_invitation
+
+  # Helper: Direct email versturen
+  post 'invitations/:token/send_email', to: 'invitations#send_invitation_email', as: :send_email_invitation
   
   # Settings
   get 'settings', to: 'settings#index'

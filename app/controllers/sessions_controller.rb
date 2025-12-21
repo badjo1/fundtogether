@@ -8,6 +8,18 @@ class SessionsController < ApplicationController
   def create
     if user = User.authenticate_by(params.permit(:email_address, :password))
       start_new_session_for user
+
+      # Handle pending invitation if present
+      if session[:pending_invitation_token].present?
+        invitation = Invitation.find_by(token: session[:pending_invitation_token])
+        if invitation&.ready_to_accept?
+          invitation.accept!(user)
+          session.delete(:pending_invitation_token)
+          redirect_to account_path(invitation.account), notice: "Je bent toegevoegd aan #{invitation.account.name}!"
+          return
+        end
+      end
+
       redirect_to after_authentication_url
     else
       redirect_to new_session_path, alert: "Try another email address or password."
