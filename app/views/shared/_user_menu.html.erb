@@ -12,7 +12,7 @@
       </p>
       <p class="text-xs text-gray-500">
         <% if current_account %>
-          €<%= sprintf('%.2f', current_account.user_balance(Current.user)) %>
+          <%= current_account.name %>
         <% else %>
           Geen account
         <% end %>

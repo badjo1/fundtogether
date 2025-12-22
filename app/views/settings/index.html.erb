@@ -1,361 +1,284 @@
 <!-- app/views/settings/index.html.erb -->
 
-    <%= render layout: 'shared/app_layout' do %>
-      <div class="space-y-6" data-controller="confirm-modal">
-        <h2 class="text-2xl font-bold text-gray-900">Instellingen</h2>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="space-y-6" data-controller="confirm-modal">
+    <h2 class="text-2xl font-bold text-gray-900">Instellingen</h2>
 
-        <!-- Group Settings -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900 mb-6">Accountinstellingen</h3>
-          
-          <%= form_with url: settings_path, method: :patch, local: true do |f| %>
-            <div class="space-y-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Accountnaam</label>
-                <input type="text" name="account[name]" value="Huisgenoten Amsterdam" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <p class="text-xs text-gray-500 mt-1">De naam van je account zoals andere deze zien</p>
-              </div>
+    <!-- Group Settings -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <h3 class="text-lg font-bold text-gray-900 mb-6">Accountinstellingen</h3>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Accountbeschrijving</label>
-                <textarea name="account[description]" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">Een account voor het delen van huishoudelijke kosten</textarea>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Standaard splitsmethode</label>
-                <select name="account[split_method]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                  <option value="equal">Gelijk verdelen</option>
-                  <option value="proportional">Op basis van saldo</option>
-                  <option value="manual">Handmatig</option>
-                  <option value="percentage">Op basis van percentage</option>
-                </select>
-                <p class="text-xs text-gray-500 mt-1">Hoe uitgaven standaard worden verdeeld</p>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Minimum storting</label>
-                <div class="relative">
-                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">€</span>
-                  <input type="number" name="account[min_deposit]" value="10" step="0.01" class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <p class="font-medium text-gray-900">Automatische EURe conversie</p>
-                  <p class="text-sm text-gray-500">Converteer automatisch DUMMY tokens naar EURe</p>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" name="account[auto_convert]" class="sr-only peer" checked>
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-
-              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <p class="font-medium text-gray-900">Notificaties</p>
-                  <p class="text-sm text-gray-500">Ontvang meldingen bij nieuwe transacties</p>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" name="account[notifications]" class="sr-only peer" checked>
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-
-              <div class="flex gap-3">
-                <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium transition-colors">
-                  Wijzigingen Opslaan
-                </button>
-                <button type="button" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
-                  Annuleren
-                </button>
-              </div>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Smart Contract Settings -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900 mb-6">Smart Contract Instellingen</h3>
-          
-          <div class="space-y-4">
-            <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-              <div class="flex items-center gap-3">
-                <%= icon :shield, class: "w-5 h-5 text-green-600" %>
-                <div>
-                  <p class="font-medium text-green-900">Gnosis Safe Multisig</p>
-                  <p class="text-sm text-green-700 font-mono">0x742d...3f8a</p>
-                </div>
-              </div>
-              <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Actief</span>
-            </div>
-
-            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-              <div class="flex items-center gap-3">
-                <%= icon :dollar, class: "w-5 h-5 text-blue-600" %>
-                <div>
-                  <p class="font-medium text-blue-900">Monerium EURe Token</p>
-                  <p class="text-sm text-blue-700 font-mono">0x8ba1...d432</p>
-                </div>
-              </div>
-              <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Verbonden</span>
-            </div>
-
-            <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
-              <div class="flex items-center gap-3">
-                <%= icon :document, class: "w-5 h-5 text-purple-600" %>
-                <div>
-                  <p class="font-medium text-purple-900">Dummy Test Token</p>
-                  <p class="text-sm text-purple-700 font-mono">0x95ad...d079</p>
-                </div>
-              </div>
-              <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">Gedeployed</span>
-            </div>
-
-            <div class="p-4 bg-gray-50 rounded-lg">
-              <div class="flex items-start gap-3">
-                <%= icon :info, class: "w-5 h-5 text-gray-600 mt-0.5" %>
-                <div class="flex-1">
-                  <p class="font-medium text-gray-900">Netwerk</p>
-                  <p class="text-sm text-gray-600 mt-1">Ethereum Mainnet (Chain ID: 1)</p>
-                  <p class="text-sm text-gray-600">Gas prijs: ~25 Gwei</p>
-                </div>
+      <%= form_with model: @account, url: settings_path, method: :patch, local: true do |f| %>
+        <% if @account.errors.any? %>
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div class="flex items-start gap-3">
+              <%= icon :x_circle, class: "w-5 h-5 text-red-600 mt-0.5" %>
+              <div class="flex-1">
+                <h4 class="font-medium text-red-900">
+                  <%= pluralize(@account.errors.count, "fout") %> gevonden:
+                </h4>
+                <ul class="mt-2 text-sm text-red-700 list-disc list-inside space-y-1">
+                  <% @account.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
               </div>
             </div>
           </div>
-        </div>
+        <% end %>
 
-        <!-- Security & Privacy -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900 mb-6">Beveiliging & Privacy</h3>
-          
-          <div class="space-y-4">
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div>
-                <p class="font-medium text-gray-900">Twee-factor authenticatie</p>
-                <p class="text-sm text-gray-500">Extra beveiliging voor je account</p>
-              </div>
-              <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
-                Inschakelen
-              </button>
-            </div>
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Accountnaam</label>
+            <%= f.text_field :name,
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+              required: true
+            %>
+            <p class="text-xs text-gray-500 mt-1">De naam van je account zoals andere deze zien</p>
+          </div>
 
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div>
-                <p class="font-medium text-gray-900">Transactie handtekeningen</p>
-                <p class="text-sm text-gray-500">Vereist handtekening voor elke transactie</p>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" class="sr-only peer" checked>
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              </label>
-            </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Accountbeschrijving</label>
+            <%= f.text_area :description,
+              rows: 3,
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            %>
+          </div>
 
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div>
-                <p class="font-medium text-gray-900">Privacy modus</p>
-                <p class="text-sm text-gray-500">Verberg saldi in de interface</p>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" class="sr-only peer">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              </label>
-            </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Standaard splitsmethode</label>
+            <%= f.select :split_method,
+              [
+                ['Gelijk verdelen', 'equal'],
+                ['Op basis van saldo', 'proportional'],
+                ['Handmatig', 'manual'],
+                ['Op basis van percentage', 'percentage']
+              ],
+              {},
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            %>
+            <p class="text-xs text-gray-500 mt-1">Hoe uitgaven standaard worden verdeeld</p>
+          </div>
+
+          <div class="flex gap-3">
+            <%= f.submit 'Wijzigingen Opslaan',
+              class: "flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium transition-colors"
+            %>
+            <%= link_to 'Annuleren', settings_path,
+              class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+            %>
           </div>
         </div>
+      <% end %>
+    </div>
 
-        <!-- Danger Zone -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-red-200">
-          <h3 class="text-lg font-bold text-red-900 mb-6">Gevarenzone</h3>
-          
-          <div class="space-y-4">
-            <!-- Account Verlaten -->
-            <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
-              <div>
-                <p class="font-medium text-gray-900">Account verlaten</p>
-                <p class="text-sm text-gray-500">Je verlaat deze account permanent</p>
-              </div>
-              <button 
-                type="button"
-                data-action="click->confirm-modal#openLeave"
-                class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium"
-              >
-                Account Verlaten
-              </button>
-            </div>
+    <!-- Smart Contract Settings (READ-ONLY) -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <h3 class="text-lg font-bold text-gray-900 mb-6">Smart Contract Instellingen</h3>
 
-            <!-- Account Verwijderen -->
-            <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
-              <div>
-                <p class="font-medium text-gray-900">Account verwijderen</p>
-                <p class="text-sm text-gray-500">Permanent verwijderen van deze account (alleen admin)</p>
-              </div>
-              <button 
-                type="button"
-                data-action="click->confirm-modal#openDelete"
-                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium"
-              >
-                Account Verwijderen
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Export Data -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900 mb-6">Data Beheer</h3>
-          
-          <div class="space-y-4">
-            <button class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <div class="flex items-center gap-3">
-                <%= icon :download, class: "w-5 h-5 text-gray-600" %>
-                <div class="text-left">
-                  <p class="font-medium text-gray-900">Exporteer transacties</p>
-                  <p class="text-sm text-gray-500">Download als CSV</p>
-                </div>
-              </div>
-              <%= icon :chevron_right, class: "w-5 h-5 text-gray-400" %>
-            </button>
-
-            <button class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <div class="flex items-center gap-3">
-                <%= icon :document, class: "w-5 h-5 text-gray-600" %>
-                <div class="text-left">
-                  <p class="font-medium text-gray-900">Genereer rapport</p>
-                  <p class="text-sm text-gray-500">Financieel overzicht PDF</p>
-                </div>
-              </div>
-              <%= icon :chevron_right, class: "w-5 h-5 text-gray-400" %>
-            </button>
-          </div>
-        </div>
-
-        <!-- Leave Account Modal -->
-        <div 
-          data-confirm-modal-target="leaveModal"
-          class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-        >
-          <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="p-3 bg-yellow-100 rounded-full">
-                <%= icon :warning, class: "w-6 h-6 text-yellow-600" %>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900">Account Verlaten</h3>
-            </div>
-            
-            <p class="text-gray-600 mb-4">
-              Weet je zeker dat je dit account wilt verlaten? Je verliest toegang tot:
-            </p>
-            
-            <ul class="text-sm text-gray-600 mb-6 space-y-2">
-              <li class="flex items-center gap-2">
-                <%= icon :warning, class: "w-4 h-4 text-yellow-500" %>
-                <span>Alle groepstransacties en -geschiedenis</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <%= icon :warning, class: "w-4 h-4 text-yellow-500" %>
-                <span>Je saldo binnen dit account</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <%= icon :warning, class: "w-4 h-4 text-yellow-500" %>
-                <span>Toegang tot gedeelde smart contracts</span>
-              </li>
-            </ul>
-            
-            <p class="text-sm text-gray-500 mb-6">
-              Het account blijft bestaan voor andere leden.
-            </p>
-            
-            <div class="flex gap-3">
-              <button 
-                type="button"
-                data-action="click->confirm-modal#closeLeave"
-                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
-              >
-                Annuleren
-              </button>
-              <% if defined?(current_account) && current_account %>
-                <%= button_to leave_account_path(current_account), 
-                    method: :delete, 
-                    class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium" do %>
-                  Ja, verlaat account
-                <% end %>
-              <% else %>
-                <button type="button" disabled class="flex-1 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed">
-                  Ja, verlaat account
-                </button>
-              <% end %>
-            </div>
-          </div>
-        </div>
-
-        <!-- Delete Account Modal -->
-        <div 
-          data-confirm-modal-target="deleteModal"
-          class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-        >
-          <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="p-3 bg-red-100 rounded-full">
-                <%= icon :trash, class: "w-6 h-6 text-red-600" %>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900">Account Permanent Verwijderen</h3>
-            </div>
-            
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-              <p class="text-red-800 text-sm font-medium">
-                ⚠️ Let op: Deze actie kan niet ongedaan worden gemaakt!
+      <div class="space-y-4">
+        <div class="p-4 bg-blue-50 rounded-lg">
+          <div class="flex items-start gap-3">
+            <%= icon :info, class: "w-5 h-5 text-blue-600 mt-0.5" %>
+            <div class="flex-1">
+              <p class="font-medium text-blue-900">Blockchain functionaliteit uitgeschakeld</p>
+              <p class="text-sm text-blue-700 mt-1">
+                Web3 features zijn momenteel niet actief. Alle transacties worden in de database opgeslagen.
+                Smart contract koppelingen zijn alleen voor weergave.
               </p>
             </div>
-            
-            <p class="text-gray-600 mb-4">
-              Het volgende wordt permanent verwijderd:
-            </p>
-            
-            <ul class="text-sm text-gray-600 mb-6 space-y-2">
-              <li class="flex items-center gap-2">
-                <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
-                <span>Alle transacties en financiële geschiedenis</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
-                <span>Alle ledengegevens en saldi</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
-                <span>Smart contract koppelingen</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
-                <span>Alle accountinstellingen</span>
-              </li>
-            </ul>
-            
-            <p class="text-sm text-red-600 font-medium mb-6">
-              Alle leden verliezen toegang tot dit account.
-            </p>
-            
-            <div class="flex gap-3">
-              <button 
-                type="button"
-                data-action="click->confirm-modal#closeDelete"
-                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
-              >
-                Annuleren
-              </button>
-              <% if defined?(current_account) && current_account %>
-                <%= button_to account_path(current_account), 
-                    method: :delete, 
-                    class: "flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium" do %>
-                  Permanent Verwijderen
-                <% end %>
+          </div>
+        </div>
+
+        <!-- Wallet Address (read-only) -->
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg opacity-60">
+          <div class="flex items-center gap-3">
+            <%= icon :shield, class: "w-5 h-5 text-gray-600" %>
+            <div>
+              <p class="font-medium text-gray-900">Account Wallet Address</p>
+              <% if @account.wallet_address.present? %>
+                <p class="text-sm text-gray-700 font-mono"><%= @account.wallet_address[0..9] %>...<%=@account.wallet_address[-6..-1] %></p>
               <% else %>
-                <button type="button" disabled class="flex-1 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed">
-                  Permanent Verwijderen
-                </button>
+                <p class="text-sm text-gray-500">Niet verbonden</p>
               <% end %>
             </div>
           </div>
+          <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-sm font-medium">
+            Read-only
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg opacity-60">
+          <div class="flex items-center gap-3">
+            <%= icon :shield, class: "w-5 h-5 text-gray-600" %>
+            <div>
+              <p class="font-medium text-gray-900">Gnosis Safe Multisig</p>
+              <p class="text-sm text-gray-500">Niet geconfigureerd</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-sm font-medium">
+            Disabled
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg opacity-60">
+          <div class="flex items-center gap-3">
+            <%= icon :dollar, class: "w-5 h-5 text-gray-600" %>
+            <div>
+              <p class="font-medium text-gray-900">Monerium EURe Token</p>
+              <p class="text-sm text-gray-500">Niet verbonden</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-sm font-medium">
+            Disabled
+          </span>
         </div>
       </div>
-    <% end %>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-red-200">
+      <h3 class="text-lg font-bold text-red-900 mb-6">Gevarenzone</h3>
+
+      <div class="space-y-4">
+        <!-- Account Verlaten -->
+        <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+          <div>
+            <p class="font-medium text-gray-900">Account verlaten</p>
+            <p class="text-sm text-gray-500">Je verlaat deze account permanent</p>
+          </div>
+          <button
+            type="button"
+            data-action="click->confirm-modal#openLeave"
+            class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium"
+          >
+            Account Verlaten
+          </button>
+        </div>
+
+        <!-- Account Verwijderen -->
+        <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+          <div>
+            <p class="font-medium text-gray-900">Account verwijderen</p>
+            <p class="text-sm text-gray-500">Permanent verwijderen van deze account (alleen admin)</p>
+          </div>
+          <button
+            type="button"
+            data-action="click->confirm-modal#openDelete"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium"
+          >
+            Account Verwijderen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave Account Modal -->
+    <div
+      data-confirm-modal-target="leaveModal"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-3 bg-yellow-100 rounded-full">
+            <%= icon :warning, class: "w-6 h-6 text-yellow-600" %>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900">Account Verlaten</h3>
+        </div>
+
+        <p class="text-gray-600 mb-4">
+          Weet je zeker dat je dit account wilt verlaten? Je verliest toegang tot:
+        </p>
+
+        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+          <li class="flex items-center gap-2">
+            <%= icon :warning, class: "w-4 h-4 text-yellow-500" %>
+            <span>Alle groepstransacties en -geschiedenis</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <%= icon :warning, class: "w-4 h-4 text-yellow-500" %>
+            <span>Je saldo binnen dit account</span>
+          </li>
+        </ul>
+
+        <p class="text-sm text-gray-500 mb-6">
+          Het account blijft bestaan voor andere leden.
+        </p>
+
+        <div class="flex gap-3">
+          <button
+            type="button"
+            data-action="click->confirm-modal#closeLeave"
+            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+          >
+            Annuleren
+          </button>
+          <%= button_to leave_account_path(@account),
+              method: :delete,
+              class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium" do %>
+            Ja, verlaat account
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div
+      data-confirm-modal-target="deleteModal"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-3 bg-red-100 rounded-full">
+            <%= icon :trash, class: "w-6 h-6 text-red-600" %>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900">Account Permanent Verwijderen</h3>
+        </div>
+
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <p class="text-red-800 text-sm font-medium">
+            ⚠️ Let op: Deze actie kan niet ongedaan worden gemaakt!
+          </p>
+        </div>
+
+        <p class="text-gray-600 mb-4">
+          Het volgende wordt permanent verwijderd:
+        </p>
+
+        <ul class="text-sm text-gray-600 mb-6 space-y-2">
+          <li class="flex items-center gap-2">
+            <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
+            <span>Alle transacties en financiële geschiedenis</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
+            <span>Alle ledengegevens en saldi</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
+            <span>Alle accountinstellingen</span>
+          </li>
+        </ul>
+
+        <p class="text-sm text-red-600 font-medium mb-6">
+          Alle leden verliezen toegang tot dit account.
+        </p>
+
+        <div class="flex gap-3">
+          <button
+            type="button"
+            data-action="click->confirm-modal#closeDelete"
+            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+          >
+            Annuleren
+          </button>
+          <%= button_to account_path(@account),
+              method: :delete,
+              class: "flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium" do %>
+            Permanent Verwijderen
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

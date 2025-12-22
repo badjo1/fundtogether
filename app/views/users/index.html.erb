@@ -15,7 +15,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-600">Totaal Leden</p>
-                <p class="text-3xl font-bold text-gray-900 mt-1">4</p>
+                <p class="text-3xl font-bold text-gray-900 mt-1"><%= @total_members %></p>
               </div>
               <div class="p-3 rounded-lg bg-blue-100">
                 <%= icon :users, class: "w-6 h-6 text-blue-600" %>
@@ -27,7 +27,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-600">Gemiddeld Saldo</p>
-                <p class="text-3xl font-bold text-gray-900 mt-1">€225.38</p>
+                <p class="text-3xl font-bold text-gray-900 mt-1">€<%= sprintf('%.2f', @average_balance) %></p>
               </div>
               <div class="p-3 rounded-lg bg-green-100">
                 <%= icon :dollar, class: "w-6 h-6 text-green-600" %>
@@ -39,7 +39,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-600">Actieve Leden</p>
-                <p class="text-3xl font-bold text-gray-900 mt-1">4</p>
+                <p class="text-3xl font-bold text-gray-900 mt-1"><%= @active_members %></p>
               </div>
               <div class="p-3 rounded-lg bg-purple-100">
                 <%= icon :check_circle, class: "w-6 h-6 text-purple-600" %>
@@ -50,63 +50,72 @@
 
         <!-- Members Grid -->
         <%
-          members = [
-            { name: 'Alice', wallet: '0x742d35Cc9c0532f3...', balance: 250.50, color: '#FF6B6B', joined: '2024-01-15', transactions: 23, role: 'Admin' },
-            { name: 'Bob', wallet: '0x8ba1f109551bD432...', balance: 180.75, color: '#4ECDC4', joined: '2024-02-20', transactions: 18, role: 'Member' },
-            { name: 'Charlie', wallet: '0x95aD61B0a150d079...', balance: 320.00, color: '#45B7D1', joined: '2024-03-10', transactions: 31, role: 'Member' },
-            { name: 'Jij', wallet: '0x742d35Cc9c0532f3...', balance: 150.25, color: '#96CEB4', joined: '2024-04-05', transactions: 15, role: 'Member', current: true }
-          ]
+          # Generate consistent colors for user avatars
+          avatar_colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFA07A', '#98D8C8', '#6C5CE7', '#FDA7DF']
         %>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <% members.each do |member| %>
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-              <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background-color: <%= member[:color] %>">
-                    <%= member[:name][0] %>
+        <% if @users.any? %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <% @users.each_with_index do |user, index| %>
+              <% membership = user.account_memberships.find_by(account: @account) %>
+              <% next unless membership %>
+              <% user_transactions_count = @account.transactions.where(from_user: user).count %>
+              <% avatar_color = avatar_colors[index % avatar_colors.length] %>
+
+              <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background-color: <%= avatar_color %>">
+                      <%= user.name[0].upcase %>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-gray-900 text-lg">
+                        <%= user.name %>
+                        <% if user == current_user %>
+                          <span class="text-sm font-normal text-gray-500">(Jij)</span>
+                        <% end %>
+                      </h3>
+                      <p class="text-sm text-gray-500"><%= user.email_address %></p>
+                    </div>
+                  </div>
+                  <span class="px-2 py-1 text-xs rounded-full <%= membership.admin? ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %> font-medium">
+                    <%= membership.admin? ? 'Admin' : 'Lid' %>
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                  <div>
+                    <p class="text-xs text-gray-500">Saldo</p>
+                    <p class="text-lg font-bold <%= membership.balance_cents >= 0 ? 'text-gray-900' : 'text-red-600' %>">
+                      €<%= sprintf('%.2f', membership.balance_euros) %>
+                    </p>
                   </div>
                   <div>
-                    <h3 class="font-semibold text-gray-900 text-lg">
-                      <%= member[:name] %>
-                      <% if member[:current] %>
-                        <span class="text-sm font-normal text-gray-500">(Jij)</span>
-                      <% end %>
-                    </h3>
-                    <p class="text-sm text-gray-500 font-mono"><%= member[:wallet] %></p>
+                    <p class="text-xs text-gray-500">Transacties</p>
+                    <p class="text-lg font-bold text-gray-900"><%= user_transactions_count %></p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-500">Lid sinds</p>
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= membership.joined_at&.strftime('%b %Y') || membership.created_at.strftime('%b %Y') %>
+                    </p>
                   </div>
                 </div>
-                <span class="px-2 py-1 text-xs rounded-full <%= member[:role] == 'Admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %> font-medium">
-                  <%= member[:role] %>
-                </span>
               </div>
-
-              <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
-                <div>
-                  <p class="text-xs text-gray-500">Saldo</p>
-                  <p class="text-lg font-bold text-gray-900">€<%= sprintf('%.2f', member[:balance]) %></p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Transacties</p>
-                  <p class="text-lg font-bold text-gray-900"><%= member[:transactions] %></p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Lid sinds</p>
-                  <p class="text-sm font-medium text-gray-900"><%= Date.parse(member[:joined]).strftime('%b %Y') %></p>
-                </div>
-              </div>
-
-              <div class="flex gap-2 mt-4">
-                <button class="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-sm font-medium transition-colors">
-                  Stuur Betaling
-                </button>
-                <button class="flex-1 px-3 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors">
-                  Bekijk Profiel
-                </button>
-              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <%= icon :users, class: "w-8 h-8 text-gray-400" %>
             </div>
-          <% end %>
-        </div>
+            <p class="text-gray-500 mb-4">Nog geen leden in dit account</p>
+            <%= button_to invitations_path, method: :post, class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-flex items-center gap-2" do %>
+              <%= icon :plus, class: "w-5 h-5" %>
+              <span>Lid Uitnodigen</span>
+            <% end %>
+          </div>
+        <% end %>
 
         <!-- Pending Invitations -->
         <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -161,32 +170,5 @@
           <% end %>
         </div>
 
-        <!-- Activity Overview -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900 mb-4">Recente Activiteit</h3>
-          <div class="space-y-3">
-            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style="background-color: #4ECDC4">B</div>
-              <div class="flex-1">
-                <p class="text-sm text-gray-900"><span class="font-medium">Bob</span> heeft een betaling gedaan</p>
-                <p class="text-xs text-gray-500">2 uur geleden</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style="background-color: #FF6B6B">A</div>
-              <div class="flex-1">
-                <p class="text-sm text-gray-900"><span class="font-medium">Alice</span> heeft €45.50 gestort</p>
-                <p class="text-xs text-gray-500">5 uur geleden</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style="background-color: #96CEB4">J</div>
-              <div class="flex-1">
-                <p class="text-sm text-gray-900"><span class="font-medium">Jij</span> bent toegevoegd aan de groep</p>
-                <p class="text-xs text-gray-500">1 dag geleden</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     <% end %>

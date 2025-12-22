@@ -4,14 +4,14 @@
         <div class="flex items-center justify-between flex-wrap gap-4">
           <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
           <div class="flex space-x-3">
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+            <%= link_to new_transaction_path(type: 'expense'), class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2" do %>
               <%= icon :plus, class: "w-4 h-4" %>
               <span>Uitgave</span>
-            </button>
-            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2">
+            <% end %>
+            <%= link_to new_transaction_path(type: 'deposit'), class: "bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2" do %>
               <%= icon :dollar, class: "w-4 h-4" %>
               <span>Storting</span>
-            </button>
+            <% end %>
           </div>
         </div>
 
@@ -21,7 +21,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-600">Totaal Groepssaldo</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1">€901.50</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">€<%= sprintf('%.2f', @total_balance) %></p>
                 <p class="text-sm text-gray-500 mt-1">Alle leden gecombineerd</p>
               </div>
               <div class="p-3 rounded-lg bg-blue-100">
@@ -34,7 +34,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-600">Jouw Saldo</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1">€150.25</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">€<%= sprintf('%.2f', @user_balance) %></p>
                 <p class="text-sm text-gray-500 mt-1">Individueel saldo</p>
               </div>
               <div class="p-3 rounded-lg bg-green-100">
@@ -47,7 +47,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-600">Groepsleden</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1">4</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1"><%= @members_count %></p>
                 <p class="text-sm text-gray-500 mt-1">Actieve deelnemers</p>
               </div>
               <div class="p-3 rounded-lg bg-purple-100">
@@ -60,7 +60,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-600">Deze Maand</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1">€485.75</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">€<%= sprintf('%.2f', @monthly_expenses) %></p>
                 <p class="text-sm text-gray-500 mt-1">Totale uitgaven</p>
               </div>
               <div class="p-3 rounded-lg bg-red-100">
@@ -73,28 +73,53 @@
         <!-- Recente Transacties -->
         <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <h3 class="text-lg font-bold text-gray-900 mb-4">Recente Transacties</h3>
-          <div class="space-y-3">
-            <!-- Transaction items zouden hier dynamisch geladen worden -->
-            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                  <div class="p-2 rounded-lg bg-green-100">
-                    <%= icon :plus, class: "w-4 h-4 text-green-600" %>
-                  </div>
-                  <div>
-                    <p class="font-medium text-gray-900">Initial deposit</p>
-                    <p class="text-sm text-gray-500">Gestort door Jij • <%= Time.now.strftime("%Y-%m-%d %H:%M") %></p>
+          <% if @recent_transactions.any? %>
+            <div class="space-y-3">
+              <% @recent_transactions.each do |transaction| %>
+                <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div class="p-2 rounded-lg <%= transaction.deposit? ? 'bg-green-100' : 'bg-red-100' %>">
+                        <% if transaction.deposit? %>
+                          <%= icon :plus, class: "w-4 h-4 text-green-600" %>
+                        <% else %>
+                          <%= icon :document, class: "w-4 h-4 text-red-600" %>
+                        <% end %>
+                      </div>
+                      <div>
+                        <p class="font-medium text-gray-900"><%= transaction.description %></p>
+                        <p class="text-sm text-gray-500">
+                          <%= transaction.deposit? ? 'Gestort door' : 'Betaald door' %>
+                          <%= transaction.from_user.name %> • <%= transaction.created_at.strftime("%Y-%m-%d %H:%M") %>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-bold <%= transaction.deposit? ? 'text-green-600' : 'text-red-600' %>">
+                        <%= transaction.deposit? ? '+' : '−' %>€<%= sprintf('%.2f', transaction.amount) %>
+                      </p>
+                      <p class="text-xs text-gray-500"><%= transaction.token %></p>
+                      <span class="inline-block px-2 py-1 text-xs rounded-full mt-1 <%= status_badge_class(transaction.status) %>">
+                        <%= transaction_status_text(transaction.status) %>
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div class="text-right">
-                  <p class="font-bold text-green-600">+€100</p>
-                  <p class="text-xs text-gray-500">EURe</p>
-                  <span class="inline-block px-2 py-1 text-xs rounded-full mt-1 bg-green-100 text-green-800">Bevestigd</span>
-                </div>
-              </div>
+              <% end %>
             </div>
-          </div>
-          <%= link_to "Alle transacties bekijken →", transactions_path, class: "w-full mt-4 text-center text-blue-600 hover:text-blue-700 font-medium py-2 block" %>
+            <%= link_to "Alle transacties bekijken →", transactions_path, class: "w-full mt-4 text-center text-blue-600 hover:text-blue-700 font-medium py-2 block" %>
+          <% else %>
+            <div class="text-center py-8">
+              <div class="p-4 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <%= icon :document, class: "w-8 h-8 text-gray-400" %>
+              </div>
+              <p class="text-gray-500 mb-4">Nog geen transacties</p>
+              <%= link_to new_transaction_path(type: 'deposit'), class: "inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" do %>
+                <%= icon :plus, class: "w-4 h-4" %>
+                <span>Eerste storting doen</span>
+              <% end %>
+            </div>
+          <% end %>
         </div>
       </div>
       <% end %>

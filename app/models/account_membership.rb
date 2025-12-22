@@ -2,23 +2,23 @@
 class AccountMembership < ApplicationRecord
   belongs_to :account
   belongs_to :user
-  
+
   # Validations
   validates :role, presence: true, inclusion: { in: %w[admin member viewer] }
-  validates :balance_cents, numericality: { greater_than_or_equal_to: 0 }
+  validates :balance_cents, numericality: true  # Allow negative balances
   validates :user_id, uniqueness: { scope: :account_id, message: "is already in this account" }
-  
+
   # Enums
   enum :role, { admin: 'admin', member: 'member', viewer: 'viewer' }
 
   # Callbacks
   before_validation :set_defaults, on: :create
-  
+
   # Scopes
   scope :active, -> { where(active: true) }
   scope :admins, -> { where(role: 'admin') }
   scope :members_only, -> { where(role: 'member') }
-  
+
   # Instance methods
   def increment_balance(amount)
     increment!(:balance_cents, amount)
@@ -28,10 +28,14 @@ class AccountMembership < ApplicationRecord
     decrement!(:balance_cents, amount)
   end
 
+  def balance_euros
+    balance_cents / 100.0
+  end
+
   def admin?
     role == 'admin'
   end
-  
+
   private
 
   def set_defaults

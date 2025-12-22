@@ -96,7 +96,7 @@ class AccountsController < ApplicationController
   end
 
   def account_params
-    params.require(:account).permit(:name, :description)
+    params.require(:account).permit(:name, :description, :split_method)
   end
 
   def authorize_admin!

@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   get 'dashboard', to: 'pages#dashboard'
   
   # Transactions
-  resources :transactions, only: [:index, :create, :show, :update]
+  resources :transactions, only: [:index, :new, :create, :show, :update]
   
   resources :users, only: [:index, :create, :show, :update, :destroy]
   post 'users/invite', to: 'users#invite'
