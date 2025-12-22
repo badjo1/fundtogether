@@ -4,7 +4,7 @@ class UsersController < ApplicationController
     redirect_to(new_account_path, alert: "Maak eerst een account aan om te beginnen") and return unless @account
 
     @users = @account.active_users.includes(:account_memberships)
-    @pending_invitations = @account.invitations.where(status: 'pending')
+    @pending_invitations = @account.invitations.where(status: "pending")
 
     # Stats
     @total_members = @users.count

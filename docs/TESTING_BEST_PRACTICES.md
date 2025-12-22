@@ -134,9 +134,70 @@ Streef naar:
 - **Models:** 95%+ coverage
 - **Critical paths:** 100% coverage
 
-### 6. Automated Testing in CI/CD
+### 6. Code Quality & Linting
 
-Zorg dat tests automatisch draaien:
+Naast functionele tests is code kwaliteit belangrijk. Gebruik RuboCop voor style checks:
+
+#### RuboCop Setup
+
+```ruby
+# .rubocop.yml
+# Configureer style regels voor je project
+```
+
+#### Linting Commando's
+
+```bash
+# Check alle offenses
+bundle exec rubocop
+
+# Auto-correct waar mogelijk
+bundle exec rubocop --autocorrect-all
+# of
+bundle exec rubocop -A
+
+# Check specifieke bestanden
+bundle exec rubocop app/controllers/
+bundle exec rubocop app/models/transaction.rb
+
+# Format output
+bundle exec rubocop --format simple
+bundle exec rubocop --format json > rubocop_results.json
+```
+
+#### Belangrijkste RuboCop Checks
+
+- **Layout/SpaceInsideArrayLiteralBrackets** - Consistente spacing in arrays
+- **Layout/TrailingWhitespace** - Geen trailing whitespace
+- **Layout/IndentationStyle** - Spaties, geen tabs
+- **Style/StringLiterals** - Double quotes voor strings (Ruby conventie)
+- **Style/RedundantReturn** - Verwijder onnodige `return` statements
+
+#### Workflow
+
+```bash
+# Voor elke commit/PR:
+1. bundle exec rails test          # Run alle tests
+2. bundle exec rubocop -A           # Fix style offenses
+3. bundle exec rails test           # Verify tests still pass
+4. git add . && git commit          # Commit changes
+```
+
+#### Pre-commit Hook (optioneel)
+
+```bash
+# .git/hooks/pre-commit
+#!/bin/bash
+bundle exec rubocop --format simple
+if [ $? -ne 0 ]; then
+  echo "RuboCop found offenses. Run 'bundle exec rubocop -A' to fix."
+  exit 1
+fi
+```
+
+### 7. Automated Testing in CI/CD
+
+Zorg dat tests én linting automatisch draaien:
 
 ```yaml
 # .github/workflows/test.yml
@@ -147,6 +208,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Run RuboCop
+        run: bundle exec rubocop
       - name: Run tests
         run: bundle exec rails test
       - name: Upload coverage
@@ -159,6 +222,10 @@ jobs:
 - [x] Tests toegevoegd voor nieuwe invitation flow
 - [x] Bug gefixed in `send_invitation_email`
 - [x] Controller tests uitgebreid (nu 24 tests)
+- [x] Complete application flow tests (13 tests, 62 assertions)
+- [x] Users controller tests met balance display (10 tests, 22 assertions)
+- [x] RuboCop linting: 273 offenses opgelost, 0 offenses remaining
+- [x] Test suite: 122 tests, 385 assertions, 0 failures
 
 ### Volgende Stappen
 1. **Integration test toevoegen** voor complete button → email flow

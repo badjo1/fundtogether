@@ -75,7 +75,7 @@ class InvitationTest < ActiveSupport::TestCase
     )
     assert_nil invitation.status
     invitation.valid?
-    assert_equal 'pending', invitation.status
+    assert_equal "pending", invitation.status
   end
 
   test "should not override explicitly set status" do
@@ -83,10 +83,10 @@ class InvitationTest < ActiveSupport::TestCase
       account: @account,
       invited_by: @user,
       email: "test@example.com",
-      status: 'accepted'
+      status: "accepted"
     )
     invitation.valid?
-    assert_equal 'accepted', invitation.status
+    assert_equal "accepted", invitation.status
   end
 
   test "should require unique token" do
@@ -162,14 +162,14 @@ class InvitationTest < ActiveSupport::TestCase
     # Verify email before accepting
     @pending_invitation.verify_email!
 
-    assert_difference '@account.users.count', 1 do
+    assert_difference "@account.users.count", 1 do
       @pending_invitation.accept!(new_user)
     end
 
     @account.reload
     membership = @account.account_memberships.find_by(user: new_user)
     assert_not_nil membership
-    assert_equal 'member', membership.role
+    assert_equal "member", membership.role
     assert membership.active?
   end
 
@@ -216,7 +216,7 @@ class InvitationTest < ActiveSupport::TestCase
       account: @account,
       invited_by: @user,
       email: "rejected@example.com",
-      status: 'rejected'
+      status: "rejected"
     )
 
     # Should be able to create a new invitation for the same email
@@ -235,7 +235,7 @@ class InvitationTest < ActiveSupport::TestCase
       account: @account,
       invited_by: @user,
       email: "accepted@example.com",
-      status: 'accepted'
+      status: "accepted"
     )
 
     # Should not be able to create a new invitation for the same email
@@ -257,7 +257,7 @@ class InvitationTest < ActiveSupport::TestCase
       account: @account,
       invited_by: @user,
       email: "multiacccount@example.com",
-      status: 'accepted'
+      status: "accepted"
     )
 
     # Should be able to create invitation for same email in different account
@@ -302,7 +302,7 @@ class InvitationTest < ActiveSupport::TestCase
 
     # Verify user has correct role in invited account
     membership = @account.account_memberships.find_by(user: new_user)
-    assert_equal 'member', membership.role, "User should have 'member' role"
+    assert_equal "member", membership.role, "User should have 'member' role"
     assert membership.active?, "Membership should be active"
   end
 
@@ -373,7 +373,7 @@ class InvitationTest < ActiveSupport::TestCase
     active_count = Invitation.where(
       account: @account,
       email: "reinvite@example.com",
-      status: 'pending'
+      status: "pending"
     ).count
     assert_equal 1, active_count, "Should only have one pending invitation"
   end

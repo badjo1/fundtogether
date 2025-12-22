@@ -13,7 +13,7 @@ class Account < ApplicationRecord
   validates :split_method, presence: true
 
   # Enums
-  enum :split_method, { equal: 'equal', proportional: 'proportional', manual: 'manual', percentage: 'percentage' }
+  enum :split_method, { equal: "equal", proportional: "proportional", manual: "manual", percentage: "percentage" }
 
   # Callbacks
   before_validation :set_defaults, on: :create
@@ -41,19 +41,19 @@ class Account < ApplicationRecord
 
   def admins
     users.joins(:account_memberships)
-         .where(account_memberships: { account_id: id, role: 'admin' })
+         .where(account_memberships: { account_id: id, role: "admin" })
   end
 
   def user_balance(user)
     user_balance_cents = account_memberships.find_by(user: user)&.balance_cents || 0
-    return user_balance_cents / 100.0
+    user_balance_cents / 100.0
   end
 
   def user_role(user)
     account_memberships.find_by(user: user)&.role
   end
 
-  def add_member(user, role: 'member', balance: 0)
+  def add_member(user, role: "member", balance: 0)
     account_memberships.create!(
       user: user,
       role: role,
@@ -72,8 +72,8 @@ class Account < ApplicationRecord
     end_date = Date.new(year, month).end_of_month
 
     transactions.where(
-      transaction_type: 'expense',
-      status: 'confirmed',
+      transaction_type: "expense",
+      status: "confirmed",
       created_at: start_date..end_date
     ).sum(:amount_cents)
   end
@@ -97,6 +97,6 @@ class Account < ApplicationRecord
     self.auto_convert ||= true
     self.notifications ||= true
     self.min_deposit ||= 10.0
-    self.split_method ||= 'equal'
+    self.split_method ||= "equal"
   end
 end

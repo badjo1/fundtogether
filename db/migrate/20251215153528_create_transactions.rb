@@ -14,4 +14,3 @@ class CreateTransactions < ActiveRecord::Migration[8.1]
     add_index :transactions, :tx_hash, unique: true
   end
 end
-

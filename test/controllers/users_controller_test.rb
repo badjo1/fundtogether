@@ -10,7 +10,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     unless @account.account_memberships.exists?(user: @user)
       @account.account_memberships.create!(
         user: @user,
-        role: 'admin',
+        role: "admin",
         balance_cents: 15000, # €150.00
         active: true,
         joined_at: 1.month.ago
@@ -32,7 +32,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     unless @account.account_memberships.exists?(user: other_user)
       @account.account_memberships.create!(
         user: other_user,
-        role: 'member',
+        role: "member",
         balance_cents: 25000, # €250.00
         active: true,
         joined_at: 2.weeks.ago
@@ -86,11 +86,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     3.times do
       @account.transactions.create!(
         from_user: @user,
-        transaction_type: 'deposit',
+        transaction_type: "deposit",
         amount_cents: 10000,
-        description: 'Test deposit',
-        token: 'EURe',
-        status: 'confirmed'
+        description: "Test deposit",
+        token: "EURe",
+        status: "confirmed"
       )
     end
 
@@ -127,7 +127,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       @account.invitations.create!(
         email: "test#{i}@example.com",
         invited_by: @user,
-        status: 'pending',
+        status: "pending",
         token: SecureRandom.hex(20)
       )
     end

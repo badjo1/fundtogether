@@ -3,10 +3,10 @@ class InvitationsController < ApplicationController
     :open, :request_email_verification, :verify_email,
     :show_accept, :accept, :reject, :send_invitation_email
   ]
-  before_action :set_invitation_by_id, only: [:destroy]
-  before_action :check_invitation_validity, only: [:show_accept, :accept]
+  before_action :set_invitation_by_id, only: [ :destroy ]
+  before_action :check_invitation_validity, only: [ :show_accept, :accept ]
 
-  skip_before_action :verify_authenticity_token, only: [:open, :verify_email]
+  skip_before_action :verify_authenticity_token, only: [ :open, :verify_email ]
   allow_unauthenticated_access only: [
     :open, :request_email_verification, :verify_email,
     :show_accept, :accept

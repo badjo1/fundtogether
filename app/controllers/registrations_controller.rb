@@ -10,7 +10,7 @@ class RegistrationsController < ApplicationController
       @from_invitation = true
     end
   end
-  
+
   def create
     @user = User.new(registration_params)
 
@@ -37,20 +37,19 @@ class RegistrationsController < ApplicationController
   end
 
  private
-  
+
   def registration_params
     params.require(:user).permit(:name, :email_address, :password, :password_confirmation)
   end
-  
+
   def start_new_session_for(user)
     user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
       Current.session = session
       cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
     end
   end
-  
+
   def after_authentication_url
     dashboard_path
   end
-
 end

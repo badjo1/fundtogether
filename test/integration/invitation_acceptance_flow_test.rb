@@ -67,7 +67,7 @@ class InvitationAcceptanceFlowTest < ActionDispatch::IntegrationTest
     assert_includes @account.users, @existing_user
     membership = @account.account_memberships.find_by(user: @existing_user)
     assert_not_nil membership
-    assert_equal 'member', membership.role
+    assert_equal "member", membership.role
 
     # Step 6: Verify session token is cleared
     assert_nil session[:pending_invitation_token]
@@ -81,7 +81,7 @@ class InvitationAcceptanceFlowTest < ActionDispatch::IntegrationTest
     assert_equal @invitation_new.token, session[:pending_invitation_token]
 
     # Step 2: User registers
-    assert_difference 'User.count', 1 do
+    assert_difference "User.count", 1 do
       post register_path, params: {
         user: {
           name: "New User",
@@ -107,7 +107,7 @@ class InvitationAcceptanceFlowTest < ActionDispatch::IntegrationTest
     assert_includes @account.users, new_user
     membership = @account.account_memberships.find_by(user: new_user)
     assert_not_nil membership
-    assert_equal 'member', membership.role
+    assert_equal "member", membership.role
 
     # Step 6: Verify session token is cleared
     assert_nil session[:pending_invitation_token]

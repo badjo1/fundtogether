@@ -9,8 +9,8 @@ class CreateAccountMembership < ActiveRecord::Migration[8.1]
       t.boolean "active", default: true
       t.timestamps
     end
-    add_index :account_memberships, [:account_id, :user_id], unique: true
-    add_index :account_memberships, [:user_id, :active]
-    add_index :account_memberships, [:role]
+    add_index :account_memberships, [ :account_id, :user_id ], unique: true
+    add_index :account_memberships, [ :user_id, :active ]
+    add_index :account_memberships, [ :role ]
   end
 end

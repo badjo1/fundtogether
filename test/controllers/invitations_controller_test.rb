@@ -15,7 +15,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
 
   # CREATE action
   test "should create invitation without email (button click flow)" do
-    assert_difference('Invitation.count', 1) do
+    assert_difference("Invitation.count", 1) do
       post invitations_path
     end
 
@@ -28,7 +28,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create invitation with email when provided" do
-    assert_difference('Invitation.count', 1) do
+    assert_difference("Invitation.count", 1) do
       post invitations_path, params: {
         invitation: { email: "test@example.com" }
       }
@@ -41,7 +41,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not create invitation with invalid email" do
-    assert_no_difference('Invitation.count') do
+    assert_no_difference("Invitation.count") do
       post invitations_path, params: {
         invitation: { email: "invalid-email" }
       }
@@ -51,7 +51,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   test "should not create invitation without authentication" do
     sign_out
 
-    assert_no_difference('Invitation.count') do
+    assert_no_difference("Invitation.count") do
       post invitations_path, params: {
         invitation: { email: "test@example.com" }
       }

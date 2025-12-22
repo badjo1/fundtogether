@@ -1,5 +1,5 @@
 class AccountsController < ApplicationController
-  before_action :set_account, only: [:show, :edit, :update, :destroy, :switch, :leave]
+  before_action :set_account, only: [ :show, :edit, :update, :destroy, :switch, :leave ]
 
   def index
     @accounts = current_user.accounts
@@ -14,7 +14,7 @@ class AccountsController < ApplicationController
 
   def create
     @account = Account.new(account_params)
-    
+
     if @account.save
       # Voeg de huidige gebruiker toe als admin
       @account.account_memberships.create!(user: current_user, role: :admin)
@@ -38,9 +38,9 @@ class AccountsController < ApplicationController
 
   def destroy
     authorize_admin!
-    
+
     account_name = @account.name
-    
+
     User.where(current_account: @account).update_all(current_account_id: nil)
     if @account.destroy
       # Als dit de huidige account was, switch naar een andere
@@ -48,7 +48,7 @@ class AccountsController < ApplicationController
         other_account = current_user.accounts.first
         current_user.update(current_account: other_account)
       end
-      
+
       redirect_to dashboard_path, notice: "Account '#{account_name}' is succesvol verwijderd"
     else
       redirect_to settings_path, alert: "Kon account niet verwijderen: #{@account.errors.full_messages.join(', ')}"
@@ -66,7 +66,7 @@ class AccountsController < ApplicationController
 
   def leave
     membership = @account.account_memberships.find_by(user: current_user)
-    
+
     if membership.nil?
       redirect_to dashboard_path, alert: "Je bent geen lid van dit account"
       return
@@ -79,7 +79,7 @@ class AccountsController < ApplicationController
     end
 
     membership.destroy
-    
+
     # Als dit de huidige account was, switch naar een andere
     if current_user.current_account == @account
       other_account = current_user.accounts.first

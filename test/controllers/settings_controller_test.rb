@@ -10,7 +10,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     unless @account.account_memberships.exists?(user: @user)
       @account.account_memberships.create!(
         user: @user,
-        role: 'admin',
+        role: "admin",
         balance_cents: 0,
         active: true
       )

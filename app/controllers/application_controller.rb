@@ -17,5 +17,4 @@ class ApplicationController < ActionController::Base
   def current_account
     current_user&.current_account
   end
-
 end

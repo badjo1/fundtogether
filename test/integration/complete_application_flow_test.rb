@@ -10,7 +10,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     unless @account.account_memberships.exists?(user: @user)
       @account.account_memberships.create!(
         user: @user,
-        role: 'admin',
+        role: "admin",
         balance_cents: 0,
         active: true
       )
@@ -47,7 +47,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "registration form creates new user" do
-    assert_difference('User.count', 1) do
+    assert_difference("User.count", 1) do
       post register_path, params: {
         user: {
           name: "Test User",
@@ -75,12 +75,12 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: "Alle Transacties"
 
     # Transaction new - deposit
-    get new_transaction_path(type: 'deposit')
+    get new_transaction_path(type: "deposit")
     assert_response :success
     assert_select "h2", text: "Nieuwe Storting"
 
     # Transaction new - expense
-    get new_transaction_path(type: 'expense')
+    get new_transaction_path(type: "expense")
     assert_response :success
     assert_select "h2", text: "Nieuwe Uitgave"
 
@@ -105,33 +105,33 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     # Create test transactions
     @account.transactions.create!(
       from_user: @user,
-      transaction_type: 'deposit',
+      transaction_type: "deposit",
       amount_cents: 10000,
-      description: 'Test deposit',
-      token: 'EURe',
-      status: 'confirmed'
+      description: "Test deposit",
+      token: "EURe",
+      status: "confirmed"
     )
 
     @account.transactions.create!(
       from_user: @user,
-      transaction_type: 'expense',
+      transaction_type: "expense",
       amount_cents: 5000,
-      description: 'Test expense',
-      token: 'DUMMY',
-      status: 'confirmed'
+      description: "Test expense",
+      token: "DUMMY",
+      status: "confirmed"
     )
 
     # Filter by type
-    get transactions_path(type: 'deposit')
+    get transactions_path(type: "deposit")
     assert_response :success
     assert_select "h2", text: "Alle Transacties"
 
     # Filter by status
-    get transactions_path(status: 'confirmed')
+    get transactions_path(status: "confirmed")
     assert_response :success
 
     # Filter by token
-    get transactions_path(token: 'EURe')
+    get transactions_path(token: "EURe")
     assert_response :success
   end
 
@@ -140,7 +140,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
 
     initial_balance = @account.user_balance(@user)
 
-    assert_difference('Transaction.count', 1) do
+    assert_difference("Transaction.count", 1) do
       post transactions_path, params: {
         transaction: {
           amount_euros: "100.50",
@@ -169,7 +169,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     unless @account.account_memberships.exists?(user: other_user)
       @account.account_memberships.create!(
         user: other_user,
-        role: 'member',
+        role: "member",
         balance_cents: 0,
         active: true
       )
@@ -179,7 +179,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     @account.account_memberships.find_by(user: @user).update(balance_cents: 10000)
     @account.account_memberships.find_by(user: other_user).update(balance_cents: 10000)
 
-    assert_difference('Transaction.count', 1) do
+    assert_difference("Transaction.count", 1) do
       post transactions_path, params: {
         transaction: {
           amount_euros: "60.00",
@@ -226,8 +226,8 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
   test "account creation form works" do
     sign_in_as(@user)
 
-    assert_difference('Account.count', 1) do
-      assert_difference('AccountMembership.count', 1) do
+    assert_difference("Account.count", 1) do
+      assert_difference("AccountMembership.count", 1) do
         post accounts_path, params: {
           account: {
             name: "New Test Account",
@@ -251,7 +251,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
   test "invitation form submission creates invitation" do
     sign_in_as(@user)
 
-    assert_difference('Invitation.count', 1) do
+    assert_difference("Invitation.count", 1) do
       post invitations_path, params: {
         invitation: {
           email: "invitee@example.com"
@@ -271,21 +271,21 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     # Create transactions
     @account.transactions.create!(
       from_user: @user,
-      transaction_type: 'deposit',
+      transaction_type: "deposit",
       amount_cents: 10000,
-      description: 'Deposit',
-      token: 'EURe',
-      status: 'confirmed',
+      description: "Deposit",
+      token: "EURe",
+      status: "confirmed",
       created_at: Time.current
     )
 
     @account.transactions.create!(
       from_user: @user,
-      transaction_type: 'expense',
+      transaction_type: "expense",
       amount_cents: 5000,
-      description: 'Expense',
-      token: 'EURe',
-      status: 'confirmed',
+      description: "Expense",
+      token: "EURe",
+      status: "confirmed",
       created_at: Time.current
     )
 
@@ -300,7 +300,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
 
     # Try to create transaction with invalid amount
-    assert_no_difference('Transaction.count') do
+    assert_no_difference("Transaction.count") do
       post transactions_path, params: {
         transaction: {
           amount_euros: "-10",
@@ -319,7 +319,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
 
     # Try to create transaction without description
-    assert_no_difference('Transaction.count') do
+    assert_no_difference("Transaction.count") do
       post transactions_path, params: {
         transaction: {
           amount_euros: "10",
@@ -332,5 +332,4 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
   end
-
 end

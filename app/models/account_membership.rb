@@ -9,15 +9,15 @@ class AccountMembership < ApplicationRecord
   validates :user_id, uniqueness: { scope: :account_id, message: "is already in this account" }
 
   # Enums
-  enum :role, { admin: 'admin', member: 'member', viewer: 'viewer' }
+  enum :role, { admin: "admin", member: "member", viewer: "viewer" }
 
   # Callbacks
   before_validation :set_defaults, on: :create
 
   # Scopes
   scope :active, -> { where(active: true) }
-  scope :admins, -> { where(role: 'admin') }
-  scope :members_only, -> { where(role: 'member') }
+  scope :admins, -> { where(role: "admin") }
+  scope :members_only, -> { where(role: "member") }
 
   # Instance methods
   def increment_balance(amount)
@@ -33,14 +33,14 @@ class AccountMembership < ApplicationRecord
   end
 
   def admin?
-    role == 'admin'
+    role == "admin"
   end
 
   private
 
   def set_defaults
     self.balance_cents ||= 0
-    self.role ||= 'member'
+    self.role ||= "member"
     self.active = true if active.nil?
     self.joined_at ||= Time.current
   end

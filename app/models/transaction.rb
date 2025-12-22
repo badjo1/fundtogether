@@ -1,8 +1,8 @@
 # app/models/transaction.rb (update associations and methods)
 class Transaction < ApplicationRecord
   belongs_to :account
-  belongs_to :from_user, class_name: 'User', optional: true
-  belongs_to :to_user, class_name: 'User', optional: true
+  belongs_to :from_user, class_name: "User", optional: true
+  belongs_to :to_user, class_name: "User", optional: true
 
   # Validations
   validates :amount_cents, presence: true, numericality: { greater_than: 0 }
@@ -16,23 +16,23 @@ class Transaction < ApplicationRecord
   validate :to_user_present_for_transfers
 
   # Enums
-  enum :transaction_type, { deposit: 'deposit', expense: 'expense', transfer: 'transfer' }
+  enum :transaction_type, { deposit: "deposit", expense: "expense", transfer: "transfer" }
 
-  enum :status, { pending: 'pending', confirmed: 'confirmed', failed: 'failed', cancelled: 'cancelled' }
+  enum :status, { pending: "pending", confirmed: "confirmed", failed: "failed", cancelled: "cancelled" }
 
-  enum :token, { eure: 'EURe', dummy: 'DUMMY', eth: 'ETH' }
+  enum :token, { eure: "EURe", dummy: "DUMMY", eth: "ETH" }
 
   # Callbacks
   before_validation :set_defaults, on: :create
-  after_commit :update_user_balances, if: :saved_change_to_status?, on: [:create, :update]
+  after_commit :update_user_balances, if: :saved_change_to_status?, on: [ :create, :update ]
   after_commit :update_user_balances, if: :saved_change_to_id?, on: :create
 
   # Scopes
-  scope :deposits, -> { where(transaction_type: 'deposit') }
-  scope :expenses, -> { where(transaction_type: 'expense') }
-  scope :transfers, -> { where(transaction_type: 'transfer') }
-  scope :confirmed, -> { where(status: 'confirmed') }
-  scope :pending, -> { where(status: 'pending') }
+  scope :deposits, -> { where(transaction_type: "deposit") }
+  scope :expenses, -> { where(transaction_type: "expense") }
+  scope :transfers, -> { where(transaction_type: "transfer") }
+  scope :confirmed, -> { where(status: "confirmed") }
+  scope :pending, -> { where(status: "pending") }
   scope :recent, -> { order(created_at: :desc) }
   scope :this_month, -> { where(created_at: Time.current.beginning_of_month..Time.current.end_of_month) }
 
@@ -51,17 +51,17 @@ class Transaction < ApplicationRecord
 
   # Instance methods
   def confirm!
-    update!(status: 'confirmed')
+    update!(status: "confirmed")
   end
 
   def split_per_member
-    return 0 unless transaction_type == 'expense'
+    return 0 unless transaction_type == "expense"
     return 0 if account.active_users.count.zero?
 
     case account.split_method
-    when 'equal'
+    when "equal"
       amount_cents / account.active_users.count
-    when 'proportional'
+    when "proportional"
       total_balance = account.total_balance
       if total_balance > 0
         (amount_cents * (from_user.balance_in_account(account) / total_balance)).round
@@ -76,12 +76,12 @@ class Transaction < ApplicationRecord
   private
 
   def set_defaults
-    self.status ||= 'confirmed'  # Auto-confirm deposits/expenses
-    self.token ||= 'EURe'
+    self.status ||= "confirmed"  # Auto-confirm deposits/expenses
+    self.token ||= "EURe"
   end
 
   def to_user_present_for_transfers
-    if transaction_type == 'transfer' && to_user_id.blank?
+    if transaction_type == "transfer" && to_user_id.blank?
       errors.add(:to_user_id, "must be present for transfers")
     end
   end
@@ -90,17 +90,17 @@ class Transaction < ApplicationRecord
     return unless confirmed?
 
     case transaction_type
-    when 'deposit'
+    when "deposit"
       membership = from_user.account_memberships.find_by(account: account)
       membership&.increment_balance(amount_cents)
-    when 'expense'
+    when "expense"
       # Split expense among ALL active members
       split_amount = split_per_member
       account.active_users.each do |user|
         membership = user.account_memberships.find_by(account: account)
         membership&.decrement_balance(split_amount)
       end
-    when 'transfer'
+    when "transfer"
       from_membership = from_user.account_memberships.find_by(account: account)
       to_membership = to_user.account_memberships.find_by(account: account)
       from_membership&.decrement_balance(amount_cents)

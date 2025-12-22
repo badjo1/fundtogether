@@ -1,7 +1,7 @@
 # app/models/invitation.rb
 class Invitation < ApplicationRecord
   belongs_to :account
-  belongs_to :invited_by, class_name: 'User'
+  belongs_to :invited_by, class_name: "User"
 
   # Email alleen required als verified (niet bij creatie - voor WhatsApp/QR/Link flows)
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_nil: true
@@ -11,14 +11,14 @@ class Invitation < ApplicationRecord
   validate :email_not_already_accepted, on: :create, if: -> { email.present? }
   validate :email_required_before_accept, if: -> { accepting? }
 
-  enum :status, { pending: 'pending', accepted: 'accepted', rejected: 'rejected' }
+  enum :status, { pending: "pending", accepted: "accepted", rejected: "rejected" }
 
   before_validation :set_defaults, on: :create
   before_create :cancel_previous_pending_invitations
 
-  scope :pending, -> { where(status: 'pending') }
-  scope :expired, -> { where('created_at < ?', 24.hours.ago).where(status: 'pending') }
-  scope :active, -> { where(status: 'pending').where('created_at >= ?', 24.hours.ago) }
+  scope :pending, -> { where(status: "pending") }
+  scope :expired, -> { where("created_at < ?", 24.hours.ago).where(status: "pending") }
+  scope :active, -> { where(status: "pending").where("created_at >= ?", 24.hours.ago) }
   scope :email_verified, -> { where.not(email_verified_at: nil) }
   scope :awaiting_email, -> { where(email: nil) }
 
@@ -56,13 +56,13 @@ class Invitation < ApplicationRecord
     return false if expired?
     return false unless ready_to_accept?
 
-    account.add_member(user, role: 'member')
-    update!(status: 'accepted')
+    account.add_member(user, role: "member")
+    update!(status: "accepted")
     user
   end
 
   def reject!
-    update!(status: 'rejected')
+    update!(status: "rejected")
   end
 
   def expired?
@@ -76,7 +76,7 @@ class Invitation < ApplicationRecord
   def time_remaining
     return 0 if invitation_expired?
     remaining = (expires_at - Time.current).to_i
-    [remaining, 0].max
+    [ remaining, 0 ].max
   end
 
   def invitation_expired?
@@ -85,7 +85,7 @@ class Invitation < ApplicationRecord
 
   # Alias for backwards compatibility
   alias_method :expired?, :invitation_expired?
-  
+
   private
 
   def signed_token_for(purpose)
@@ -94,7 +94,7 @@ class Invitation < ApplicationRecord
   end
 
   def set_defaults
-    self.status ||= 'pending'
+    self.status ||= "pending"
     self.token ||= SecureRandom.hex(32)
   end
 
@@ -104,7 +104,7 @@ class Invitation < ApplicationRecord
     existing_accepted = Invitation.where(
       account: account,
       email: email,
-      status: 'accepted'
+      status: "accepted"
     ).where.not(id: id).exists?
 
     if existing_accepted
@@ -113,13 +113,13 @@ class Invitation < ApplicationRecord
   end
 
   def email_required_before_accept
-    if status == 'accepted' && email.blank?
+    if status == "accepted" && email.blank?
       errors.add(:email, "must be present before accepting")
     end
   end
 
   def accepting?
-    status_changed? && status == 'accepted'
+    status_changed? && status == "accepted"
   end
 
   def cancel_previous_pending_invitations
@@ -129,7 +129,7 @@ class Invitation < ApplicationRecord
     Invitation.where(
       account: account,
       email: email,
-      status: 'pending'
+      status: "pending"
     ).where.not(id: id).destroy_all
   end
 end

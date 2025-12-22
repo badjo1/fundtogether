@@ -12,7 +12,7 @@ class TransactionsController < ApplicationController
 
   def new
     @transaction = @account.transactions.build
-    @transaction_type = params[:type] || 'deposit'
+    @transaction_type = params[:type] || "deposit"
 
     unless %w[deposit expense].include?(@transaction_type)
       redirect_to dashboard_path, alert: "Ongeldig transactietype"
@@ -22,7 +22,7 @@ class TransactionsController < ApplicationController
   def create
     @transaction = @account.transactions.build(transaction_params)
     @transaction.from_user = current_user
-    @transaction.status = 'confirmed'
+    @transaction.status = "confirmed"
 
     if @transaction.save
       flash_message = @transaction.deposit? ? "Storting succesvol toegevoegd" : "Uitgave succesvol toegevoegd"

@@ -17,13 +17,13 @@ class InvitationMailerTest < ActionMailer::TestCase
     email = InvitationMailer.invite(@invitation, @invitation_url)
 
     assert_equal "#{@inviter.name} heeft je uitgenodigd voor #{@account.name}", email.subject
-    assert_equal ["test@example.com"], email.to
+    assert_equal [ "test@example.com" ], email.to
   end
 
   test "invite email contains invitation link" do
     email = InvitationMailer.invite(@invitation, @invitation_url)
 
-    text_part = email.parts.find { |p| p.content_type.start_with?('text/plain') }
+    text_part = email.parts.find { |p| p.content_type.start_with?("text/plain") }
     assert_match "/invitations/", text_part.decoded
     assert_match "/open", text_part.decoded
   end
@@ -48,7 +48,7 @@ class InvitationMailerTest < ActionMailer::TestCase
     email = InvitationMailer.verify_email(@invitation)
 
     assert_equal "Bevestig je email voor #{@account.name}", email.subject
-    assert_equal ["test@example.com"], email.to
+    assert_equal [ "test@example.com" ], email.to
   end
 
   test "verify_email email contains verification link" do
@@ -57,7 +57,7 @@ class InvitationMailerTest < ActionMailer::TestCase
 
     email = InvitationMailer.verify_email(@invitation)
 
-    text_part = email.parts.find { |p| p.content_type.start_with?('text/plain') }
+    text_part = email.parts.find { |p| p.content_type.start_with?("text/plain") }
     assert_match "/invitations/", text_part.decoded
     assert_match "/verify/", text_part.decoded
   end
@@ -95,7 +95,7 @@ class InvitationMailerTest < ActionMailer::TestCase
   test "invite email has correct from address" do
     email = InvitationMailer.invite(@invitation, @invitation_url)
 
-    assert_equal ["noreply@fundtogether.app"], email.from
+    assert_equal [ "noreply@fundtogether.app" ], email.from
   end
 
   test "verify_email email has correct from address" do
@@ -104,6 +104,6 @@ class InvitationMailerTest < ActionMailer::TestCase
 
     email = InvitationMailer.verify_email(@invitation)
 
-    assert_equal ["noreply@fundtogether.app"], email.from
+    assert_equal [ "noreply@fundtogether.app" ], email.from
   end
 end
