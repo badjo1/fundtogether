@@ -64,7 +64,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   # Pin minitest to 5.x for Rails 8.1.1 compatibility
-  gem "minitest", "~> 5.26"
+  gem "minitest", "~> 6.0"
 end
 
 gem "tailwindcss-rails", "~> 4.4"
