@@ -5,6 +5,7 @@ class UsersController < ApplicationController
 
     @users = @account.active_users.includes(:account_memberships)
     @pending_invitations = @account.invitations.where(status: "pending")
+    @rejected_invitations = @account.invitations.where(status: "rejected").order(updated_at: :desc)
 
     # Stats
     @total_members = @users.count

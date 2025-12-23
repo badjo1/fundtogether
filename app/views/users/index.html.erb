@@ -170,5 +170,46 @@
           <% end %>
         </div>
 
+        <!-- Rejected/Cancelled Invitations -->
+        <% if @rejected_invitations.any? %>
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-gray-900">Geannuleerde Uitnodigingen</h3>
+              <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 font-medium">
+                <%= @rejected_invitations.count %> Geannuleerd
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              <% @rejected_invitations.each do |invitation| %>
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div class="flex items-center gap-3 flex-1">
+                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                      <%= icon :x_circle, class: "w-5 h-5 text-gray-600" %>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-medium text-gray-900">
+                        <%= invitation.email.present? ? invitation.email : "Geen email opgegeven" %>
+                      </p>
+                      <p class="text-sm text-gray-500">
+                        Geannuleerd op <%= invitation.updated_at.strftime('%d %b %Y om %H:%M') %>
+                      </p>
+                      <p class="text-xs text-gray-400 mt-1">
+                        Oorspronkelijk uitgenodigd door <%= invitation.invited_by.name %>
+                      </p>
+                    </div>
+                  </div>
+                  <%= button_to invitation_path(invitation),
+                      method: :delete,
+                      class: "px-3 py-1 text-sm text-red-600 hover:text-red-700 font-medium",
+                      data: { turbo_confirm: "Weet je zeker dat je deze geannuleerde uitnodiging permanent wilt verwijderen?" } do %>
+                    Verwijderen
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
       </div>
     <% end %>

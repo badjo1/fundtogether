@@ -65,7 +65,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     get accept_invitation_path(@pending_invitation.token)
 
     assert_response :success
-    assert_select "h1", /uitgenodigd/i
+    assert_select "h1", /uitnodiging/i
   end
 
   test "should show expired page for expired invitation" do
@@ -154,7 +154,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # OPEN action (new flow)
-  test "should show request_email page for invitation without email" do
+  test "should redirect to accept page for invitation without email" do
     sign_out
     invitation_no_email = Invitation.create!(
       account: @account,
@@ -163,8 +163,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
 
     get open_invitation_path(invitation_no_email.token)
 
-    assert_response :success
-    assert_select "form[action=?]", request_email_verification_invitation_path(invitation_no_email.token)
+    assert_redirected_to accept_invitation_path(invitation_no_email.token)
   end
 
   test "should redirect to accept page for verified invitation" do
@@ -175,7 +174,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to accept_invitation_path(@pending_invitation.token)
   end
 
-  test "should show awaiting_verification for unverified invitation with email" do
+  test "should redirect to accept page for unverified invitation with email" do
     sign_out
     unverified_invitation = Invitation.create!(
       account: @account,
@@ -185,8 +184,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
 
     get open_invitation_path(unverified_invitation.token)
 
-    assert_response :success
-    assert_select "h1", /Check je Email/i
+    assert_redirected_to accept_invitation_path(unverified_invitation.token)
   end
 
   # REQUEST_EMAIL_VERIFICATION action
@@ -205,8 +203,8 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "newuser@example.com", invitation.email
     assert_not_nil invitation.email_verification_token
     assert_not_nil invitation.email_verification_sent_at
-    assert_response :success
-    assert_select "h1", /Check je Email/i
+    assert_redirected_to accept_invitation_path(invitation.token)
+    assert_equal "Check je inbox voor de verificatie link!", flash[:notice]
   end
 
   # VERIFY_EMAIL action

@@ -55,27 +55,21 @@ class InvitationsController < ApplicationController
 
   # GET /invitations/:token/open - STAP 1: Eerste contact met link
   def open
+    # Check expiration
     if @invitation.expired?
       render :expired, status: :gone
       return
     end
 
+    # Check if already accepted
     if @invitation.accepted?
       redirect_to root_path, alert: "Deze uitnodiging is al geaccepteerd."
       return
     end
 
-    # Beslisboom:
-    if @invitation.email.present? && @invitation.email_verified?
-      # Email al bekend en geverifieerd → direct naar accept/reject
-      redirect_to accept_invitation_path(@invitation.token)
-    elsif @invitation.email.present? && !@invitation.email_verified?
-      # Email bekend maar niet geverifieerd → toon "check je email" pagina
-      render :awaiting_verification
-    else
-      # Geen email → vraag email en stuur verificatie
-      render :request_email
-    end
+    # Always redirect to accept page
+    # The accept page will handle email entry/verification state
+    redirect_to accept_invitation_path(@invitation.token)
   end
 
   # POST /invitations/:token/request_verification - STAP 2a: Email invoeren
@@ -88,10 +82,12 @@ class InvitationsController < ApplicationController
       InvitationMailer.verify_email(@invitation).deliver_later
 
       flash[:notice] = "Check je inbox voor de verificatie link!"
-      render :awaiting_verification
+      # Redirect back to accept page which will show "check email" state
+      redirect_to accept_invitation_path(@invitation.token)
     else
-      flash.now[:alert] = @invitation.errors.full_messages.join(", ")
-      render :request_email, status: :unprocessable_entity
+      flash[:alert] = @invitation.errors.full_messages.join(", ")
+      # Redirect back to accept page which will show email form with errors
+      redirect_to accept_invitation_path(@invitation.token), status: :unprocessable_entity
     end
   end
 
@@ -111,11 +107,14 @@ class InvitationsController < ApplicationController
 
   # GET /invitations/:token/accept - STAP 3: Accept/Reject pagina
   def show_accept
-    # Email moet geverifieerd zijn om hier te komen
-    unless @invitation.ready_to_accept?
-      redirect_to open_invitation_path(@invitation.token),
-                  alert: "Verificatie vereist."
-    end
+    # This action now handles 3 states:
+    # 1. Email not known - show email form
+    # 2. Email known but not verified - show "check email" message
+    # 3. Email verified - show accept/reject buttons
+
+    @invitation_url = open_invitation_url(@invitation.token)
+
+    # No additional logic needed - view handles state
   end
 
   # POST /invitations/:token/accept - STAP 4: Daadwerkelijk accepteren
@@ -148,8 +147,13 @@ class InvitationsController < ApplicationController
   # DELETE /invitations/:id
   def destroy
     if @invitation.account == current_account
-      @invitation.destroy
-      redirect_to users_path, notice: "Uitnodiging geannuleerd."
+      # Allow deleting pending OR rejected invitations
+      if @invitation.pending? || @invitation.rejected?
+        @invitation.destroy
+        redirect_to users_path, notice: "Uitnodiging verwijderd."
+      else
+        redirect_to users_path, alert: "Kan alleen pending of geannuleerde uitnodigingen verwijderen."
+      end
     else
       redirect_to users_path, alert: "Je kunt deze uitnodiging niet annuleren."
     end
