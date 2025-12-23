@@ -95,7 +95,7 @@ class InvitationMailerTest < ActionMailer::TestCase
   test "invite email has correct from address" do
     email = InvitationMailer.invite(@invitation, @invitation_url)
 
-    assert_equal [ "noreply@fundtogether.app" ], email.from
+    assert_equal [ "noreply@notifications.fundtogether.app" ], email.from
   end
 
   test "verify_email email has correct from address" do
@@ -104,6 +104,6 @@ class InvitationMailerTest < ActionMailer::TestCase
 
     email = InvitationMailer.verify_email(@invitation)
 
-    assert_equal [ "noreply@fundtogether.app" ], email.from
+    assert_equal [ "noreply@notifications.fundtogether.app" ], email.from
   end
 end
