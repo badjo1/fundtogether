@@ -7,6 +7,8 @@ Deze directory bevat alle project documentatie en handleidingen voor hergebruik 
 ### Project Documentatie:
 - [`STYLEGUIDE.md`](STYLEGUIDE.md) - Code conventions en patterns (939 regels)
 - [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md) - Security checklist (15 categorieën)
+- [`TESTING_BEST_PRACTICES.md`](TESTING_BEST_PRACTICES.md) - Testing guidelines & linting workflow
+- [`EMAIL_SETUP.md`](EMAIL_SETUP.md) - Complete guide voor email in productie
 - [`../app/views/icons/README.md`](../app/views/icons/README.md) - Icon system documentatie
 
 ### Hergebruik Handleiding:
