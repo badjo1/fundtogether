@@ -69,4 +69,4 @@ end
 
 gem "tailwindcss-rails", "~> 4.4"
 
-gem "rqrcode", "~> 3.1"
+gem "rqrcode", "~> 3.2"
