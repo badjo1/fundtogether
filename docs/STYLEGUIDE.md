@@ -30,7 +30,7 @@
 **FundTogether** is een Rails 8 applicatie voor gedeelde fondsen met blockchain integratie.
 
 **Tech Stack:**
-- Ruby 3.4.6
+- Ruby 3.4.10
 - Rails 8.1.1
 - PostgreSQL
 - Hotwire (Turbo + Stimulus)

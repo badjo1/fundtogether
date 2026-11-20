@@ -5,6 +5,12 @@ Deze directory bevat alle project documentatie en handleidingen voor hergebruik 
 ## Beschikbare Documenten
 
 ### Project Documentatie:
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) - Technisch overzicht en beslissingen (on-chain, Safe, wallets)
+- [`OPEN_ITEMS.md`](OPEN_ITEMS.md) - Wat nog nodig is vóór echt geld
+- [`TESTNET_EVIDENCE.md`](TESTNET_EVIDENCE.md) - Live tests op Sepolia met transactie-hashes
+- [`SECURITY_REVIEW.md`](SECURITY_REVIEW.md) - Onafhankelijke review en status per bevinding
+- [`RAMPS.md`](RAMPS.md) - Storten en opnemen via providers
+- [`research/`](research/) - Onderzoek achter de keuzes
 - [`STYLEGUIDE.md`](STYLEGUIDE.md) - Code conventions en patterns (939 regels)
 - [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md) - Security checklist (15 categorieën)
 - [`TESTING_BEST_PRACTICES.md`](TESTING_BEST_PRACTICES.md) - Testing guidelines & linting workflow
