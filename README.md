@@ -32,7 +32,7 @@ wallets have not been tested yet.
 
 ## Requirements
 
-- Ruby 3.4.10 (see `.ruby-version`)
+- Ruby 4.0.10 (see `.ruby-version`)
 - PostgreSQL 14 or newer
 - Node 20 is only needed to run the JavaScript tests and to rebuild the vendored viem bundle; it
   is not needed to run the app.
