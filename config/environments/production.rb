@@ -1,4 +1,10 @@
 require "active_support/core_ext/integer/time"
+require_relative "../../lib/production_hosts"
+require_relative "../../lib/trusted_proxies"
+
+# Required: the host check and every link in mail depend on it. The image build has no runtime environment.
+ENV["APP_HOST"] ||= "build.invalid" if ENV["SECRET_KEY_BASE_DUMMY"]
+raise "APP_HOST is required in production (see docs/ARCHITECTURE.md, Production environment)" if ENV["APP_HOST"].blank?
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -21,17 +27,18 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
+
+  # Who may report a client's address. See docs/ARCHITECTURE.md, Production environment.
+  config.action_dispatch.trusted_proxies = TrustedProxies.parse(ENV["TRUSTED_PROXIES"])
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  config.ssl_options = { redirect: { exclude: ProductionHosts::EXCLUDE } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
@@ -60,7 +67,7 @@ Rails.application.configure do
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = {
-    host: ENV.fetch("APP_HOST", "fundtogether.app"),
+    host: ENV.fetch("APP_HOST"),
     protocol: "https"
   }
 
@@ -96,12 +103,8 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # DNS rebinding protection and the Host header attacks in docs/SECURITY_REVIEW.md, H3. X-Forwarded-Host is
+  # checked by the same list. The health check is exempt, because it is called by address.
+  config.hosts = ProductionHosts.allowed
+  config.host_authorization = { exclude: ProductionHosts::EXCLUDE }
 end

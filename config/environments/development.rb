@@ -28,8 +28,6 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
@@ -64,6 +62,11 @@ Rails.application.configure do
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true
+
+  # Solid Queue, so the recurring chain sync runs (bin/jobs, started by bin/dev). Without it contributions stay
+  # "in behandeling" forever. The live end-to-end run (test/e2e/serve.sh) keeps the queue tables in its own database.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } } unless ENV["SOLID_QUEUE_IN_DEV"]
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true

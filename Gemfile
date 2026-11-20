@@ -70,3 +70,7 @@ end
 gem "tailwindcss-rails", "~> 4.4"
 
 gem "rqrcode", "~> 3.1"
+
+# Local Ethereum crypto: Keccak-256 hashing and secp256k1 signature recovery
+gem "keccak"
+gem "ecdsa"
