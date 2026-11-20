@@ -1,0 +1,14 @@
+<div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" data-ramp-empty="<%= @guide.state %>">
+  <h3 class="text-lg font-semibold text-gray-900">Er zijn nu geen routes voor dit fonds</h3>
+  <p class="text-gray-600 mt-2">
+    <% case @guide.state %>
+    <% when :no_chain %>
+      Dit fonds heeft nog geen netwerk en token. Welke routes passen hangt daarvan af. Zodra een admin de Safe instelt, zie je ze hier.
+    <% when :chain_unavailable %>
+      Het netwerk van dit fonds staat op deze server niet aan. We tonen daarom geen routes, en je kunt hier nu ook niet bijdragen.
+    <% else %>
+      De token van dit fonds staat niet in onze lijst voor dit netwerk. We tonen daarom geen routes, want een verkeerde token kun je kwijtraken.
+    <% end %>
+  </p>
+  <p class="text-gray-600 mt-2">Stuur in de tussentijd geen geld naar een adres van dit fonds.</p>
+</div>

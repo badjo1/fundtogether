@@ -1,0 +1,10 @@
+<%# Locals: value, label. Adres of hash met kopieerknop; breekt af in plaats van te overlopen. %>
+<div data-controller="clipboard" class="space-y-2">
+  <p id="<%= dom = "copy_#{value.hash.abs}" %>" class="text-xs font-medium text-gray-500"><%= label %></p>
+  <input type="hidden" value="<%= value %>" data-clipboard-target="source">
+  <p class="font-mono text-sm text-gray-900 break-hash" aria-labelledby="<%= dom %>"><%= value %></p>
+  <button type="button" data-action="clipboard#copy" class="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors">
+    <%= icon :copy, class: "w-4 h-4" %>
+    <span>Kopiëren</span>
+  </button>
+</div>

@@ -11,7 +11,6 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
       @account.account_memberships.create!(
         user: @user,
         role: "admin",
-        balance_cents: 0,
         active: true
       )
     end
@@ -27,10 +26,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
   test "should update account settings" do
     patch settings_path, params: {
+      account_id: @account.id,
       account: {
         name: "Updated Name",
-        description: "Updated description",
-        split_method: "proportional"
+        description: "Updated description"
       }
     }
 
@@ -41,11 +40,11 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     @account.reload
     assert_equal "Updated Name", @account.name
     assert_equal "Updated description", @account.description
-    assert_equal "proportional", @account.split_method
   end
 
   test "should not update with invalid data" do
     patch settings_path, params: {
+      account_id: @account.id,
       account: {
         name: "", # Empty name should fail validation
         description: "Test"

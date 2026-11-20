@@ -1,0 +1,50 @@
+<%#
+  Verbinden en de staat van de wallet. Locals: chain (of nil), requires_chain.
+  Het blok bevat de acties: gebruik data-show-wallet="ready" zodat ze alleen verschijnen als het mag.
+%>
+<% chain = local_assigns[:chain] %>
+<%= tag.div class: "space-y-3", data: wallet_controller_data(chain: chain, requires_chain: local_assigns.fetch(:requires_chain, false)) do %>
+  <div class="p-4 bg-gray-50 rounded-lg space-y-3">
+    <p class="text-sm text-gray-500" data-show-wallet="idle">Wallet zoeken…</p>
+
+    <div data-show-wallet="disconnected" class="space-y-2">
+      <p class="text-sm font-medium text-gray-900">Kies je wallet</p>
+      <div class="grid gap-2 sm:grid-cols-2" data-wallet-target="providerList"></div>
+      <template data-wallet-target="providerTemplate">
+        <button type="button" data-action="wallet#connectWallet" class="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-white font-medium transition-colors min-w-0">
+          <img data-wallet-icon alt="" class="w-5 h-5 flex-shrink-0">
+          <span data-wallet-name class="truncate"></span>
+        </button>
+      </template>
+    </div>
+
+    <div data-show-wallet="no_wallet" class="space-y-2">
+      <p class="text-sm font-medium text-gray-900">Geen wallet gevonden in deze browser</p>
+      <%= link_to "Hoe kom ik aan een wallet?", wallet_page_path(anchor: "geen-wallet"), class: "text-sm text-blue-600 hover:text-blue-700 font-medium" %>
+    </div>
+
+    <p class="text-sm text-gray-700" data-show-wallet="requesting_accounts switching_chain adding_chain awaiting_signature submitting wallet_busy">Open je wallet om verder te gaan.</p>
+
+    <div data-show-wallet="ready unlinked address_mismatch wrong_network" class="flex items-center justify-between gap-3 flex-wrap">
+      <div class="min-w-0">
+        <p class="text-xs text-gray-500">Verbonden: <span data-wallet-target="field" data-field="walletName"></span></p>
+        <p class="font-mono text-xs text-gray-900 break-hash" data-wallet-target="field" data-field="address"></p>
+      </div>
+      <button type="button" data-action="wallet#disconnectWallet" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Verbinding verbreken</button>
+    </div>
+
+    <div data-show-wallet="wrong_network" class="flex flex-wrap items-center gap-3">
+      <button type="button" data-action="wallet#switchChain" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
+        Wissel naar <%= chain&.name || "het juiste netwerk" %>
+      </button>
+    </div>
+
+    <div data-show-wallet="unlinked address_mismatch">
+      <%= link_to "Koppel deze wallet bij Mijn wallets", wallet_page_path, class: "text-sm text-blue-600 hover:text-blue-700 font-medium" unless local_assigns[:on_wallet_page] %>
+    </div>
+
+    <p class="flow-message" data-wallet-target="message" aria-live="polite"></p>
+    <button type="button" data-show-banner="offer_reset" data-action="wallet#reset" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium">Opnieuw proberen</button>
+  </div>
+  <%= yield %>
+<% end %>

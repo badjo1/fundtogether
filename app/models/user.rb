@@ -3,67 +3,62 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :account_memberships, dependent: :destroy
   has_many :accounts, through: :account_memberships
-  has_many :sent_transactions, class_name: "Transaction",
-           foreign_key: "from_user_id", dependent: :nullify
-  has_many :received_transactions, class_name: "Transaction",
-           foreign_key: "to_user_id", dependent: :nullify
+  has_many :active_memberships, -> { active }, class_name: "AccountMembership"
+  has_many :active_accounts, through: :active_memberships, source: :account
   belongs_to :current_account, class_name: "Account", optional: true
+  has_many :wallets, dependent: :destroy
+  has_many :wallet_challenges, dependent: :destroy
+  has_many :safe_proposals, foreign_key: :proposer_id, inverse_of: :proposer, dependent: :restrict_with_error
+  has_many :safe_signatures, dependent: :restrict_with_error
 
+  CONFIRMATION_LIFETIME = 24.hours
+  ABANDONED_AFTER = 7.days
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+  normalizes :name, with: ->(value) { SafeText.clean(value) }
+
+  # Spent by confirming, and void if the address changes.
+  generates_token_for :email_confirmation, expires_in: CONFIRMATION_LIFETIME do
+    [ email_address, email_confirmed_at ]
+  end
+
+  scope :abandoned_unconfirmed, -> {
+    where(email_confirmed_at: nil, created_at: ...ABANDONED_AFTER.ago)
+      .where.missing(:account_memberships, :wallets, :safe_proposals, :safe_signatures)
+  }
 
   # Validations
   validates :name, presence: true, length: { minimum: 2, maximum: 50 }
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :wallet_address, uniqueness: true, allow_nil: true,
-            format: { with: /\A0x[a-fA-F0-9]{40}\z/, message: "must be a valid Ethereum address" },
-            if: -> { wallet_address.present? }
+  validates :password, length: { minimum: 8 }, allow_nil: true
 
-  # Scopes
-  scope :active_in_account, ->(account) {
-    joins(:account_memberships)
-      .where(account_memberships: { account_id: account.id, active: true })
-  }
-
-  # Instance methods
-  def transactions_in_account(account)
-    Transaction.where(account: account)
-               .where("from_user_id = ? OR to_user_id = ?", id, id)
+  # The membership that decides what this user may do right now. current_account_id
+  # only says which fund they last chose; it never grants access by itself.
+  def current_membership
+    active_memberships.find_by(account_id: current_account_id) || active_memberships.order(:id).first
   end
 
-  def balance_in_account(account)
-    account_memberships.find_by(account: account)&.balance_cents || 0
+  # The address is proven only by a token that went to it and came back with this account's password or
+  # session, by a password reset, or by a link invitation's proof returning to the same browser.
+  def email_confirmed?
+    email_confirmed_at.present?
   end
 
-  def role_in_account(account)
-    account_memberships.find_by(account: account)&.role
+  def confirm_email!
+    update!(email_confirmed_at: Time.current) unless email_confirmed?
   end
 
-  def admin_in_account?(account)
-    role_in_account(account) == "admin"
+  def send_email_confirmation
+    update_column(:email_confirmation_sent_at, Time.current)
+    UserMailer.email_confirmation(self).deliver_later
   end
 
-  def active_in_account?(account)
-    account_memberships.find_by(account: account)&.active?
+  # Rows from before the input rule are neutralised here, so a screen never needs to know.
+  def name
+    SafeText.clean(super)
   end
 
   def display_name
-    name || email_address.split("@").first
-  end
-
-  def short_address
-    return "Not connected" unless wallet_address
-    "#{wallet_address[0..5]}...#{wallet_address[-4..]}"
-  end
-
-  # Wissel naar een andere account
-  def switch_to_account(account)
-    return false unless accounts.include?(account)
-    update(current_account: account)
-  end
-
-  # Stel eerste account in als current als er geen is
-  def ensure_current_account
-    update(current_account: accounts.first) if current_account.nil? && accounts.any?
+    name.presence || email_address.split("@").first
   end
 end

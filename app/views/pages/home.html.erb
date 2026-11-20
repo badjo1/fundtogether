@@ -1,36 +1,51 @@
-<!-- Login Screen -->
-<div id="loginScreen" class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full text-center animate-slide-in">
-        <div class="mb-6">
-            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            	<img src="/icon.svg" class="w-13 h-13" />
-            </div>
-            <h1 class="text-2xl font-bold text-gray-900 mb-2">FUND TOGETHER</h1>
-            <p class="text-gray-600">Transparante groepsfinanciën op de blockchain</p>
-        </div>
-        
-        <div class="space-y-4 mb-6">
-            <div class="flex items-center space-x-3 text-left">
-                <%= icon :shield, class: "w-5 h-5 text-green-600" %>
-                <span class="text-gray-700">Gnosis Safe multisig beveiliging</span>
-            </div>
-            <div class="flex items-center space-x-3 text-left">
-                <%= icon :dollar, class: "w-5 h-5 text-blue-600" %>
-                <span class="text-gray-700">Monerium EURe fiat integratie</span>
-            </div>
-            <div class="flex items-center space-x-3 text-left">
-                <%= icon :document, class: "w-5 h-5 text-purple-600" %>
-                <span class="text-gray-700">Transparante on-chain boekhouding</span>
-            </div>
-        </div>
-
-		<%= link_to dashboard_path, class: "w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2" do %>
-            <%= icon :dollar, class: "w-5 h-5" %>
-            <span>Verbind Wallet</span>
-        <% end %>	
-
-        <p class="text-xs text-gray-500 mt-4">
-            Ondersteund: MetaMask, WalletConnect, Coinbase Wallet
-        </p>
+<% content_for :title, "FundTogether: samen geld beheren met een Safe" %>
+<div class="min-h-screen bg-linear-to-br/srgb from-blue-900 via-blue-800 to-purple-900 p-4 py-8 sm:py-16">
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-4">
+        <%= icon :users, class: "w-8 h-8 text-blue-600" %>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold text-white">Samen geld beheren, zonder dat één persoon er alleen bij kan</h1>
+      <p class="text-blue-200 mt-3 text-lg">Een groepspot op de blockchain. De groep beslist, en iedereen kan zien wat er gebeurt.</p>
+      <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+        <% if authenticated? %>
+          <%= link_to "Naar je overzicht", dashboard_path, class: "px-6 py-3 bg-white text-blue-700 rounded-lg hover:bg-blue-50 font-medium transition-colors" %>
+        <% else %>
+          <%= link_to "Account aanmaken", register_path, class: "px-6 py-3 bg-white text-blue-700 rounded-lg hover:bg-blue-50 font-medium transition-colors" %>
+          <%= link_to "Inloggen", login_path, class: "px-6 py-3 border border-blue-300 text-white rounded-lg hover:bg-blue-800 font-medium transition-colors" %>
+        <% end %>
+      </div>
     </div>
+
+    <% if Chain::Registry.default.testnet? %>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Testgeld, geen echte waarde" } do %>
+        <p>FundTogether draait nu op het testnetwerk <%= Chain::Registry.default.name %>. Gebruik het om te oefenen. Er gaat nog geen echt geld doorheen.</p>
+      <% end %>
+    <% end %>
+
+    <div class="grid gap-6 sm:grid-cols-2">
+      <section class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Wat FundTogether doet</h2>
+        <ul class="space-y-3 text-sm text-gray-700">
+          <li class="flex items-start gap-3"><%= icon :shield, class: "w-5 h-5 text-green-600 flex-shrink-0" %><span>Je groep krijgt een eigen <strong>Safe</strong>: een gemeenschappelijke kluis op de blockchain, gemaakt met de standaardcontracten van Safe 1.4.1.</span></li>
+          <li class="flex items-start gap-3"><%= icon :users, class: "w-5 h-5 text-green-600 flex-shrink-0" %><span>Jullie kiezen samen wie <strong>ondertekenaar</strong> is en hoeveel <strong>goedkeuringen</strong> een uitgave nodig heeft.</span></li>
+          <li class="flex items-start gap-3"><%= icon :dollar, class: "w-5 h-5 text-green-600 flex-shrink-0" %><span>Leden leggen een euro-stablecoin in vanuit hun eigen wallet. Elke inleg en uitgave is terug te vinden op de blockchain.</span></li>
+          <li class="flex items-start gap-3"><%= icon :key, class: "w-5 h-5 text-green-600 flex-shrink-0" %><span>Sleutels blijven bij jullie. FundTogether kan geen geld verplaatsen en rekent geen vergoeding.</span></li>
+          <li class="flex items-start gap-3"><%= icon :external_link, class: "w-5 h-5 text-green-600 flex-shrink-0" %><span>Jullie Safe werkt ook zonder ons, bijvoorbeeld in Safe{Wallet}.</span></li>
+        </ul>
+      </section>
+      <section class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Wat FundTogether niet doet</h2>
+        <ul class="space-y-3 text-sm text-gray-700">
+          <li class="flex items-start gap-3"><%= icon :x_circle, class: "w-5 h-5 text-gray-400 flex-shrink-0" %><span>Het is geen bank en geen betaalrekening. Er is geen depositogarantie en geen IBAN van het fonds.</span></li>
+          <li class="flex items-start gap-3"><%= icon :x_circle, class: "w-5 h-5 text-gray-400 flex-shrink-0" %><span>We kunnen een verloren wallet of herstelzin niet terughalen. Hooguit kan de rest van de groep een ondertekenaar vervangen.</span></li>
+          <li class="flex items-start gap-3"><%= icon :x_circle, class: "w-5 h-5 text-gray-400 flex-shrink-0" %><span>We wisselen geen euro's. Je koopt de stablecoin zelf bij een aanbieder en stuurt die naar je eigen wallet.</span></li>
+          <li class="flex items-start gap-3"><%= icon :x_circle, class: "w-5 h-5 text-gray-400 flex-shrink-0" %><span>We betalen je netwerkkosten niet. Elke transactie kost een klein bedrag aan gas, uit je eigen wallet.</span></li>
+          <li class="flex items-start gap-3"><%= icon :x_circle, class: "w-5 h-5 text-gray-400 flex-shrink-0" %><span>Wie kwaad wil en genoeg sleutels heeft, kan niet worden tegengehouden. Kies je ondertekenaars met zorg.</span></li>
+        </ul>
+      </section>
+    </div>
+
+    <p class="text-center text-blue-100 text-sm">Je hebt een wallet nodig om mee te doen. Geen wallet? We leggen stap voor stap uit hoe dat werkt.</p>
+  </div>
 </div>

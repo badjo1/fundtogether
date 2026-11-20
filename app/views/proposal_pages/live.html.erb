@@ -1,0 +1,109 @@
+<turbo-frame id="proposal_live">
+  <div class="space-y-6">
+    <% chain = @chain %>
+    <% if !@proposal.open? %>
+      <%= render 'proposal_pages/closed', proposal: @proposal, chain: chain %>
+      <% if @proposal.cancelled? && @can_contribute && @proposal.safe_signatures.any? && @snapshot && @proposal.nonce.to_i >= @snapshot.nonce %>
+        <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3" aria-labelledby="afwijzen-titel">
+          <h3 id="afwijzen-titel" class="text-lg font-bold text-gray-900">Zeker weten dat dit nooit wordt uitgevoerd?</h3>
+          <p class="text-sm text-gray-600">De handtekeningen onder dit ingetrokken voorstel gelden op de blockchain nog. Een uitgevoerde afwijzing met hetzelfde volgnummer maakt ze voorgoed ongeldig.</p>
+          <%= button_to "Afwijzing voorstellen", reject_account_proposal_page_path(@account, @proposal), class: "px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium", form: { data: { turbo_frame: "_top" } } %>
+        </section>
+      <% end %>
+    <% elsif @snapshot.nil? %>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Live status niet beschikbaar" } do %>
+        <p>De blockchain is nu niet bereikbaar, dus we kunnen niet zeggen hoeveel goedkeuringen geldig zijn. Ondertekenen en uitvoeren kan pas als dat weer lukt.</p>
+        <p><%= link_to "Opnieuw proberen", live_account_proposal_page_path(@account, @proposal), data: { turbo_frame: "proposal_live" }, class: "font-medium underline" %></p>
+      <% end %>
+    <% else %>
+      <% live = @view.live %>
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4" aria-labelledby="goedkeuringen-titel">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <h3 id="goedkeuringen-titel" class="text-lg font-bold text-gray-900">Goedkeuringen</h3>
+          <span class="px-2 py-1 text-xs rounded-full font-medium <%= bucket_class(@view.bucket) %>"><%= bucket_label(@view.bucket) %></span>
+        </div>
+        <p class="text-gray-900"><span class="text-2xl font-bold tabular-nums"><%= live[:valid_signature_count] %> van <%= live[:threshold] %></span> <span class="text-sm text-gray-500">nodig, gemeten aan de huidige ondertekenaars</span></p>
+        <progress class="w-full h-2 accent-blue-600" value="<%= [ live[:valid_signature_count], live[:threshold] ].min %>" max="<%= live[:threshold] %>" aria-label="Goedkeuringen"></progress>
+        <ul class="space-y-2">
+          <% @owners.each do |owner| %>
+            <% signed = live[:valid_signers].include?(owner[:address]) %>
+            <li class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+              <span class="flex-shrink-0 mt-0.5"><%= signed ? icon(:check_circle, class: "w-5 h-5 text-green-600") : icon(:clock, class: "w-5 h-5 text-gray-400") %></span>
+              <span class="min-w-0 flex-1">
+                <span class="block text-sm font-medium text-gray-900"><%= owner[:name] || "Onbekend" %> <span class="font-normal text-gray-500"><%= signed ? "heeft goedgekeurd" : "nog niet" %></span></span>
+                <span class="block font-mono text-xs text-gray-500 break-hash"><%= checksum_address(owner[:address]) %></span>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+        <% if live[:stale_signers].any? %>
+          <p class="text-sm text-yellow-800"><%= pluralize_nl(live[:stale_signers].size, "handtekening telt", "handtekeningen tellen") %> niet mee, omdat de ondertekenaar niet meer in de Safe zit of de handtekening niet klopt.</p>
+        <% end %>
+        <% if @view.reason && reason_text(@view.reason) && @view.reason != "not_enough_signatures" %>
+          <%= render layout: 'shared/info_panel', locals: { tone: "warning" } do %><p><%= reason_text(@view.reason) %></p><% end %>
+        <% end %>
+        <% if live[:warnings].include?("sibling_at_same_nonce") %>
+          <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Er staat nog een voorstel met hetzelfde volgnummer" } do %>
+            <p>Maar één ervan kan worden uitgevoerd. Het andere vervalt dan.
+              <% live[:siblings].each do |sibling| %><%= link_to "Bekijk voorstel #{sibling}", account_proposal_page_path(@account, sibling), class: "underline font-medium" %> <% end %>
+            </p>
+          <% end %>
+        <% end %>
+        <% if live[:warnings].include?("nonce_gap") %>
+          <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Dit voorstel wacht op een volgnummer dat niemand gebruikt" } do %>
+            <p>Een eerder voorstel is ingetrokken, dus dit voorstel kan nu niet aan de beurt komen. Maak het opnieuw op het eerstvolgende volgnummer. Goedkeuringen moeten dan opnieuw.</p>
+            <% if @can_cancel %>
+              <%= button_to "Opnieuw maken op het vrije volgnummer", renumber_account_proposal_page_path(@account, @proposal), class: "mt-2 px-4 py-2 border border-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-100 text-sm font-medium", form: { data: { turbo_frame: "_top" } } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <% if live[:warnings].include?("insufficient_balance") %>
+          <div data-testid="insufficient-balance">
+            <%= render layout: 'shared/info_panel', locals: { tone: "danger", title: "Te weinig saldo in het fonds" } do %>
+              <% unit = @proposal.kind == "transfer_native" ? native_money(live[:fund_balance], chain) : money(live[:fund_balance], chain.token) %>
+              <p>Er staat nu <strong class="tabular-nums"><%= unit %></strong> in de Safe. Dit voorstel kan zo niet worden uitgevoerd: de blockchain zou het weigeren, en de netwerkkosten ben je dan kwijt.</p>
+              <p>Zolang dit voorstel aan de beurt is, wachten voorstellen met een hoger volgnummer. Stort bij, trek het in, of voer een afwijzing uit.</p>
+            <% end %>
+          </div>
+        <% end %>
+        <% if live[:warnings].include?("lowers_threshold") %>
+          <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Dit verlaagt het aantal goedkeuringen" } do %>
+            <p>Oudere voorstellen met goedkeuringen kunnen daarna meteen uitvoerbaar worden. Kijk die eerst na.</p>
+          <% end %>
+        <% end %>
+        <p class="text-xs text-gray-500">Gelezen om <%= clock_time(Time.current) %>. <%= link_to "Vernieuwen", live_account_proposal_page_path(@account, @proposal), data: { turbo_frame: "proposal_live" }, class: "text-blue-600 hover:text-blue-700 font-medium" %></p>
+      </section>
+
+      <% if @view.ready? && @can_contribute %>
+        <%= render 'proposal_pages/execute_panel' %>
+      <% end %>
+      <% if @view.needs_me? %>
+        <%= render 'proposal_pages/sign_panel' %>
+      <% elsif @view.i_signed? %>
+        <p class="text-sm text-gray-700 flex items-center gap-2"><%= icon :check_circle, class: "w-5 h-5 text-green-600 flex-shrink-0" %><span>Je hebt dit voorstel goedgekeurd.</span></p>
+      <% elsif @view.my_owner_addresses.empty? && !@view.ready? %>
+        <p class="text-sm text-gray-500">Je bent geen ondertekenaar van deze Safe, dus je hoeft hier niets te doen.<% if @linked_addresses.empty? %> <%= link_to "Koppel een wallet", wallet_page_path, class: "text-blue-600 hover:text-blue-700 font-medium" %> als je wel ondertekenaar zou moeten zijn.<% end %></p>
+      <% end %>
+
+      <% if @can_cancel %>
+        <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3" aria-labelledby="intrekken-titel">
+          <h3 id="intrekken-titel" class="text-lg font-bold text-gray-900">Intrekken</h3>
+          <% if @proposal.safe_signatures.any? %>
+            <p class="text-sm text-gray-600">Dit haalt het voorstel weg uit FundTogether, maar er <%= @proposal.safe_signatures.size == 1 ? "staat al een handtekening" : "staan al handtekeningen" %> onder. Die blijven op de blockchain geldig totdat dit volgnummer voorbij is. Wil je zeker weten dat dit nooit wordt uitgevoerd, voer dan een afwijzing uit.</p>
+          <% else %>
+            <p class="text-sm text-gray-600">Er staat nog geen handtekening onder, dus intrekken is genoeg. Het kost niets en er gebeurt niets op de blockchain.</p>
+          <% end %>
+          <%= button_to "Voorstel intrekken", cancel_account_proposal_page_path(@account, @proposal), class: "px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium", form: { data: { turbo_frame: "_top" } } %>
+        </section>
+      <% end %>
+
+      <% if @can_contribute && @proposal.kind != "rejection" && @proposal.nonce.to_i >= @snapshot.nonce %>
+        <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3" aria-labelledby="afwijzen-titel">
+          <h3 id="afwijzen-titel" class="text-lg font-bold text-gray-900">Niet mee eens?</h3>
+          <p class="text-sm text-gray-600">Niet ondertekenen is genoeg zolang er te weinig goedkeuringen zijn. Wil je dit voorstel definitief van tafel, of heeft het al goedkeuringen? Dan maak je een afwijzing met hetzelfde volgnummer. Die moet net zoveel goedkeuringen krijgen. Wordt hij uitgevoerd, dan kan dit voorstel nooit meer worden uitgevoerd.</p>
+          <%= button_to "Afwijzing voorstellen", reject_account_proposal_page_path(@account, @proposal), class: "px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium", form: { data: { turbo_frame: "_top" } } %>
+        </section>
+      <% end %>
+    <% end %>
+  </div>
+</turbo-frame>

@@ -1,0 +1,12 @@
+<%# Locals: current (1, 2 of 3), on_dark. %>
+<% on_dark = local_assigns[:on_dark] %>
+<ol class="flex items-center gap-2 text-sm" aria-label="Stappen voor een nieuw fonds">
+  <% [ "Naam en doel", "Leden uitnodigen", "Fonds instellen" ].each_with_index do |label, index| %>
+    <% number = index + 1 %>
+    <li class="flex items-center gap-2 min-w-0 <%= 'flex-1' if number < 3 %>" <%= 'aria-current=step' if number == current %>>
+      <span class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold <%= number <= current ? 'bg-blue-600 text-white' : (on_dark ? 'bg-blue-800 text-blue-200' : 'bg-gray-200 text-gray-600') %>"><%= number %></span>
+      <span class="truncate hidden sm:block <%= on_dark ? 'text-blue-100' : (number == current ? 'font-medium text-gray-900' : 'text-gray-500') %>"><%= label %></span>
+      <% if number < 3 %><span class="h-px flex-1 <%= on_dark ? 'bg-blue-700' : 'bg-gray-300' %>"></span><% end %>
+    </li>
+  <% end %>
+</ol>

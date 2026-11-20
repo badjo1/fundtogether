@@ -1,5 +1,9 @@
 class RegistrationsController < ApplicationController
+  include InvitationAcceptance
+
   allow_unauthenticated_access only: %i[ new create ]
+  rate_limit to: 10, within: 3.minutes, only: :create,
+             with: -> { redirect_to register_path, alert: "Te veel pogingen. Probeer het later opnieuw." }
 
   def new
     @user = User.new
@@ -15,38 +19,26 @@ class RegistrationsController < ApplicationController
     @user = User.new(registration_params)
 
     if @user.save
+      pending_token = session[:pending_invitation_token]
+      proof = session[:invitation_email_proof]
       start_new_session_for @user
+      apply_email_proof(@user, proof)
+      @user.send_email_confirmation unless @user.email_confirmed?
 
-      # Handle pending invitation if present
-      if session[:pending_invitation_token].present?
-        invitation = Invitation.find_by(token: session[:pending_invitation_token])
-        if invitation&.ready_to_accept?
-          invitation.accept!(@user)
-          session.delete(:pending_invitation_token)
-          session.delete(:invitation_email)
-          redirect_to account_path(invitation.account), notice: "Account aangemaakt en toegevoegd aan #{invitation.account.name}!"
-          return
-        end
-      end
+      return if redirect_for_pending_invitation(@user, pending_token, joined_prefix: "Account aangemaakt en toegevoegd aan")
 
-      redirect_to after_authentication_url, notice: "Account succesvol aangemaakt"
+      redirect_to after_authentication_url,
+                  notice: @user.email_confirmed? ? "Account aangemaakt." : "Account aangemaakt. Check je inbox om je e-mailadres te bevestigen."
     else
       @from_invitation = session[:invitation_email].present?
       render :new, status: :unprocessable_entity
     end
   end
 
- private
+  private
 
   def registration_params
     params.require(:user).permit(:name, :email_address, :password, :password_confirmation)
-  end
-
-  def start_new_session_for(user)
-    user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
-      Current.session = session
-      cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
-    end
   end
 
   def after_authentication_url

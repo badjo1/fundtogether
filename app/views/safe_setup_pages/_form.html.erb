@@ -1,0 +1,135 @@
+<% chain = @chain %>
+<% stored = @account.safe_owners.presence %>
+<% with_wallet = @candidates.select { |row| row[:wallet] } %>
+<% without_wallet = @candidates.reject { |row| row[:wallet] } %>
+<% default_owners = stored || with_wallet.map { |row| row[:wallet].address } %>
+<% count = default_owners.length %>
+<% threshold = @account.safe_threshold || [ count / 2 + 1, 1 ].max %>
+
+<% if @account.safe_verification_error.present? %>
+  <%= render layout: 'shared/info_panel', locals: { tone: "danger", title: "De vorige poging is niet gelukt" } do %>
+    <p>De Safe kon niet worden bevestigd op de blockchain. Er staat geen geld op het spel. Controleer de keuzes hieronder en probeer het opnieuw.</p>
+  <% end %>
+<% end %>
+
+<div data-controller="threshold" data-threshold-deploy-value="<%= { chain_id: chain.chain_id, token_address: chain.token.address }.to_json %>" data-threshold-count-value="<%= count %>" data-threshold-stored-value="<%= @account.safe_threshold.present? %>" class="space-y-6">
+
+  <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4">
+    <h3 class="text-lg font-bold text-gray-900">Waar komt het geld te staan?</h3>
+    <% if @chains.length > 1 %>
+      <div class="grid gap-2 sm:grid-cols-2">
+        <% @chains.each do |option| %>
+          <%= link_to account_safe_setup_path(@account, chain: option.chain_id), class: "p-3 rounded-lg border text-sm #{option.chain_id == chain.chain_id ? 'border-blue-600 bg-blue-50 font-medium text-blue-900' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}" do %>
+            <%= option.name %> · <%= option.token.symbol %><% if option.testnet? %> (testgeld)<% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+    <dl class="grid grid-cols-2 gap-4 text-sm">
+      <div><dt class="text-gray-500">Netwerk</dt><dd class="font-medium text-gray-900"><%= chain.name %></dd></div>
+      <div><dt class="text-gray-500">Munt</dt><dd class="font-medium text-gray-900"><%= chain.token.symbol %></dd></div>
+    </dl>
+    <p class="text-sm text-gray-500">Dit staat vast zodra de Safe is aangemaakt. <% if chain.testnet? %>Dit is een testnetwerk: testgeld, geen echte waarde.<% end %></p>
+  </section>
+
+  <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4">
+    <div>
+      <h3 class="text-lg font-bold text-gray-900">Wie mag ondertekenen?</h3>
+      <p class="text-sm text-gray-500 mt-1">Ondertekenaars keuren uitgaven goed met hun eigen wallet. Alleen leden met een gekoppelde wallet kunnen dat.</p>
+    </div>
+    <ul class="space-y-2">
+      <% with_wallet.each do |row| %>
+        <li>
+          <label class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer">
+            <input type="checkbox" value="<%= row[:wallet].address %>" <%= "checked" if default_owners.include?(row[:wallet].address) %> data-threshold-target="owner" data-action="threshold#update" class="mt-1 w-4 h-4 flex-shrink-0">
+            <span class="min-w-0">
+              <span class="block font-medium text-gray-900 text-sm"><%= row[:user].display_name %><% if row[:user] == current_user %> <span class="font-normal text-gray-500">(jij)</span><% end %></span>
+              <span class="block font-mono text-xs text-gray-500 break-hash"><%= checksum_address(row[:wallet].address) %></span>
+            </span>
+          </label>
+        </li>
+      <% end %>
+      <% without_wallet.each do |row| %>
+        <li class="flex items-start gap-3 p-3 border border-dashed border-gray-300 rounded-lg" data-testid="member-without-wallet">
+          <%= icon :wallet, class: "w-4 h-4 mt-0.5 text-gray-400 flex-shrink-0" %>
+          <span class="min-w-0 text-sm">
+            <span class="font-medium text-gray-900"><%= row[:user].display_name %><% if row[:user] == current_user %> (jij)<% end %></span>
+            <span class="block text-gray-500">
+              Nog geen wallet gekoppeld. <% if row[:user] == current_user %><%= link_to "Koppel je wallet", wallet_page_path, class: "text-blue-600 hover:text-blue-700 font-medium" %><% else %>Vraag <%= row[:user].display_name %> om een wallet te koppelen bij 'Mijn wallets'.<% end %>
+            </span>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+    <% if with_wallet.empty? %>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Nog niemand kan ondertekenen" } do %>
+        <p>Koppel eerst je wallet. Daarna kun je hier verder.</p>
+      <% end %>
+    <% end %>
+    <p class="text-sm text-gray-500">Later iemand toevoegen of vervangen kan altijd, met goedkeuring van de groep.</p>
+  </section>
+
+  <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4">
+    <div>
+      <h3 class="text-lg font-bold text-gray-900">Hoeveel goedkeuringen zijn nodig?</h3>
+      <p class="text-sm text-gray-500 mt-1">Zoveel ondertekenaars moeten akkoord zijn voordat er geld uit het fonds gaat of de regels veranderen.</p>
+    </div>
+    <div class="flex items-center gap-3 flex-wrap">
+      <label for="threshold-select" class="text-sm font-medium text-gray-700">Aantal goedkeuringen</label>
+      <select id="threshold-select" data-threshold-target="select" data-action="threshold#chosen" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 tabular-nums">
+        <% (1..[ count, 1 ].max).each do |number| %>
+          <option value="<%= number %>" <%= "selected" if number == threshold %>><%= number %></option>
+        <% end %>
+      </select>
+    </div>
+    <p class="text-lg font-bold text-gray-900" data-threshold-target="sentence" aria-live="polite"><%= threshold_sentence(threshold, count) if count.positive? %></p>
+    <div data-threshold-target="riskAll" hidden>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Iedereen moet goedkeuren" } do %>
+        <p>Raakt één iemand zijn wallet kwijt, dan kan er niets meer uit het fonds. Ook FundTogether kan dat dan niet oplossen.</p>
+      <% end %>
+    </div>
+    <div data-threshold-target="riskOne" hidden>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Eén persoon kan alles" } do %>
+        <p>Elke ondertekenaar kan dan in zijn eentje al het geld verplaatsen. Ook wie gehackt wordt.</p>
+      <% end %>
+    </div>
+    <label class="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg cursor-pointer" data-threshold-target="ackRow" hidden>
+      <input type="checkbox" data-threshold-target="ack" data-action="threshold#update" class="mt-1 w-4 h-4 flex-shrink-0">
+      <span class="text-sm text-yellow-900">Ik begrijp dit risico en wil toch deze instelling.</span>
+    </label>
+  </section>
+
+  <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4"
+           data-controller="safe-deploy flow-ui"
+           data-safe-deploy-url-value="<%= account_safe_path(@account) %>"
+           data-safe-deploy-chain-value="<%= chain.browser_config.to_json %>"
+           data-safe-deploy-create-params-value="{}"
+           data-safe-deploy-acknowledge-risk-value="false"
+           data-flow-ui-explorer-value="<%= chain.explorer_url %>"
+           data-flow-ui-reload-delay-value="1000"
+           data-action="safe-deploy:step->flow-ui#step safe-deploy:error->flow-ui#error safe-deploy:deployed->flow-ui#reload">
+    <div>
+      <h3 class="text-lg font-bold text-gray-900">Safe aanmaken</h3>
+      <p class="text-sm text-gray-500 mt-1">Je wallet maakt de Safe aan op <%= chain.name %>, met de standaardcontracten van Safe 1.4.1. Dat kost eenmalig wat netwerkkosten in <%= chain.native_symbol %>, uit je eigen wallet. FundTogether rekent niets.</p>
+    </div>
+
+    <%= render layout: 'shared/wallet_panel', locals: { chain: chain, requires_chain: true } do %>
+      <button type="button" data-show-wallet="ready" data-action="safe-deploy#deploy" data-threshold-target="submit" data-flow-ui-target="button" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        Safe aanmaken vanuit mijn wallet
+      </button>
+    <% end %>
+
+    <div data-flow-ui-target="panel" hidden class="p-4 bg-gray-50 rounded-lg space-y-3" aria-live="polite">
+      <%= render 'shared/flow_steps', steps: [
+            [ "Gegevens voorbereiden en controleren", "preparing verifying" ],
+            [ "Netwerkkosten controleren", "checking_gas" ],
+            [ "Bevestig in je wallet", "confirm_in_wallet" ],
+            [ "Verstuurd, wachten op de blockchain", "saving waiting_receipt" ],
+            [ "De nieuwe Safe controleren", "verifying_deployment" ],
+            [ "Actief", "deployed" ]
+          ] %>
+      <a href="#" hidden target="_blank" rel="noopener noreferrer" data-flow-ui-target="txLink" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Bekijk de transactie op de explorer</a>
+    </div>
+    <p class="flow-message" data-safe-deploy-target="message" aria-live="polite"></p>
+  </section>
+</div>

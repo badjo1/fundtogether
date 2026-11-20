@@ -1,0 +1,35 @@
+<% admin = current_membership.admin? %>
+<section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="start-titel">
+  <h3 id="start-titel" class="text-lg font-bold text-gray-900">Zo gaat dit fonds van start</h3>
+  <p class="text-sm text-gray-500 mt-1">Een fonds is een gezamenlijke pot. Pas na stap 3 bestaat hij op de blockchain en kan er geld in.</p>
+  <ol class="mt-4 space-y-3">
+    <% [
+         [ "Haal de groep erbij", @members_count > 1 ? "#{@members_count} leden zijn er al." : "Nodig mensen uit via e-mail, link, QR of WhatsApp.", @members_count > 1, admin ? account_invite_path(@account) : nil, "Uitnodigen" ],
+         [ "Koppel je wallet", @has_wallet ? "Je wallet is gekoppeld." : "Daarmee geef je later goedkeuring. Nog geen wallet? We leggen het uit.", @has_wallet, wallet_page_path, "Wallet koppelen" ],
+         [ "Maak de Safe aan", "Kies wie mag ondertekenen en hoeveel goedkeuringen nodig zijn.", false, admin ? account_safe_setup_path(@account) : nil, "Fonds instellen" ]
+       ].each_with_index do |(title, body, done, path, cta), index| %>
+      <li class="flex flex-wrap items-start gap-x-3 gap-y-1 p-4 bg-gray-50 rounded-lg">
+        <span class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold <%= done ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' %>">
+          <% if done %><%= icon :check, class: "w-4 h-4" %><span class="sr-only">Gedaan</span><% else %><%= index + 1 %><% end %>
+        </span>
+        <div class="flex-1 min-w-48">
+          <p class="font-medium text-gray-900"><%= title %></p>
+          <p class="text-sm text-gray-500"><%= body %></p>
+        </div>
+        <% if path %>
+          <%= link_to cta, path, class: "text-sm font-medium text-blue-600 hover:text-blue-700 basis-full sm:basis-auto pl-10 sm:pl-0" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+  <% unless admin %>
+    <p class="text-sm text-gray-500 mt-4">Een admin van dit fonds maakt de Safe aan. Koppel alvast je wallet, dan kun je ondertekenaar worden.</p>
+  <% end %>
+  <% if @members_without_wallet.positive? %>
+    <p class="text-sm text-gray-500 mt-4"><%= pluralize_nl(@members_without_wallet, "lid heeft", "leden hebben") %> nog geen wallet gekoppeld.</p>
+  <% end %>
+</section>
+
+<%= render layout: 'shared/info_panel', locals: {} do %>
+  <p>Bedragen verschijnen hier pas als ze van de blockchain komen. Dit fonds heeft nog geen Safe, dus er is nog geen bedrag om te tonen.</p>
+<% end %>

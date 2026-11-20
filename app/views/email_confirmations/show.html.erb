@@ -1,0 +1,18 @@
+<% content_for :title, "E-mailadres bevestigen" %>
+<%= render layout: 'shared/public_layout' do %>
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-4">
+    <%= render 'shared/flash_messages' %>
+    <h1 class="text-2xl font-bold text-gray-900">E-mailadres bevestigen</h1>
+    <p class="text-gray-700">Je bevestigt dat <strong class="break-all"><%= @user.email_address %></strong> van jou is, voor het account op naam van <strong><bdi><%= @user.display_name %></bdi></strong>.</p>
+    <p class="text-sm text-gray-600">Heb je dit account niet zelf aangemaakt? Doe dan niets en sluit deze pagina.</p>
+    <%= form_with url: email_confirmation_path(params[:token]), method: :post, class: "space-y-4" do %>
+      <% unless @own_session %>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Wachtwoord van dit account</label>
+          <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+      <% end %>
+      <button type="submit" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Bevestigen</button>
+    <% end %>
+  </div>
+<% end %>

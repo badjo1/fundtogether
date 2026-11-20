@@ -1,0 +1,16 @@
+<% if !@account.safe_active? %>
+  <%= render "ramps/notice", tone: :warning, text: "Dit fonds heeft nog geen actieve Safe. Stuur nog geen geld naar het fonds. Wacht tot de Safe is aangemaakt en gecontroleerd." %>
+<% else %>
+  <p class="text-sm text-gray-700">
+    Wat je hebt gekocht of ontvangen staat nu op je eigen wallet en nog niet in het fonds. Bijdragen is een aparte transactie vanuit je wallet.
+    Op de blockchain is daarna te zien van welke wallet de bijdrage komt.
+  </p>
+  <% if !@can_act %>
+    <p class="text-sm text-gray-600">Alleen members en admins kunnen bijdragen.</p>
+  <% else %>
+    <%= link_to account_contribute_path(@account), class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors", data: { ramp_action: "contribute" } do %>
+      <span>Draag Bij Aan Het Fonds</span>
+      <%= icon :arrow_right, class: "w-4 h-4" %>
+    <% end %>
+  <% end %>
+<% end %>

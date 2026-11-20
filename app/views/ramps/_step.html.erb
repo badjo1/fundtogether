@@ -1,0 +1,8 @@
+<%# Locals: number, title. yield is the step body. %>
+<li class="flex gap-3 sm:gap-4" data-ramp-step="<%= number %>">
+  <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0" aria-hidden="true"><%= number %></div>
+  <div class="min-w-0 flex-1 bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 space-y-3">
+    <h3 class="text-lg font-semibold text-gray-900"><span class="sr-only">Stap <%= number %>: </span><%= title %></h3>
+    <%= yield %>
+  </div>
+</li>

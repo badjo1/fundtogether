@@ -1,0 +1,14 @@
+<% content_for :title, "Wallet koppelen" %>
+<%= render layout: 'shared/public_layout' do %>
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 space-y-4">
+    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center"><%= icon :phone, class: "w-6 h-6 text-blue-600" %></div>
+    <h1 class="text-2xl font-bold text-gray-900">Ben jij <bdi><%= @challenge.user.display_name %></bdi>?</h1>
+    <p class="text-sm text-gray-900">Account: <strong class="break-all"><%= @challenge.user.email_address %></strong></p>
+    <p class="text-sm text-gray-600">Deze link geeft deze browser 15 minuten toegang om een wallet te koppelen aan het account van <strong><bdi><%= @challenge.user.display_name %></bdi></strong>. Er wordt verder niets gedeeld of verplaatst.</p>
+    <%= render layout: 'shared/info_panel', locals: { tone: "warning" } do %>
+      <p>Heb je deze link niet net zelf gemaakt op FundTogether, bijvoorbeeld omdat iemand hem je stuurde? Stop dan hier.</p>
+    <% end %>
+    <%= button_to "Ja, dit ben ik", wallet_handoff_path(params[:token]), class: "w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors" %>
+    <p class="text-xs text-gray-500">Geldig tot <%= clock_time(@challenge.expires_at) %>. De link werkt één keer.</p>
+  </div>
+<% end %>

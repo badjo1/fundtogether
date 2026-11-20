@@ -1,0 +1,20 @@
+<% gas = @guide.guide.gas %>
+<p class="text-sm text-gray-700">
+  Een transactie op <%= @guide.guide.network_label %> betaal je niet in <%= @guide.chain.token.symbol %>, maar met <strong><%= gas.token %></strong>.
+  Zonder gas kun je je geld niet verplaatsen. FundTogether betaalt dit niet voor je.
+</p>
+<p class="text-sm text-gray-700"><span class="font-medium text-gray-900">Hoeveel:</span> <%= gas.rough_need %></p>
+<div class="text-sm text-gray-700">
+  <p class="font-medium text-gray-900">Waar vandaan:</p>
+  <ul class="list-disc pl-5 space-y-1 mt-1">
+    <% gas.where.each do |item| %>
+      <li><%= item %></li>
+    <% end %>
+  </ul>
+</div>
+<p class="text-xs text-gray-500">
+  Gecontroleerd op <%= ramp_date(gas.verified_on) %>.
+  <% gas.sources.each do |source| %>
+    <%= ramp_external_link source.label, source.url, class: "underline hover:text-gray-900", data: { ramp_source: true } %>
+  <% end %>
+</p>

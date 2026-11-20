@@ -1,0 +1,6 @@
+<nav class="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-lg" aria-label="Richting">
+  <%= link_to "Geld Erin", account_ramp_path(@account), aria: { current: (@direction == "on" ? "page" : nil) },
+        class: "text-center px-4 py-2 rounded-lg font-medium #{@direction == 'on' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}" %>
+  <%= link_to "Geld Eruit", account_ramp_path(@account, direction: "off"), aria: { current: (@direction == "off" ? "page" : nil) },
+        class: "text-center px-4 py-2 rounded-lg font-medium #{@direction == 'off' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}" %>
+</nav>

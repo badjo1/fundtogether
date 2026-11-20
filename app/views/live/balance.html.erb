@@ -1,0 +1,24 @@
+<turbo-frame id="<%= @frame_id %>">
+  <% token = @chain&.token %>
+  <% big = @size == "hero" %>
+  <% if @balance.nil? %>
+    <p class="text-sm text-gray-500">Nog geen Safe, dus nog geen bedrag.</p>
+  <% elsif @balance[:source] == "live" %>
+    <p class="<%= big ? 'text-3xl sm:text-4xl mt-3' : 'text-lg' %> font-bold text-gray-900 tabular-nums break-words"><%= money(@balance[:amount], token) %></p>
+    <% if @balance[:native_amount].to_i.positive? %>
+      <p class="text-sm font-medium text-gray-700 tabular-nums break-words mt-1" data-testid="native-balance">en <%= native_money(@balance[:native_amount], @chain) %></p>
+    <% end %>
+    <p class="text-xs text-gray-500 mt-1">Rechtstreeks van de blockchain gelezen om <%= clock_time(Time.iso8601(@balance[:as_of])) %></p>
+  <% elsif @balance[:source] == "cached" %>
+    <p class="<%= big ? 'text-3xl sm:text-4xl mt-3 text-gray-500' : 'text-lg text-gray-500' %> font-bold tabular-nums break-words"><%= money(@balance[:amount], token) %></p>
+    <p class="text-xs text-yellow-800 mt-1 flex items-start gap-1">
+      <%= icon :warning, class: "w-4 h-4 flex-shrink-0" %>
+      <span>Dit is de laatst bekende stand, van <%= nl_datetime(Time.iso8601(@balance[:as_of])) %>. De actuele stand kon niet worden opgehaald.</span>
+    </p>
+  <% else %>
+    <p class="<%= big ? 'mt-3' : '' %> text-sm text-red-700 flex items-start gap-2">
+      <%= icon :warning, class: "w-4 h-4 mt-0.5 flex-shrink-0" %>
+      <span>Het saldo kan nu niet worden opgehaald, omdat de blockchain niet bereikbaar is. Dat zegt niets over het geld zelf.</span>
+    </p>
+  <% end %>
+</turbo-frame>

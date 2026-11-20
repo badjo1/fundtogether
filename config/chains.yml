@@ -1,0 +1,67 @@
+# Registry of chains, RPC endpoints, canonical Safe 1.4.1 contracts and tokens.
+# Chain::Registry is the only reader. Only keys in FUNDTOGETHER_CHAINS can be used
+# (default: sepolia). Enabling a mainnet is an explicit operator decision.
+#
+# Read-only verification, 2026-11-09, on the first endpoint of each chain: code hashes of
+# singleton, factory and fallback handler match docs/research/safe-integration.md section 3;
+# VERSION() is 1.4.1; keccak(proxyCreationCode()) matches; token symbol and decimals as below.
+# Every listed endpoint answered eth_chainId, eth_blockNumber, eth_getBlockByNumber("finalized")
+# and eth_getStorageAt. eth_getLogs over 2,000 blocks worked on all except base-tenderly (1,000
+# block limit) and mainnet.base.org (429); LogSync halves ranges and Rpc falls back on both.
+safe_contracts: &safe_contracts
+  singleton: "0x29fcb43b46531bca003ddc8fcb67ffe91900c762"
+  factory: "0x4e1dcf7ad4e460cfd30791ccc4f9c8a4f820ec67"
+  fallback_handler: "0xfd0732dc9e303f09fcef3a7388ad10a83459ec99"
+
+chains:
+  sepolia:
+    chain_id: 11155111
+    name: "Sepolia"
+    testnet: true
+    native_symbol: "ETH"
+    explorer_url: "https://sepolia.etherscan.io"
+    confirmations: 96
+    rpc_urls:
+      - "https://ethereum-sepolia-rpc.publicnode.com"
+      - "https://sepolia.gateway.tenderly.co"
+      - "https://rpc.sepolia.ethpandaops.io"
+    safe: *safe_contracts
+    token:
+      symbol: "EURC"
+      address: "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4"
+      decimals: 6
+
+  base:
+    chain_id: 8453
+    name: "Base"
+    testnet: false
+    native_symbol: "ETH"
+    explorer_url: "https://basescan.org"
+    confirmations: 5000
+    rpc_urls:
+      - "https://base-rpc.publicnode.com"
+      - "https://base.gateway.tenderly.co"
+      - "https://mainnet.base.org"
+    safe: *safe_contracts
+    token:
+      symbol: "EURC"
+      address: "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42"
+      decimals: 6
+
+  gnosis:
+    chain_id: 100
+    name: "Gnosis"
+    testnet: false
+    native_symbol: "xDAI"
+    explorer_url: "https://gnosisscan.io"
+    confirmations: 60
+    rpc_urls:
+      - "https://rpc.gnosischain.com"
+      - "https://rpc.gnosis.gateway.fm"
+      - "https://gnosis-rpc.publicnode.com"
+    safe: *safe_contracts
+    token:
+      # EURe V2. V1 (0xcb44...) emits a mirrored Transfer on each call and is never indexed.
+      symbol: "EURe"
+      address: "0x420ca0f9b9b604ce0fd9c18ef134c705e5fa3430"
+      decimals: 18

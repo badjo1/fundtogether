@@ -1,0 +1,16 @@
+<%#
+  Lazy turbo-frame with an honest loading state. Locals: id, src, interval (ms, optional).
+  The block is the placeholder shown until the server has answered.
+%>
+<div data-controller="live-frame" data-live-frame-interval-value="<%= local_assigns[:interval].to_i %>"
+     data-action="turbo:frame-missing->live-frame#failed turbo:fetch-request-error->live-frame#failed">
+  <turbo-frame id="<%= id %>" src="<%= src %>" data-live-frame-target="frame" target="_top" aria-live="polite">
+    <div aria-busy="true"><%= yield %></div>
+  </turbo-frame>
+  <template data-live-frame-target="error">
+    <p class="text-sm text-red-700 flex items-start gap-2">
+      <%= icon :warning, class: "w-4 h-4 mt-0.5 flex-shrink-0" %>
+      <span>Dit kon niet worden geladen. Vernieuw de pagina om het opnieuw te proberen.</span>
+    </p>
+  </template>
+</div>

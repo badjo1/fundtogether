@@ -1,0 +1,33 @@
+<turbo-frame id="live_owners">
+  <% if @snapshot.nil? %>
+    <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Live gegevens zijn nu niet beschikbaar" } do %>
+      <p>De blockchain is niet bereikbaar. Je kunt de Safe hieronder altijd rechtstreeks op de explorer bekijken.</p>
+    <% end %>
+  <% else %>
+    <div class="space-y-4">
+      <%= render 'live/owner_gaps', gaps: @owners.reject { |owner| owner[:active_member] }, account: @account %>
+      <p class="text-gray-900 font-medium"><%= threshold_sentence(@snapshot.threshold, @snapshot.owners.length) %></p>
+      <ul class="space-y-2">
+        <% @owners.each do |owner| %>
+          <li class="p-3 bg-gray-50 rounded-lg">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-medium text-gray-900 text-sm"><%= owner[:name] || "Onbekend" %></p>
+              <% unless owner[:active_member] %><span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium"><%= owner[:verified_wallet] ? "Geen lid meer" : "Niet gekoppeld" %></span><% end %>
+            </div>
+            <p class="font-mono text-xs text-gray-500 break-hash mt-1"><%= checksum_address(owner[:address]) %></p>
+          </li>
+        <% end %>
+      </ul>
+      <p class="text-xs text-gray-500">Rechtstreeks van de blockchain gelezen om <%= clock_time(Time.current) %>. Volgnummer van de volgende transactie: <span class="tabular-nums"><%= @snapshot.nonce %></span>.</p>
+      <% if @singleton == @account.chain.singleton %>
+        <p class="text-sm text-gray-700 flex items-center gap-2"><%= icon :check_circle, class: "w-4 h-4 text-green-600 flex-shrink-0" %><span>Contractversie: Safe L2 1.4.1, het standaardcontract (zojuist gecontroleerd).</span></p>
+      <% elsif @singleton %>
+        <%= render layout: 'shared/info_panel', locals: { tone: "danger", title: "Onverwacht contract" } do %>
+          <p>Deze Safe gebruikt een ander contract dan de standaard Safe L2 1.4.1: <span class="font-mono break-hash"><%= checksum_address(@singleton) %></span>. Stuur er geen geld heen en waarschuw je groep.</p>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-gray-500">De contractversie kon nu niet worden gecontroleerd. Bij het aanmaken was het Safe L2 1.4.1.</p>
+      <% end %>
+    </div>
+  <% end %>
+</turbo-frame>

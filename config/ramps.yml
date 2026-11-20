@@ -1,0 +1,264 @@
+# Ramp routes per chain and token. Ramps::Catalog is the only reader.
+#
+# Evidence: docs/research/on-off-ramps.md and docs/research/chains-and-tokens.md, checked 2026-11-08.
+# Rules, enforced by test/services/ramps/catalog_test.rb:
+# - Links only: no iframes, no revenue-share parameters (Mt Pelerin rfr), no credentials.
+# - Never a provider deposit address, and no on-chain address of any kind, in this file.
+# - fee_status "unconfirmed" means no claim of free, and the sentence "Controleer actuele kosten bij provider".
+# - Every route has a primary source and a verified_on date.
+#
+# verification_status:
+#   documentation_read  primary documentation was read; the flow itself was not used
+#   partial             as above, but something material (see verification_note) is unconfirmed
+#   unverified          no primary source for the flow itself
+# No route has been used with real money, whatever its status.
+
+providers:
+  monerium:
+    name: "Monerium"
+    kind: "provider"
+    enabled: true
+    regulator: "Monerium ehf, uitgever van e-geld, onder toezicht van de Central Bank of Iceland."
+    responsible: "Monerium voert de identiteitscontrole uit, ontvangt en betaalt je euro's en geeft EURe uit. FundTogether is geen partij bij deze transactie."
+    fee_status: "unconfirmed"
+    fees: "Niet bevestigd. De oude kostenpagina geeft een 404 en de voorwaarden (§4) verwijzen naar een Fee Schedule. Controleer actuele kosten bij provider."
+    fee_source_url: "https://monerium.com/policies/personal-terms-of-service/"
+    kyc: "Volledige controle door Monerium: identiteitsbewijs, selfie of liveness-check en adresbewijs."
+    currencies: "EUR naar en van EURe"
+    payment_methods: "SEPA en SEPA Instant. Geen kaart. iDEAL wordt niet als zodanig aangeboden; een overboeking vanuit je bank-app werkt wel."
+    verification_status: "partial"
+    verified_on: 2026-11-08
+    sources:
+      - { label: "Monerium FAQ", url: "https://docs.monerium.com/faq" }
+      - { label: "Monerium-voorwaarden", url: "https://monerium.com/policies/personal-terms-of-service/" }
+      - { label: "Monerium KYC-gids", url: "https://docs.monerium.com/kyc-guide-individuals" }
+      - { label: "ESMA EMT-register", url: "https://www.esma.europa.eu/sites/default/files/2024-12/EMTWP.csv" }
+
+  mt_pelerin:
+    name: "Mt Pelerin"
+    kind: "provider"
+    # Off unless FUNDTOGETHER_ENABLE_MTPELERIN=1, after legal review (docs/ARCHITECTURE.md, Decisions).
+    enabled: false
+    enable_env: "FUNDTOGETHER_ENABLE_MTPELERIN"
+    regulator: "Niet op naam gevonden in het ESMA-register van cryptodienstverleners (controle 2026-11-08)."
+    legal_notice: "Juridische status: Mt Pelerin schrijft zelf dat het geen EU MiCA-vergunning heeft en geen EU-klanten werft, en staat niet op naam in het ESMA-register (controle 2026-11-08). Niet gevonden is geen vaststelling dat iets onrechtmatig is; ESMA waarschuwt dat het register kan achterlopen. FundTogether beveelt deze route niet aan. Beoordeel zelf of je deze wilt gebruiken."
+    responsible: "Mt Pelerin voert de identiteitscontrole uit en verwerkt je geld en crypto. FundTogether is geen partij bij deze transactie."
+    fee_status: "confirmed"
+    fees: "Bank, per kalenderjaar: 0-500 gratis; 501-5.000 1,3%; 5.001-50.000 1,1%. Het tarief geldt over het hele bedrag. Kaart: 2,5% tot 499, daarna 3,8%; minimaal CHF 1,20. Mogelijke verwerkingskosten bij terugboeking: CHF 20."
+    fee_source_url: "https://developers.mtpelerin.com/llms-full.txt"
+    kyc: "Geen documenten tot CHF 999 per 30 dagen, wel telefoon en e-mail. Kaart altijd met controle. SEPA-aankopen van niet-geverifieerde gebruikers worden 7 dagen vastgehouden."
+    currencies: "EUR naar en van EURC. De widget is er niet in het Nederlands; hij opent in het Engels."
+    payment_methods: "SEPA (geen SEPA Instant), kaart, Apple Pay, Google Pay. Geen iDEAL vermeld."
+    verification_status: "partial"
+    verification_note: "Documentatie, voorwaarden en widgetcode gelezen. De directe link is niet doorgeklikt in een echte sessie; een weigering later in de flow is niet uit te sluiten."
+    verified_on: 2026-11-08
+    sources:
+      - { label: "Mt Pelerin-documentatie", url: "https://developers.mtpelerin.com/llms-full.txt" }
+      - { label: "Mt Pelerin-voorwaarden", url: "https://www.mtpelerin.com/terms-conditions" }
+      - { label: "Mt Pelerin over kopen en MiCA", url: "https://www.mtpelerin.com/buy-crypto" }
+      - { label: "ESMA CASP-register", url: "https://www.esma.europa.eu/sites/default/files/2024-12/CASPS.csv" }
+
+  own_exchange:
+    name: "Je eigen exchange"
+    kind: "own_exchange"
+    enabled: true
+    regulator: "Hangt af van je exchange. Controleer dit in het register van de AFM of ESMA."
+    responsible: "Je exchange voert de identiteitscontrole uit en beheert je tegoed daar. FundTogether is geen partij en kan een verkeerde overboeking niet terughalen."
+    fee_status: "unconfirmed"
+    fees: "Handels- en opnamekosten verschillen per exchange en per netwerk. Controleer actuele kosten bij provider."
+    kyc: "Volgens je exchange. Een exchange kan vragen om te bewijzen dat een wallet van jou is."
+    payment_methods: "Volgens je exchange."
+    verification_status: "partial"
+    verified_on: 2026-11-08
+
+  circle:
+    name: "Circle (EURC-inwisseling)"
+    kind: "provider"
+    enabled: true
+    regulator: "Circle Internet Financial Europe SAS, uitgever van EURC, onder toezicht van de ACPR (Frankrijk)."
+    responsible: "Circle controleert je gegevens en betaalt uit. FundTogether is geen partij bij deze transactie."
+    fee_status: "unconfirmed"
+    fees: "Niet bevestigd voor particulieren. Controleer actuele kosten bij provider."
+    fee_source_url: "https://www.circle.com/legal/mica-redemption-policy"
+    kyc: "Registratie via een formulier, daarna controle door Circle."
+    payment_methods: "Uitbetaling volgens het beleid van Circle, in maximaal 5 werkdagen. Bij een stressgebeurtenis kan dat worden uitgesteld."
+    verification_status: "partial"
+    verification_note: "Alleen het beleid is gelezen. Het formulier en de uitbetaling zijn niet gebruikt. Verkopen op een exchange kan voor particulieren praktischer zijn."
+    verified_on: 2026-11-08
+    sources:
+      - { label: "Circle MiCA-inwisselbeleid", url: "https://www.circle.com/legal/mica-redemption-policy" }
+      - { label: "ESMA EMT-register", url: "https://www.esma.europa.eu/sites/default/files/2024-12/EMTWP.csv" }
+
+routes:
+  - id: "gnosis_eure_monerium_on"
+    provider: "monerium"
+    direction: "on"
+    chain: "gnosis"
+    token: "EURe"
+    url: "https://monerium.app/"
+    limits: "Minimaal 0,01. De FAQ noemt geen limieten per klant, maar de voorwaarden (§14) houden limieten voor."
+    verification_note: "Documentatie en voorwaarden gelezen; kosten niet bevestigd. De flow is niet gebruikt: geen account, geen KYC, geen echt geld."
+    instructions:
+      - "Maak een Monerium-account op je eigen naam en rond de controle af."
+      - "Kies het netwerk Gnosis en koppel de wallet uit stap 1 aan dat account."
+      - "Maak euro's over vanuit je bank-app naar je eigen Monerium-IBAN. Je ontvangt EURe in je eigen wallet."
+    warnings:
+      - "Monerium verbiedt gebruik namens derden zonder schriftelijke toestemming (voorwaarden §16). Koop alleen voor jezelf, en laat anderen niet op jouw IBAN betalen."
+      - "Monerium kan eisen dat je eerste betaling van een rekening op je eigen naam komt."
+      - "EURe is geen banktegoed."
+
+  - id: "gnosis_eure_monerium_off"
+    provider: "monerium"
+    direction: "off"
+    chain: "gnosis"
+    token: "EURe"
+    url: "https://monerium.app/"
+    limits: "De FAQ noemt geen limieten per klant, maar de voorwaarden (§14) houden limieten voor. Een uitbetaling aan een derde vanaf EUR 15.000 vraagt om een ondersteunend document."
+    verification_note: "Documentatie en voorwaarden gelezen; kosten niet bevestigd. De flow is niet gebruikt: geen account, geen KYC, geen echt geld."
+    instructions:
+      - "Open je eigen Monerium-account met de wallet die de uitbetaling heeft ontvangen."
+      - "Betaal uit naar je eigen IBAN en onderteken de opdracht met je eigen wallet."
+    warnings:
+      - "Monerium verbiedt gebruik namens derden zonder schriftelijke toestemming (voorwaarden §16). Ontvang geen geld voor anderen om het via jouw account door te zetten."
+      - "EURe is geen banktegoed."
+
+  - id: "base_eurc_mtpelerin_on"
+    provider: "mt_pelerin"
+    direction: "on"
+    chain: "base"
+    token: "EURC"
+    url: "https://widget.mtpelerin.com/?_ctkn=954139b2-ef3e-4914-82ea-33192d3f43d3&type=direct-link&lang=en&tabs=buy,sell&tab=buy&nets=base_mainnet&net=base_mainnet&dnet=base_mainnet&curs=EUR&bsc=EUR&crys=EURC&bdc=EURC&bsa=100"
+    limits: "Kopen: geen minimum, maximaal CHF 100.000. Kaart maximaal CHF 5.000."
+    instructions:
+      - "Bewijs in de widget met een handtekening dat de wallet van jou is. Een adres hoort bij één Mt Pelerin-account; gedeelde adressen zijn niet toegestaan."
+      - "Het vooringevulde bedrag van 100 is alleen een voorbeeld uit de documentatie. Vul zelf je bedrag in."
+    warnings:
+      - "Handel alleen voor jezelf: de voorwaarden verbieden handelen namens of in het belang van een ander."
+      - "SEPA-aankopen van niet-geverifieerde gebruikers worden 7 dagen vastgehouden."
+      - "Crypto wordt niet terugbetaald, en een mislukte transactie wordt niet automatisch teruggedraaid."
+      - "EURC is geen banktegoed."
+
+  - id: "base_eurc_mtpelerin_off"
+    provider: "mt_pelerin"
+    direction: "off"
+    chain: "base"
+    token: "EURC"
+    url: "https://widget.mtpelerin.com/?_ctkn=954139b2-ef3e-4914-82ea-33192d3f43d3&type=direct-link&lang=en&tabs=buy,sell&tab=sell&nets=base_mainnet&net=base_mainnet&snet=base_mainnet&curs=EUR&sdc=EUR&crys=EURC&ssc=EURC&ssa=100"
+    limits: "Verkopen: minimaal CHF 50 (EUR 54,72 volgens de API op de controledatum), geen minimum met een persoonlijk IBAN."
+    instructions:
+      - "Bewijs in de widget met een handtekening dat de wallet van jou is."
+      - "Stuur vanuit je eigen wallet, op het netwerk Base. Mt Pelerin herkent je betaling aan het verzendadres en het netwerk."
+      - "Het vooringevulde bedrag van 100 is alleen een voorbeeld uit de documentatie. Vul zelf je bedrag in."
+    warnings:
+      - "Een verkoop start niet zonder gas op je wallet."
+      - "Uitbetaling gaat naar een bankrekening op je eigen naam, tenzij je een persoonlijk IBAN gebruikt."
+      - "Een storting op het verkeerde netwerk wordt niet automatisch verwerkt. Je moet dan contact opnemen met support."
+
+  - id: "base_eurc_exchange_on"
+    provider: "own_exchange"
+    direction: "on"
+    chain: "base"
+    token: "EURC"
+    limits: "Volgens je exchange."
+    currencies: "EUR naar EURC"
+    verification_note: "Op de controledatum toonde de publieke API van Coinbase EURC op Base. Of dit voor Nederlandse klanten werkt is niet bevestigd. Niet met echt geld getest."
+    sources:
+      - { label: "Coinbase API, EURC", url: "https://api.exchange.coinbase.com/currencies/EURC" }
+      - { label: "Bitvavo API, activa", url: "https://api.bitvavo.com/v2/assets" }
+      - { label: "Kraken over stablecoins", url: "https://support.kraken.com/articles/stablecoins-supported-on-kraken" }
+    instructions:
+      - "Controleer bij je exchange of je EURC op het netwerk Base kunt opnemen. Lukt dat niet, gebruik deze route dan niet."
+      - "Koop EURC bij je exchange."
+      - "Neem op naar je eigen gekoppelde wallet, niet naar de Safe van het fonds."
+      - "Kies als netwerk precies Base. Een ander netwerk met dezelfde tokennaam is niet hetzelfde."
+      - "Probeer eerst een klein bedrag en controleer of het aankomt."
+    warnings:
+      - "Kies je het verkeerde netwerk, dan kun je je geld kwijtraken. FundTogether kan dit niet terughalen."
+      - "Bitvavo, Kraken en Bitstamp toonden EURC op de controledatum alleen op Ethereum. Daarmee bereik je dit fonds niet."
+      - "EURC is geen banktegoed."
+
+  - id: "base_eurc_exchange_off"
+    provider: "own_exchange"
+    direction: "off"
+    chain: "base"
+    token: "EURC"
+    limits: "Volgens je exchange."
+    currencies: "EURC naar EUR"
+    verification_note: "Of een exchange EURC-stortingen op Base accepteert is alleen afgeleid uit de publieke API van Coinbase. Niet met echt geld getest."
+    sources:
+      - { label: "Coinbase API, EURC", url: "https://api.exchange.coinbase.com/currencies/EURC" }
+    instructions:
+      - "Controleer bij je exchange of je EURC op het netwerk Base kunt storten."
+      - "Vraag het stortingsadres voor Base op in je exchange-account."
+      - "Stuur vanuit je eigen wallet, nooit rechtstreeks vanuit de Safe. Een stortingsadres van een exchange hoort niet in een voorstel van het fonds."
+      - "Probeer eerst een klein bedrag, verkoop het en boek het af naar je eigen rekening."
+    warnings:
+      - "Kies je het verkeerde netwerk, dan kun je je geld kwijtraken. FundTogether kan dit niet terughalen."
+
+  - id: "base_eurc_circle_off"
+    provider: "circle"
+    direction: "off"
+    chain: "base"
+    token: "EURC"
+    url: "https://www.circle.com/legal/mica-redemption-policy"
+    limits: "Niet bevestigd. Controleer dit in het beleid."
+    currencies: "EURC naar EUR"
+    instructions:
+      - "Deze link opent het beleid van Circle. Lees daar hoe je je registreert als houder."
+    warnings:
+      - "EURC is geen banktegoed."
+
+chains:
+  sepolia:
+    network_label: "Ethereum Sepolia"
+    faucet:
+      name: "Circle faucet"
+      url: "https://faucet.circle.com/"
+      token: "EURC"
+      network: "Ethereum Sepolia"
+      limits: "Eén keer per token en netwerk per 2 uur. Het EURC-bedrag staat niet op de pagina. reCAPTCHA, geen account nodig."
+      verified_on: 2026-11-08
+      sources:
+        - { label: "Circle faucet", url: "https://faucet.circle.com/" }
+        - { label: "Circle EURC-adressen", url: "https://developers.circle.com/stablecoins/eurc-contract-addresses" }
+    gas:
+      token: "Sepolia ETH"
+      rough_need: "Een kleine hoeveelheid is genoeg voor enkele transacties. Sepolia ETH heeft geen waarde."
+      where:
+        - "De PoW-faucet sepolia-faucet.pk910.de vraagt geen account. Of die nu online is, is niet bevestigd."
+        - "De CDP-faucet van Coinbase vraagt een CDP-account."
+        - "De faucet van Alchemy vraagt een kleine hoeveelheid echte ETH op mainnet."
+      verified_on: 2026-11-08
+      sources:
+        - { label: "PoW-faucet Sepolia", url: "https://sepolia-faucet.pk910.de/" }
+        - { label: "CDP-faucet", url: "https://docs.cdp.coinbase.com/faucets/introduction/welcome" }
+        - { label: "Alchemy-faucet", url: "https://www.alchemy.com/faucets/ethereum-sepolia" }
+
+  base:
+    network_label: "Base"
+    route_note: "Dit fonds gebruikt EURC op Base. Monerium levert EURe en geen EURC, dus Monerium past niet bij dit fonds. Wisselen tussen tokens valt buiten deze pagina."
+    gas:
+      token: "ETH op Base"
+      rough_need: "Op 8 november 2026 gemeten: minder dan 1,5 cent per actie. Dat is een momentopname en geen actuele prijs; gas kan duurder worden. Neem iets meer dan één transactie nodig heeft, want opnemen bij een exchange kan een minimum en eigen kosten hebben."
+      where:
+        - "Coinbase toonde op de controledatum opname van ETH op Base."
+        - "Bitvavo toonde ETH alleen op Ethereum. Dat is geen gas op Base."
+      verified_on: 2026-11-08
+      sources:
+        - { label: "Coinbase API, ETH", url: "https://api.exchange.coinbase.com/currencies/ETH" }
+        - { label: "Bitvavo API, activa", url: "https://api.bitvavo.com/v2/assets" }
+
+  gnosis:
+    network_label: "Gnosis"
+    route_note: "Coinbase, Bitvavo en Kraken toonden op de controledatum geen EURe en geen xDAI. Een route via je eigen exchange is daarom niet gevonden. Monerium is hier de enige route met euro's die we vonden."
+    gas:
+      token: "xDAI"
+      rough_need: "Op 8 november 2026 gemeten: minder dan 0,1 cent per actie. Dat is een momentopname en geen actuele prijs. Een zeer kleine hoeveelheid is genoeg voor enkele transacties."
+      where:
+        - "Een kleine faucet, zoals de faucet van Gnosis. Hoeveel die geeft is niet bevestigd en er kan een captcha zijn."
+        - "Wisselen vanuit EURe. Dat vraagt al een beetje gas, of een wallet die het gas voor je regelt."
+      verified_on: 2026-11-08
+      sources:
+        - { label: "Gnosis-faucets", url: "https://docs.gnosischain.com/tools/Faucets" }
+        - { label: "Coinbase API, valuta", url: "https://api.exchange.coinbase.com/currencies" }
+        - { label: "Kraken API, activa", url: "https://api.kraken.com/0/public/Assets" }

@@ -37,7 +37,8 @@ export default class extends Controller {
   handleKeydown(event) {
     if (event.key === "Escape") {
       this.closeLeave()
-      this.closeDelete()
+      // Only admins get the delete modal
+      if (this.hasDeleteModalTarget) this.closeDelete()
     }
   }
 }

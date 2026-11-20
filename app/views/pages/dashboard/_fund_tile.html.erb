@@ -1,0 +1,39 @@
+<% chain = fund_chain(fund) %>
+<% current = fund.id == current_account.id %>
+<div class="bg-white rounded-xl p-4 shadow-sm border <%= current ? 'border-blue-300' : 'border-gray-100' %>">
+  <div class="flex items-start gap-3">
+    <div class="w-10 h-10 bg-linear-to-br/srgb from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+      <span class="text-white font-bold text-sm"><%= fund.name.first.upcase %></span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="font-semibold text-gray-900 truncate"><%= fund.name %></p>
+      <p class="text-xs text-gray-500">
+        <%= pluralize_nl(fund.active_members_count, "lid", "leden") %>
+        <% if chain %>· <%= chain.name %><% end %>
+      </p>
+    </div>
+    <% if chain&.testnet? %>
+      <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium flex-shrink-0">Testgeld</span>
+    <% end %>
+  </div>
+
+  <div class="mt-3">
+    <% if fund.safe_active? && chain %>
+      <%= render layout: 'shared/live_frame', locals: { id: "balance_#{fund.id}", src: account_live_balance_path(fund, frame: "balance_#{fund.id}") } do %>
+        <div class="animate-pulse h-6 w-32 bg-gray-200 rounded"><span class="sr-only">Saldo ophalen</span></div>
+      <% end %>
+    <% elsif fund.safe_deploying? %>
+      <p class="text-sm text-gray-500">De Safe wordt aangemaakt.</p>
+    <% else %>
+      <p class="text-sm text-gray-500">Nog geen Safe, dus nog geen bedrag.</p>
+    <% end %>
+  </div>
+
+  <div class="mt-3 pt-3 border-t border-gray-100">
+    <% if current %>
+      <p class="text-sm text-gray-500 flex items-center gap-1"><%= icon :check, class: "w-4 h-4 text-green-500" %><span>Je bekijkt dit fonds</span></p>
+    <% else %>
+      <%= button_to switch_account_path(fund), class: "text-sm font-medium text-blue-600 hover:text-blue-700" do %>Bekijk dit fonds<% end %>
+    <% end %>
+  </div>
+</div>

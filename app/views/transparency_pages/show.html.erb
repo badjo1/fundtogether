@@ -1,0 +1,72 @@
+<% content_for :title, "Transparantie" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Transparantie</h2>
+      <p class="text-sm text-gray-500 mt-1">Waar het geld staat, wie er macht over heeft, en hoe je er zonder FundTogether bij kunt.</p>
+    </div>
+
+    <% if !@account.safe_active? %>
+      <%= render 'shared/safe_needed', account: @account, title: "Nog geen Safe", body: "Zodra de Safe bestaat, staat hier het adres, wie er mogen ondertekenen, en hoe je het fonds ook zonder FundTogether kunt gebruiken." %>
+    <% else %>
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4" aria-labelledby="safe-titel">
+        <h3 id="safe-titel" class="text-lg font-bold text-gray-900">De Safe</h3>
+        <%= render 'shared/copy_field', value: checksum_address(@account.safe_address), label: "Adres" %>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div><dt class="text-gray-500">Netwerk</dt><dd class="font-medium text-gray-900"><%= @chain.name %><% if @chain.testnet? %> (testnetwerk)<% end %></dd></div>
+          <div><dt class="text-gray-500">Munt</dt><dd class="font-medium text-gray-900"><%= @chain.token.symbol %></dd></div>
+          <div class="sm:col-span-2"><dt class="text-gray-500">Contract van de munt</dt><dd class="font-mono text-xs text-gray-900 break-hash"><%= checksum_address(@chain.token.address) %></dd></div>
+          <% if @account.safe_verified_at %>
+            <div class="sm:col-span-2"><dt class="text-gray-500">Door de server gecontroleerd op</dt><dd class="font-medium text-gray-900"><%= nl_datetime(@account.safe_verified_at) %></dd></div>
+          <% end %>
+        </dl>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <% if (url = safe_wallet_url(@chain, @account.safe_address)) %>
+            <%= link_to url, target: "_blank", rel: "noopener noreferrer", class: "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-flex items-center justify-center gap-2" do %>
+              <span>Open in Safe{Wallet}</span><%= icon :external_link, class: "w-4 h-4" %>
+            <% end %>
+          <% end %>
+          <%= link_to explorer_address_url(@chain, @account.safe_address), target: "_blank", rel: "noopener noreferrer", class: "px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium inline-flex items-center justify-center gap-2" do %>
+            <span>Bekijk op de explorer</span><%= icon :external_link, class: "w-4 h-4" %>
+          <% end %>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="ondertekenaars-titel">
+        <h3 id="ondertekenaars-titel" class="text-lg font-bold text-gray-900 mb-4">Ondertekenaars en goedkeuringen</h3>
+        <%= render layout: 'shared/live_frame', locals: { id: "live_owners", src: account_live_owners_path(@account) } do %>
+          <%= render 'shared/skeleton', label: "Ondertekenaars van de blockchain lezen" %>
+        <% end %>
+      </section>
+
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3 text-sm text-gray-700" aria-labelledby="zonder-titel">
+        <h3 id="zonder-titel" class="text-lg font-bold text-gray-900">Zonder FundTogether verder</h3>
+        <p>Dit fonds is een gewone Safe op de blockchain. FundTogether is een handig venster erop, maar niet nodig om bij het geld te komen. Als wij morgen verdwijnen, staat het geld er nog en houden de ondertekenaars de macht.</p>
+        <ol class="list-decimal list-inside space-y-1">
+          <li>Open het adres hierboven in Safe{Wallet}, op het netwerk <%= @chain.name %>.</li>
+          <li>Verbind de wallet waarmee je hier ondertekent.</li>
+          <li>Maak daar een transactie en laat genoeg ondertekenaars goedkeuren.</li>
+        </ol>
+        <p>Voorstellen die in FundTogether openstaan, zijn niet zichtbaar in Safe{Wallet}: de handtekeningen staan in onze database. Daar begin je dus met een nieuw voorstel.</p>
+        <p class="text-gray-500">Niet door mensen getest: deze uitwijkroute hebben we nog niet in de praktijk geoefend met echte wallets. Probeer het met een klein bedrag.</p>
+      </section>
+
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3 text-sm text-gray-700" aria-labelledby="grens-titel">
+        <h3 id="grens-titel" class="text-lg font-bold text-gray-900">Wat FundTogether niet kan uitsluiten</h3>
+        <p>De code die in je browser draait, komt van onze server. Wordt die server gehackt, dan kan een aanvaller je een andere pagina laten zien, en je wallet iets anders laten ondertekenen dan op het scherm staat. Zo zijn bij echte multisig-fondsen grote bedragen verloren gegaan. Dit is niet volledig af te dekken zolang een website de pagina levert.</p>
+        <p>Wat wel helpt, in volgorde van belang:</p>
+        <ol class="list-decimal list-inside space-y-1">
+          <li>Lees wat je <strong>wallet</strong> laat zien, niet alleen wat deze pagina zegt. Gebruik voor echt geld een hardware wallet.</li>
+          <li>Vergelijk de safeTxHash via een ander kanaal met een andere ondertekenaar. Op elke voorstelpagina staat hoe je hem zelf kunt berekenen.</li>
+          <li>Laat ondertekenaars verschillende apparaten gebruiken, en houd het aantal goedkeuringen hoger dan één.</li>
+        </ol>
+        <p>Wat wij doen: een streng Content-Security-Policy, integriteitscontroles op scripts, en één vastgelegde bouw van de enige externe bibliotheek. Die maatregelen helpen tegen een aangepast bestand onderweg, <strong>niet</strong> tegen een server die zelf is overgenomen, want die kan de controles meeveranderen.</p>
+        <dl>
+          <dt class="font-medium text-gray-900">SHA-256 van viem.js, onze enige externe bibliotheek in de browser</dt>
+          <dd class="font-mono text-xs break-hash mt-1" data-testid="viem-hash"><%= Rails.configuration.x.viem_sha256 %></dd>
+        </dl>
+        <p class="text-gray-500">Vergelijk dit met de broncode: <span class="font-mono text-xs">vendor/javascript/viem.js</span> en de opnieuw te bouwen versie uit <span class="font-mono text-xs">docs/VENDORED_JS.md</span>. Dit getal staat op dezelfde server als de code, dus zonder eigen bouw of een tweede bron bewijst het alleen iets aan wie al een eerdere waarde heeft.</p>
+      </section>
+    <% end %>
+  </div>
+<% end %>

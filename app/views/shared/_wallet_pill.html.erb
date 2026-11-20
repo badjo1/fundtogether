@@ -1,0 +1,9 @@
+<%# Klein en alleen-lezen: toont welke wallet verbonden is. Nooit een prompt vanuit de topbar. %>
+<% if current_user %>
+  <%= link_to wallet_page_path, id: "wallet-pill", class: "hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 min-w-0",
+        data: wallet_controller_data.merge(turbo_permanent: true), "aria-label": "Mijn wallets" do %>
+    <%= icon :wallet, class: "w-4 h-4 text-gray-500 flex-shrink-0" %>
+    <span data-show-wallet="idle no_wallet disconnected requesting_accounts wallet_busy stale">Wallet</span>
+    <span class="font-mono text-xs truncate max-w-28" data-show-wallet="ready unlinked address_mismatch wrong_network switching_chain adding_chain awaiting_signature submitting" data-wallet-target="field" data-field="address"></span>
+  <% end %>
+<% end %>

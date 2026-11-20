@@ -1,0 +1,19 @@
+<%# Locals: gaps (owner details die geen actief lid meer zijn), account. App-rollen veranderen niets op de blockchain. %>
+<% can_propose = current_membership && !current_membership.viewer? %>
+<% gaps.each do |gap| %>
+  <% if gap[:verified_wallet] %>
+    <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "#{gap[:name]} is geen lid meer, maar kan nog goedkeuren" } do %>
+      <p>Lid zijn van FundTogether en ondertekenaar zijn op de blockchain zijn twee aparte dingen. Adres <span class="font-mono break-hash"><%= checksum_address(gap[:address]) %></span> telt nog mee voor goedkeuringen.</p>
+      <% if can_propose %>
+        <p><%= link_to "Stel voor om deze ondertekenaar te verwijderen", new_account_proposal_page_path(account, kind: "remove_owner", owner: gap[:address]), class: "font-medium underline" %></p>
+      <% end %>
+    <% end %>
+  <% else %>
+    <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Een ondertekenaar hoort niet meer bij een gekoppelde wallet" } do %>
+      <p>Adres <span class="font-mono break-hash"><%= checksum_address(gap[:address]) %></span> is nog ondertekenaar op de blockchain, maar is niet (meer) aan een account gekoppeld. Wie deze sleutel heeft, kan nog goedkeuren.</p>
+      <% if can_propose %>
+        <p><%= link_to "Stel voor om deze ondertekenaar te vervangen", new_account_proposal_page_path(account, kind: "swap_owner", old_owner: gap[:address]), class: "font-medium underline" %></p>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

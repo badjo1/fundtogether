@@ -1,9 +1,10 @@
-<!-- app/views/shared/_user_menu.html.erb -->
 
 <div class="relative" data-controller="dropdown">
   <!-- User Menu Button -->
-  <button 
-    data-action="click->dropdown#toggle" 
+  <button
+    type="button"
+    data-action="click->dropdown#toggle"
+    aria-label="Gebruikersmenu"
     class="flex items-center space-x-3 hover:bg-gray-50 rounded-lg p-2 transition-colors"
   >
     <div class="text-right hidden sm:block">
@@ -14,11 +15,11 @@
         <% if current_account %>
           <%= current_account.name %>
         <% else %>
-          Geen account
+          Geen fonds
         <% end %>
       </p>
     </div>
-    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+    <div class="w-10 h-10 bg-linear-to-br/srgb from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
       <span class="text-white font-bold text-sm">
         <%= Current.user&.name&.first&.upcase || 'U' %>
       </span>
@@ -29,12 +30,12 @@
   <!-- Dropdown Menu -->
   <div 
     data-dropdown-target="menu" 
-    class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50"
+    class="hidden absolute right-0 mt-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-xl border border-gray-200 z-50"
   >
     <!-- User Info Header -->
     <div class="p-4 border-b border-gray-100">
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+        <div class="w-12 h-12 bg-linear-to-br/srgb from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
           <span class="text-white font-bold text-lg">
             <%= Current.user&.name&.first&.upcase || 'U' %>
           </span>
@@ -43,8 +44,8 @@
           <p class="font-semibold text-gray-900 truncate">
             <%= Current.user&.name || 'Gebruiker' %>
           </p>
-          <p class="text-sm text-gray-500 truncate" data-dapp-target="walletAddress">
-            <%= Current.user&.short_address || 'Niet verbonden' %>
+          <p class="text-sm text-gray-500 truncate">
+            <%= Current.user&.email_address %>
           </p>
         </div>
       </div>
@@ -53,9 +54,9 @@
     <!-- Current Account Section -->
     <% if current_account %>
       <div class="p-3 border-b border-gray-100 bg-blue-50">
-        <p class="text-xs font-semibold text-gray-600 uppercase mb-2">Huidige Account</p>
+        <p class="text-xs font-semibold text-gray-600 uppercase mb-2">Huidig fonds</p>
         <div class="flex items-center gap-3 p-2 bg-white rounded-lg">
-          <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <div class="w-10 h-10 bg-linear-to-br/srgb from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
             <span class="text-white font-bold text-sm">
               <%= current_account.name.first.upcase %>
             </span>
@@ -65,8 +66,7 @@
               <%= current_account.name %>
             </p>
             <p class="text-xs text-gray-500">
-              <%= current_account.active_users.count %> leden • 
-              €<%= sprintf('%.2f', current_account.user_balance(current_user)) %>
+              <%= pluralize_nl(current_account.active_users.count, "lid", "leden") %>
             </p>
           </div>
           <%= icon :check, class: "w-5 h-5 text-green-500 flex-shrink-0" %>
@@ -77,15 +77,15 @@
     <!-- Switch Account Section -->
     <div class="p-3 border-b border-gray-100">
       <p class="text-xs font-semibold text-gray-600 uppercase mb-2 px-2">
-        Wissel van Account
+        Wissel van fonds
       </p>
       <div class="max-h-48 overflow-y-auto space-y-1">
         <% if Current.user %>
-          <% Current.user.accounts.each do |account| %>
+          <% current_user.active_accounts.each do |account| %>
             <% next if account == current_account %>
-            <%= link_to switch_account_path(account), method: :post, 
+            <%= link_to switch_account_path(account), data: { turbo_method: :post }, 
                 class: "flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors group" do %>
-              <div class="w-9 h-9 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div class="w-9 h-9 bg-linear-to-br/srgb from-blue-400 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span class="text-white font-bold text-xs">
                   <%= account.name.first.upcase %>
                 </span>
@@ -95,8 +95,7 @@
                   <%= account.name %>
                 </p>
                 <p class="text-xs text-gray-500">
-                  <%= account.active_users.count %> leden • 
-                  €<%= sprintf('%.2f', account.user_balance(current_user)) %>
+                  <%= pluralize_nl(account.active_users.count, "lid", "leden") %>
                 </p>
               </div>
               <%= icon :chevron_right, class: "w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" %>
@@ -109,17 +108,20 @@
         <div class="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 transition-colors">
           <%= icon :plus, class: "w-5 h-5 text-blue-600" %>
         </div>
-        <span class="font-medium text-sm">Nieuwe Account</span>
+        <span class="font-medium text-sm">Nieuw fonds</span>
       <% end %>
     </div>
 
     <!-- User Actions -->
     <div class="p-2">
-      <%= link_to '#', class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-700" do %>
-        <%= icon :user, class: "w-5 h-5 text-gray-400" %>
-        <span class="text-sm font-medium">Mijn Profiel</span>
+      <%= link_to wallet_page_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-700" do %>
+        <%= icon :wallet, class: "w-5 h-5 text-gray-400" %>
+        <span class="text-sm font-medium">Mijn wallets</span>
       <% end %>
 
+      <%= link_to sessions_list_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-700" do %>
+        <%= icon :lock, class: "w-5 h-5" %><span>Sessies</span>
+      <% end %>
       <%= link_to settings_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-700" do %>
         <%= icon :settings, class: "w-5 h-5 text-gray-400" %>
         <span class="text-sm font-medium">Instellingen</span>

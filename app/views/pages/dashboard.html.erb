@@ -1,125 +1,47 @@
-    <%= render layout: 'shared/app_layout' do %>
-    <!-- Dashboard Content -->
-      <div class="space-y-6">
-        <div class="flex items-center justify-between flex-wrap gap-4">
-          <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
-          <div class="flex space-x-3">
-            <%= link_to new_transaction_path(type: 'expense'), class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2" do %>
-              <%= icon :plus, class: "w-4 h-4" %>
-              <span>Uitgave</span>
-            <% end %>
-            <%= link_to new_transaction_path(type: 'deposit'), class: "bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2" do %>
-              <%= icon :dollar, class: "w-4 h-4" %>
-              <span>Storting</span>
-            <% end %>
-          </div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-600">Totaal Groepssaldo</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1">€<%= sprintf('%.2f', @total_balance) %></p>
-                <p class="text-sm text-gray-500 mt-1">Alle leden gecombineerd</p>
-              </div>
-              <div class="p-3 rounded-lg bg-blue-100">
-                <%= icon :dollar, class: "w-6 h-6 text-blue-600" %>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-600">Jouw Saldo</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1">€<%= sprintf('%.2f', @user_balance) %></p>
-                <p class="text-sm text-gray-500 mt-1">Individueel saldo</p>
-              </div>
-              <div class="p-3 rounded-lg bg-green-100">
-                <%= icon :dollar, class: "w-6 h-6 text-green-600" %>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-600">Groepsleden</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1"><%= @members_count %></p>
-                <p class="text-sm text-gray-500 mt-1">Actieve deelnemers</p>
-              </div>
-              <div class="p-3 rounded-lg bg-purple-100">
-                <%= icon :users, class: "w-6 h-6 text-purple-600" %>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-600">Deze Maand</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1">€<%= sprintf('%.2f', @monthly_expenses) %></p>
-                <p class="text-sm text-gray-500 mt-1">Totale uitgaven</p>
-              </div>
-              <div class="p-3 rounded-lg bg-red-100">
-                <%= icon :chart, class: "w-6 h-6 text-red-600" %>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recente Transacties -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900 mb-4">Recente Transacties</h3>
-          <% if @recent_transactions.any? %>
-            <div class="space-y-3">
-              <% @recent_transactions.each do |transaction| %>
-                <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <div class="p-2 rounded-lg <%= transaction.deposit? ? 'bg-green-100' : 'bg-red-100' %>">
-                        <% if transaction.deposit? %>
-                          <%= icon :plus, class: "w-4 h-4 text-green-600" %>
-                        <% else %>
-                          <%= icon :document, class: "w-4 h-4 text-red-600" %>
-                        <% end %>
-                      </div>
-                      <div>
-                        <p class="font-medium text-gray-900"><%= transaction.description %></p>
-                        <p class="text-sm text-gray-500">
-                          <%= transaction.deposit? ? 'Gestort door' : 'Betaald door' %>
-                          <%= transaction.from_user.name %> • <%= transaction.created_at.strftime("%Y-%m-%d %H:%M") %>
-                        </p>
-                      </div>
-                    </div>
-                    <div class="text-right">
-                      <p class="font-bold <%= transaction.deposit? ? 'text-green-600' : 'text-red-600' %>">
-                        <%= transaction.deposit? ? '+' : '−' %>€<%= sprintf('%.2f', transaction.amount) %>
-                      </p>
-                      <p class="text-xs text-gray-500"><%= transaction.token %></p>
-                      <span class="inline-block px-2 py-1 text-xs rounded-full mt-1 <%= status_badge_class(transaction.status) %>">
-                        <%= transaction_status_text(transaction.status) %>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-            <%= link_to "Alle transacties bekijken →", transactions_path, class: "w-full mt-4 text-center text-blue-600 hover:text-blue-700 font-medium py-2 block" %>
-          <% else %>
-            <div class="text-center py-8">
-              <div class="p-4 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <%= icon :document, class: "w-8 h-8 text-gray-400" %>
-              </div>
-              <p class="text-gray-500 mb-4">Nog geen transacties</p>
-              <%= link_to new_transaction_path(type: 'deposit'), class: "inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" do %>
-                <%= icon :plus, class: "w-4 h-4" %>
-                <span>Eerste storting doen</span>
-              <% end %>
-            </div>
+<% content_for :title, "Overzicht: #{@account.name}" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="space-y-6 max-w-5xl mx-auto">
+    <div class="flex items-start justify-between flex-wrap gap-4">
+      <div class="min-w-0">
+        <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
+        <p class="text-sm text-gray-500 mt-1 break-words"><%= @account.name %><% if @account.description.present? %>: <%= @account.description %><% end %></p>
+      </div>
+      <% if @account.safe_active? && @chain && !current_membership.viewer? %>
+        <div class="flex gap-2 flex-wrap">
+          <%= link_to account_contribute_path(@account), class: "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2 font-medium" do %>
+            <%= icon :arrow_down, class: "w-4 h-4" %><span>Inleggen</span>
+          <% end %>
+          <%= link_to new_account_proposal_page_path(@account), class: "px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center space-x-2 font-medium" do %>
+            <%= icon :plus, class: "w-4 h-4" %><span>Nieuw voorstel</span>
           <% end %>
         </div>
-      </div>
       <% end %>
+    </div>
+
+    <% if @account.chain_id && @chain.nil? %>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Netwerk niet beschikbaar" } do %>
+        <p>Het netwerk van dit fonds staat in FundTogether uit. Je geld staat er nog: open je Safe rechtstreeks in Safe{Wallet}.</p>
+      <% end %>
+    <% elsif @account.safe_active? %>
+      <%= render 'pages/dashboard/active' %>
+    <% elsif @account.safe_deploying? %>
+      <%= render 'pages/dashboard/deploying' %>
+    <% else %>
+      <%= render 'pages/dashboard/draft' %>
+    <% end %>
+
+    <section aria-labelledby="fondsen-titel">
+      <div class="flex items-center justify-between gap-4 mb-3">
+        <h3 id="fondsen-titel" class="text-lg font-bold text-gray-900">Mijn fondsen</h3>
+        <%= link_to new_account_path, class: "text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1" do %>
+          <%= icon :plus, class: "w-4 h-4" %><span>Nieuw fonds</span>
+        <% end %>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% @funds.each do |fund| %>
+          <%= render 'pages/dashboard/fund_tile', fund: fund %>
+        <% end %>
+      </div>
+    </section>
+  </div>
+<% end %>

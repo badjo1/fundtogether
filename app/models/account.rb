@@ -1,38 +1,61 @@
 class Account < ApplicationRecord
-  attr_accessor :min_deposit, :auto_convert, :notifications
+  SAFE_STATUSES = %w[draft deploying active].freeze
+  # These decide where the money lives, so they cannot move once a Safe may exist.
+  IMMUTABLE_AFTER_DEPLOYMENT = %w[chain_id token_address safe_address safe_salt_nonce safe_owners
+                                  safe_threshold safe_group_uuid].freeze
+
+  # Before the dependent callbacks below, or the children would already be gone.
+  before_destroy :refuse_destroy_with_safe, prepend: true
 
   has_many :account_memberships, dependent: :destroy
   has_many :users, through: :account_memberships
-  has_many :transactions, dependent: :destroy
   has_many :invitations, dependent: :destroy
+  has_many :users_with_this_as_current, class_name: "User", foreign_key: :current_account_id,
+           inverse_of: :current_account, dependent: :nullify
+  has_many :safe_proposals, dependent: :destroy
+  has_many :chain_events, dependent: :destroy
+
+  normalizes :name, :description, with: ->(value) { SafeText.clean(value) }
 
   # Validations
   validates :name, presence: true, length: { minimum: 3, maximum: 100 }
-  # validates :wallet_address, presence: true, uniqueness: true,
-  #           format: { with: /\A0x[a-fA-F0-9]{40}\z/, message: "must be a valid Ethereum address" }
-  validates :split_method, presence: true
+  validates :description, length: { maximum: 2_000 }
+  validates :safe_status, inclusion: { in: SAFE_STATUSES }
+  validates :token_address, format: { with: Chain::Address::LOWER }, allow_nil: true
+  validates :safe_address, format: { with: Chain::Address::LOWER }, allow_nil: true,
+                           uniqueness: { scope: :chain_id }
+  validates :deploy_tx_hash, format: { with: Chain::Hex::HASH }, allow_nil: true
+  validate :safe_settings_immutable_after_deployment, on: :update
 
-  # Enums
-  enum :split_method, { equal: "equal", proportional: "proportional", manual: "manual", percentage: "percentage" }
+  scope :safe_active, -> { where(safe_status: "active") }
+  scope :safe_deploying, -> { where(safe_status: "deploying") }
 
-  # Callbacks
-  before_validation :set_defaults, on: :create
-
-  # Scopes
-  scope :active, -> { joins(:account_memberships).where(account_memberships: { active: true }).distinct }
-
-  # Instance methods - UPDATED: member → user
-  def total_balance
-    account_memberships.sum(:balance_cents)
+  def name
+    SafeText.clean(super)
   end
 
-  def total_balance_euros
-    total_balance / 100.0
+  def description
+    SafeText.clean(super)
+  end
+
+  def safe_draft?
+    safe_status == "draft"
+  end
+
+  def safe_deploying?
+    safe_status == "deploying"
+  end
+
+  def safe_active?
+    safe_status == "active"
+  end
+
+  def chain
+    Chain::Registry.fetch(chain_id) if chain_id
   end
 
   def active_users
-    users.joins(:account_memberships)
-         .where(account_memberships: { account_id: id, active: true })
+    users.merge(AccountMembership.active)
   end
 
   def active_members_count
@@ -40,63 +63,54 @@ class Account < ApplicationRecord
   end
 
   def admins
-    users.joins(:account_memberships)
-         .where(account_memberships: { account_id: id, role: "admin" })
+    active_users.merge(AccountMembership.admins)
   end
 
-  def user_balance(user)
-    user_balance_cents = account_memberships.find_by(user: user)&.balance_cents || 0
-    user_balance_cents / 100.0
+  def active_admin?(user)
+    admins.exists?(user&.id)
   end
 
-  def user_role(user)
-    account_memberships.find_by(user: user)&.role
-  end
-
-  def add_member(user, role: "member", balance: 0)
+  def add_member(user, role: "member")
     account_memberships.create!(
       user: user,
       role: role,
-      balance_cents: balance,
       active: true,
       joined_at: Time.current
     )
   end
 
-  def remove_user(user)
-    account_memberships.find_by(user: user)&.update(active: false)
+  # Who each on-chain owner maps to right now. App roles and wallets never change the chain, so this
+  # is how a removed member or an unlinked wallet shows up as a gap (docs/ARCHITECTURE.md, Authorization).
+  def owner_details(owners)
+    wallets = Wallet.active.where(address: owners).includes(:user).index_by(&:address)
+    active_ids = account_memberships.active.pluck(:user_id)
+    owners.map do |address|
+      user = wallets[address]&.user
+      { address: address, user_id: user&.id, name: user&.display_name, verified_wallet: user.present?,
+        active_member: user.present? && active_ids.include?(user.id) }
+    end
   end
 
-  def monthly_expenses_cents(month = Time.current.month, year = Time.current.year)
-    start_date = Date.new(year, month).beginning_of_month
-    end_date = Date.new(year, month).end_of_month
-
-    transactions.where(
-      transaction_type: "expense",
-      status: "confirmed",
-      created_at: start_date..end_date
-    ).sum(:amount_cents)
-  end
-
-  def monthly_expenses_euros(month = Time.current.month, year = Time.current.year)
-    monthly_expenses_cents(month, year) / 100.0
-  end
-
-  # Alias for backwards compatibility
-  def monthly_expenses(month = Time.current.month, year = Time.current.year)
-    monthly_expenses_euros(month, year)
-  end
-
-  def recent_transactions(limit = 5)
-    transactions.recent.limit(limit)
+  # Names shared by more than one active member, compared loosely. Two people looking alike on a signing
+  # page is how the wrong key gets approved (docs/SECURITY_REVIEW.md, M6).
+  def duplicate_member_names
+    active_users.pluck(:name).group_by { |name| SafeText.comparable(name) }.select { |_, names| names.size > 1 }.keys
   end
 
   private
 
-  def set_defaults
-    self.auto_convert ||= true
-    self.notifications ||= true
-    self.min_deposit ||= 10.0
-    self.split_method ||= "equal"
+  def refuse_destroy_with_safe
+    return if safe_draft?
+
+    errors.add(:base, "Dit fonds heeft een Safe op de blockchain en kan niet worden verwijderd.")
+    throw :abort
+  end
+
+  def safe_settings_immutable_after_deployment
+    return if safe_status_was == "draft"
+
+    IMMUTABLE_AFTER_DEPLOYMENT.each do |field|
+      errors.add(field, "kan niet meer wijzigen nadat de Safe is aangemaakt") if attribute_changed?(field)
+    end
   end
 end

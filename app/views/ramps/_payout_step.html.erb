@@ -1,0 +1,25 @@
+<p class="text-sm text-gray-700">
+  Een uitbetaling gaat altijd eerst van de Safe naar de eigen wallet van de ontvanger.
+  Zet nooit een stortingsadres van een provider in een voorstel. Medeondertekenaars kunnen zo'n adres niet controleren, en het kan verlopen.
+</p>
+<% if !@account.safe_active? %>
+  <%= render "ramps/notice", tone: :warning, text: "Dit fonds heeft nog geen actieve Safe, dus er is nog niets om uit te betalen." %>
+<% elsif !@can_act %>
+  <p class="text-sm text-gray-600">Alleen members en admins kunnen een voorstel maken.</p>
+<% elsif @wallets.empty? %>
+  <%= render "ramps/notice", tone: :warning, text: "Er is nog geen wallet aan je account gekoppeld. Koppel eerst je eigen wallet." %>
+  <%= link_to "Koppel Een Wallet", wallet_page_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors", data: { ramp_action: "link_wallet" } %>
+<% else %>
+  <ul class="space-y-2">
+    <% @wallets.each do |wallet| %>
+      <li class="p-3 bg-gray-50 rounded-lg space-y-2" data-ramp-wallet>
+        <code class="block text-sm text-gray-900 break-all"><%= ramp_display_address(wallet) %></code>
+        <%= link_to ramp_payout_path(@account, wallet), class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors", data: { ramp_action: "payout" } do %>
+          <span>Maak Uitbetalingsvoorstel</span>
+          <%= icon :arrow_right, class: "w-4 h-4" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+  <p class="text-sm text-gray-600">Vul in het formulier het bedrag in, en controleer dat dit adres de ontvanger is. Er gebeurt niets totdat je het voorstel verstuurt.</p>
+<% end %>

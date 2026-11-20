@@ -1,0 +1,19 @@
+<% chain = @account.chain %>
+<section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4" data-controller="flow-ui" data-flow-ui-auto-reload-value="15000" aria-live="polite">
+  <h3 class="text-lg font-bold text-gray-900">De Safe wordt aangemaakt</h3>
+  <ol class="space-y-2">
+    <li class="flow-step" data-state="done"><span class="flow-dot" aria-hidden="true"></span><span>Bevestigd in de wallet</span></li>
+    <li class="flow-step" data-state="done"><span class="flow-dot" aria-hidden="true"></span><span>Transactie verstuurd</span></li>
+    <li class="flow-step" data-state="active"><span class="flow-dot" aria-hidden="true"></span><span>De server controleert de Safe op de blockchain</span></li>
+    <li class="flow-step" data-state="pending"><span class="flow-dot" aria-hidden="true"></span><span>Actief</span></li>
+  </ol>
+  <% if @account.deploy_tx_hash.present? && chain %>
+    <%= link_to explorer_tx_url(chain, @account.deploy_tx_hash), target: "_blank", rel: "noopener noreferrer", class: "text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1" do %>
+      <span>Bekijk de transactie op de explorer</span><%= icon :external_link, class: "w-4 h-4" %>
+    <% end %>
+  <% end %>
+  <%= render layout: 'shared/info_panel', locals: { tone: "warning" } do %>
+    <p>Stuur nog geen geld. Het adres van de Safe is pas zeker als deze pagina zegt dat hij actief is. Deze pagina ververst vanzelf.</p>
+  <% end %>
+  <p class="text-sm text-gray-500">Mislukt de transactie, of is hij na 24 uur niet gevonden? Dan gaat het fonds terug naar instellen, en kun je het opnieuw proberen.</p>
+</section>

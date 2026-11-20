@@ -1,0 +1,9 @@
+<%# Locals: icon_name, title, body. Het blok bevat de actie. %>
+<div class="bg-white rounded-xl p-6 sm:p-8 shadow-sm border border-gray-100 text-center">
+  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+    <%= icon icon_name, class: "w-8 h-8 text-gray-400" %>
+  </div>
+  <h3 class="font-bold text-gray-900"><%= title %></h3>
+  <p class="text-gray-500 mt-2 max-w-md mx-auto text-sm"><%= body %></p>
+  <div class="mt-4 flex justify-center"><%= yield %></div>
+</div>

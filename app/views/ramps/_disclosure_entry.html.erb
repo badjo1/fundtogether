@@ -1,0 +1,29 @@
+<%# Locals: route. %>
+<article class="border-t border-gray-200 pt-4" data-ramp-disclosure-entry="<%= route.id %>">
+  <h4 class="font-semibold text-gray-900"><%= route.name %></h4>
+  <% if route.legal_notice %>
+    <div class="mt-2"><%= render "ramps/notice", tone: :danger, text: route.legal_notice %></div>
+  <% end %>
+  <dl class="text-sm space-y-2 mt-2">
+    <div><dt class="font-medium text-gray-900">Kosten</dt><dd class="text-gray-700"><%= route.fees %></dd></div>
+    <div><dt class="font-medium text-gray-900">Valuta</dt><dd class="text-gray-700"><%= route.currencies %></dd></div>
+    <div><dt class="font-medium text-gray-900">Betaalmethoden</dt><dd class="text-gray-700"><%= route.payment_methods %></dd></div>
+    <div><dt class="font-medium text-gray-900">Limieten</dt><dd class="text-gray-700"><%= route.limits %></dd></div>
+    <div><dt class="font-medium text-gray-900">Identiteitscontrole</dt><dd class="text-gray-700"><%= route.kyc %></dd></div>
+    <div><dt class="font-medium text-gray-900">Wie is verantwoordelijk</dt><dd class="text-gray-700"><%= route.responsible %></dd></div>
+    <div><dt class="font-medium text-gray-900">Toezicht</dt><dd class="text-gray-700"><%= route.regulator %></dd></div>
+    <div>
+      <dt class="font-medium text-gray-900">Status van de controle</dt>
+      <dd class="text-gray-700"><%= ramp_verification_label(route) %>. <%= route.verification_note %></dd>
+    </div>
+    <div><dt class="font-medium text-gray-900">Laatst gecontroleerd</dt><dd class="text-gray-700"><%= ramp_date(route.verified_on) %></dd></div>
+    <div>
+      <dt class="font-medium text-gray-900">Bronnen</dt>
+      <dd class="text-gray-700">
+        <% route.sources.each do |source| %>
+          <%= ramp_external_link source.label, source.url, class: "underline hover:text-gray-900 mr-2", data: { ramp_source: true } %>
+        <% end %>
+      </dd>
+    </div>
+  </dl>
+</article>

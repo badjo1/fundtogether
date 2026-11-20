@@ -1,0 +1,35 @@
+<% routes = @guide.routes("on") %>
+<% providers = routes.reject(&:own_exchange?) %>
+<% exchanges = routes.select(&:own_exchange?) %>
+<ol class="space-y-4" data-ramp-stepper="on">
+  <%= render layout: "ramps/step", locals: { number: 1, title: "Controleer je gekoppelde wallet" } do %>
+    <%= render "ramps/wallet_check", intro: "Je koopt op je eigen wallet, niet rechtstreeks op de Safe van het fonds. Deze wallet is aan je account gekoppeld:" %>
+  <% end %>
+
+  <%= render layout: "ramps/step", locals: { number: 2, title: "Koop bij een provider" } do %>
+    <p class="text-sm text-gray-700">
+      Kies <strong><%= @guide.chain.token.symbol %></strong> op het netwerk <strong><%= @guide.guide.network_label %></strong>.
+      Je geld komt eerst op je eigen wallet. De Safe van het fonds is een gedeeld adres en hoort niet bij één klant van een provider.
+    </p>
+    <% if @guide.guide.route_note %>
+      <%= render "ramps/notice", tone: :info, text: @guide.guide.route_note %>
+    <% end %>
+    <%= render partial: "ramps/route_card", collection: providers, as: :route %>
+    <% if exchanges.any? %>
+      <h4 class="font-medium text-gray-900">Of via je eigen exchange</h4>
+      <%= render partial: "ramps/route_card", collection: exchanges, as: :route %>
+    <% end %>
+    <% if routes.empty? %>
+      <p class="text-sm text-gray-600" data-ramp-empty="routes">We hebben nu geen route voor deze combinatie van netwerk en token.</p>
+    <% end %>
+  <% end %>
+
+  <%= render layout: "ramps/step", locals: { number: 3, title: "Zorg voor gas" } do %>
+    <%= render "ramps/gas" %>
+  <% end %>
+
+  <%= render layout: "ramps/step", locals: { number: 4, title: "Draag bij aan het fonds" } do %>
+    <%= render "ramps/contribute_step" %>
+  <% end %>
+</ol>
+<%= render "ramps/disclosure", routes: routes %>

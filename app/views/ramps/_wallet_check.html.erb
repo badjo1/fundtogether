@@ -1,0 +1,19 @@
+<%# Server-side only: says what is linked to this account, not what your browser is connected to. %>
+<% if !@can_act %>
+  <p class="text-sm text-gray-600">Members en admins zien hier welke wallet aan hun account is gekoppeld.</p>
+<% elsif @wallets.empty? %>
+  <%= render "ramps/notice", tone: :warning, text: "Er is nog geen wallet aan je account gekoppeld. Koppel eerst je eigen wallet, voordat je iets koopt." %>
+  <%= link_to "Koppel Een Wallet", wallet_page_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors", data: { ramp_action: "link_wallet" } %>
+<% else %>
+  <p class="text-sm text-gray-600"><%= intro %></p>
+  <ul class="space-y-2">
+    <% @wallets.each do |wallet| %>
+      <li class="p-3 bg-gray-50 rounded-lg" data-ramp-wallet data-controller="clipboard">
+        <code class="block text-sm text-gray-900 break-all"><%= ramp_display_address(wallet) %></code>
+        <input type="hidden" value="<%= ramp_display_address(wallet) %>" data-clipboard-target="source">
+        <button type="button" data-action="clipboard#copy" class="mt-2 inline-flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"><span>Kopieer Adres</span></button>
+      </li>
+    <% end %>
+  </ul>
+  <p class="text-sm text-gray-600">Controleer of je wallet dit adres toont. Is het niet jouw adres, stop dan hier.</p>
+<% end %>

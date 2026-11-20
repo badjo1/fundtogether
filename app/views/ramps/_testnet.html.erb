@@ -1,0 +1,64 @@
+<% faucet = @guide.guide.faucet %>
+<%= render "ramps/notice", tone: :warning, text: "Dit fonds staat op het testnetwerk #{@guide.guide.network_label}. Dit is testgeld zonder waarde. Echte providers en banken doen hier niet aan mee, en je kunt het niet omwisselen naar euro's." %>
+<% if @direction == "off" %>
+  <ol class="space-y-4" data-ramp-stepper="off">
+    <%= render layout: "ramps/step", locals: { number: 1, title: "Maak een uitbetalingsvoorstel naar je eigen wallet" } do %>
+      <%= render "ramps/payout_step" %>
+    <% end %>
+    <%= render layout: "ramps/step", locals: { number: 2, title: "Wacht op goedkeuring" } do %>
+      <%= render "ramps/approvals" %>
+    <% end %>
+    <%= render layout: "ramps/step", locals: { number: 3, title: "Zorg voor gas" } do %>
+      <%= render "ramps/gas" %>
+    <% end %>
+    <%= render layout: "ramps/step", locals: { number: 4, title: "Geen omwisseling op een testnetwerk" } do %>
+      <p class="text-sm text-gray-700" data-ramp-no-fiat>
+        Hier houdt de oefening op. De testtokens blijven op je wallet en worden geen euro's.
+        Op een echt netwerk zou je hier naar een provider gaan.
+      </p>
+    <% end %>
+  </ol>
+<% else %>
+  <ol class="space-y-4" data-ramp-stepper="on">
+    <%= render layout: "ramps/step", locals: { number: 1, title: "Controleer je gekoppelde wallet" } do %>
+      <%= render "ramps/wallet_check", intro: "Je vraagt de testtokens aan voor je eigen wallet. Deze wallet is aan je account gekoppeld:" %>
+    <% end %>
+    <%= render layout: "ramps/step", locals: { number: 2, title: "Haal test-#{faucet.token} op bij de #{faucet.name}" } do %>
+      <p class="text-sm text-gray-700">
+        Kies op de pagina <strong><%= faucet.token %></strong> en <strong><%= faucet.network %></strong>, en plak het adres van je eigen wallet.
+        Dit is testgeld: het kost niets en is niets waard.
+      </p>
+      <p class="text-sm text-gray-600"><%= faucet.limits %></p>
+      <% if @can_act %>
+        <%= ramp_external_link faucet.url, class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors", data: { ramp_action: "faucet" } do %>
+          <span>Open De <%= faucet.name.titleize %></span>
+          <%= icon :external_link, class: "w-4 h-4" %>
+        <% end %>
+        <p class="text-xs text-gray-500">Je verlaat FundTogether en gaat naar een site van Circle, in een nieuw tabblad.</p>
+      <% end %>
+    <% end %>
+    <%= render layout: "ramps/step", locals: { number: 3, title: "Zorg voor gas" } do %>
+      <%= render "ramps/gas" %>
+    <% end %>
+    <%= render layout: "ramps/step", locals: { number: 4, title: "Draag bij aan het fonds" } do %>
+      <%= render "ramps/contribute_step" %>
+    <% end %>
+  </ol>
+<% end %>
+<section class="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 space-y-2" data-ramp-disclosure>
+  <h3 class="text-lg font-semibold text-gray-900">Over deze testroute</h3>
+  <dl class="text-sm space-y-2">
+    <div><dt class="font-medium text-gray-900">Kosten</dt><dd class="text-gray-700">Testtokens hebben geen waarde.</dd></div>
+    <div><dt class="font-medium text-gray-900">Limieten</dt><dd class="text-gray-700"><%= faucet.limits %></dd></div>
+    <div><dt class="font-medium text-gray-900">Wie is verantwoordelijk</dt><dd class="text-gray-700">Circle beheert de faucet. FundTogether houdt niets vast.</dd></div>
+    <div><dt class="font-medium text-gray-900">Laatst gecontroleerd</dt><dd class="text-gray-700"><%= ramp_date(faucet.verified_on) %></dd></div>
+    <div>
+      <dt class="font-medium text-gray-900">Bronnen</dt>
+      <dd class="text-gray-700">
+        <% faucet.sources.each do |source| %>
+          <%= ramp_external_link source.label, source.url, class: "underline hover:text-gray-900 mr-2", data: { ramp_source: true } %>
+        <% end %>
+      </dd>
+    </div>
+  </dl>
+</section>

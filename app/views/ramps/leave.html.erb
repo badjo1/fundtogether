@@ -1,0 +1,37 @@
+<% content_for :title, "Je verlaat FundTogether - FundTogether" %>
+<%= render layout: "shared/app_layout" do %>
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Je verlaat FundTogether</h2>
+      <p class="text-gray-600 mt-1">Je gaat naar <%= @route.name %>, in een nieuw tabblad.</p>
+    </div>
+
+    <section class="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 space-y-3" data-ramp-interstitial>
+      <ul class="list-disc pl-5 text-sm text-gray-700 space-y-1">
+        <li><%= @route.name %> regelt de identiteitscontrole en het geld. Dat is een eigen dienst met eigen voorwaarden.</li>
+        <li>FundTogether houdt niets vast en neemt geen vergoeding. We krijgen niets van <%= @route.name %>.</li>
+        <li>We geven geen gegevens van jou door, en we krijgen geen bevestiging terug. Controleer daarna zelf je wallet.</li>
+        <li>Gebruik <strong><%= @route.token %></strong> op het netwerk <strong><%= @guide.guide.network_label %></strong>. Op een ander netwerk kun je je geld kwijtraken.</li>
+        <li>FundTogether heeft deze route niet met echt geld getest.</li>
+      </ul>
+      <% if @route.legal_notice %>
+        <%= render "ramps/notice", tone: :danger, text: @route.legal_notice %>
+      <% end %>
+      <% @route.warnings.each do |warning| %>
+        <%= render "ramps/notice", tone: :warning, text: warning %>
+      <% end %>
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <%= ramp_external_link @route.url, class: "inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors", data: { ramp_action: "external" } do %>
+          <span>Open <%= @route.name %></span>
+          <%= icon :external_link, class: "w-4 h-4" %>
+        <% end %>
+        <%= link_to "Terug Naar FundTogether", account_ramp_path(@account, direction: @route.direction), class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" %>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 space-y-4" data-ramp-disclosure>
+      <h3 class="text-lg font-semibold text-gray-900">Kosten, limieten en verantwoordelijkheid</h3>
+      <%= render "ramps/disclosure_entry", route: @route %>
+    </section>
+  </div>
+<% end %>

@@ -1,0 +1,24 @@
+<%# Locals: route. %>
+<article class="p-4 border border-gray-200 rounded-lg space-y-3" data-ramp-route="<%= route.id %>">
+  <h4 class="font-semibold text-gray-900"><%= route.name %></h4>
+  <% if route.legal_notice %>
+    <%= render "ramps/notice", tone: :danger, text: route.legal_notice %>
+  <% end %>
+  <ol class="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+    <% route.instructions.each do |instruction| %>
+      <li><%= instruction %></li>
+    <% end %>
+  </ol>
+  <% route.warnings.each do |warning| %>
+    <%= render "ramps/notice", tone: :warning, text: warning %>
+  <% end %>
+  <p class="text-sm text-gray-600"><span class="font-medium text-gray-900">Kosten:</span> <%= route.fees %></p>
+  <% if route.url && @can_act %>
+    <%= link_to leave_account_ramp_path(@account, route: route.id),
+          class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors",
+          data: { ramp_action: "leave" } do %>
+      <span>Verder Naar <%= route.name %></span>
+      <%= icon :arrow_right, class: "w-4 h-4" %>
+    <% end %>
+  <% end %>
+</article>

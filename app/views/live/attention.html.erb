@@ -1,0 +1,25 @@
+<turbo-frame id="attention">
+  <div class="space-y-4">
+    <% if @snapshot.nil? %>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: @gaps_only ? "Kan de ondertekenaars nu niet controleren" : "Kan nu niet controleren of er iets op je wacht" } do %>
+        <p>De blockchain is niet bereikbaar. Voorstellen kun je wel inzien bij <%= link_to "Voorstellen", account_proposal_pages_path(@account), class: "underline font-medium" %>.</p>
+      <% end %>
+    <% else %>
+      <%= render 'live/owner_gaps', gaps: @gaps, account: @account %>
+      <% unless @gaps_only %>
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="wacht-titel">
+        <h3 id="wacht-titel" class="text-lg font-bold text-gray-900 mb-4">Wacht op jou</h3>
+        <% if @views.empty? && @ready.empty? %>
+          <p class="text-sm text-gray-500">Er ligt niets op je te wachten. Zodra iemand een voorstel doet dat jouw goedkeuring nodig heeft, staat het hier.</p>
+        <% else %>
+          <ul class="divide-y divide-gray-100">
+            <% (@views + @ready).each do |view| %>
+              <%= render 'proposal_pages/row', view: view, account: @account, chain: @account.chain %>
+            <% end %>
+          </ul>
+        <% end %>
+      </section>
+      <% end %>
+    <% end %>
+  </div>
+</turbo-frame>

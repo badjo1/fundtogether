@@ -157,7 +157,7 @@ class InvitationTest < ActiveSupport::TestCase
   # Accept Method
   test "accept! should add user to account as member" do
     # Use a user that is not already in the account
-    new_user = User.create!(name: "New User", email_address: "newuser@test.com", password: "password")
+    new_user = User.create!(name: "New User", email_address: @pending_invitation.email, password: "password", email_confirmed_at: Time.current)
 
     # Verify email before accepting
     @pending_invitation.verify_email!
@@ -174,7 +174,7 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   test "accept! should update status to accepted" do
-    new_user = User.create!(name: "New User 2", email_address: "newuser2@test.com", password: "password")
+    new_user = User.create!(name: "New User 2", email_address: @pending_invitation.email, password: "password", email_confirmed_at: Time.current)
 
     # Verify email before accepting
     @pending_invitation.verify_email!
@@ -184,9 +184,17 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   test "accept! should return false for expired invitations" do
-    new_user = User.create!(name: "New User 3", email_address: "newuser3@test.com", password: "password")
+    new_user = User.create!(name: "New User 3", email_address: "newuser3@test.com", password: "password", email_confirmed_at: Time.current)
     result = @expired_invitation.accept!(new_user)
     assert_equal false, result
+  end
+
+  test "accept! should refuse a user whose email differs" do
+    other = User.create!(name: "Other", email_address: "other@test.com", password: "password", email_confirmed_at: Time.current)
+
+    assert_equal false, @pending_invitation.accept!(other)
+    assert @pending_invitation.reload.pending?
+    assert_not @account.users.include?(other)
   end
 
   # Reject Method
@@ -276,7 +284,8 @@ class InvitationTest < ActiveSupport::TestCase
     new_user = User.create!(
       name: "Invited User",
       email_address: "invited@example.com",
-      password: "password"
+      password: "password",
+      email_confirmed_at: Time.current
     )
 
     # Create invitation for account one only
@@ -312,7 +321,8 @@ class InvitationTest < ActiveSupport::TestCase
     new_user = User.create!(
       name: "Security Test User",
       email_address: "security@example.com",
-      password: "password"
+      password: "password",
+      email_confirmed_at: Time.current
     )
 
     # Create invitations for BOTH accounts (but user only accepts one)
@@ -493,7 +503,7 @@ class InvitationTest < ActiveSupport::TestCase
     assert invitation.ready_to_accept?, "Should be ready after verification"
 
     # Accept invitation
-    new_user = User.create!(name: "Test", email_address: "test@example.com", password: "password")
+    new_user = User.create!(name: "Test", email_address: "test@example.com", password: "password", email_confirmed_at: Time.current)
     invitation.accept!(new_user)
     assert_not invitation.ready_to_accept?, "Should not be ready after acceptance"
   end
@@ -505,7 +515,7 @@ class InvitationTest < ActiveSupport::TestCase
       email: "unverified@example.com"
     )
 
-    new_user = User.create!(name: "Test User", email_address: "unverified@example.com", password: "password")
+    new_user = User.create!(name: "Test User", email_address: "unverified@example.com", password: "password", email_confirmed_at: Time.current)
     result = invitation.accept!(new_user)
 
     assert_equal false, result, "Accept should fail for unverified email"

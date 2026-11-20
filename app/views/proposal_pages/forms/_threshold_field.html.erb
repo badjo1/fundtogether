@@ -1,0 +1,20 @@
+<%# Locals: count (ondertekenaars na dit voorstel), selected. Valt binnen data-controller="threshold". %>
+<div>
+  <label for="threshold" class="block text-sm font-medium text-gray-700 mb-2">Aantal goedkeuringen daarna</label>
+  <%= select_tag :threshold, options_for_select((1..count).to_a, selected), data: { threshold_target: "select", action: "threshold#update" }, class: "w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 tabular-nums" %>
+  <p class="text-gray-900 font-medium mt-2" data-threshold-target="sentence" aria-live="polite"></p>
+</div>
+<div data-threshold-target="riskAll" hidden>
+  <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Iedereen moet goedkeuren" } do %>
+    <p>Raakt één iemand zijn wallet kwijt, dan kan er niets meer uit het fonds.</p>
+  <% end %>
+</div>
+<div data-threshold-target="riskOne" hidden>
+  <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Eén persoon kan alles" } do %>
+    <p>Elke ondertekenaar kan dan in zijn eentje al het geld verplaatsen. Ook wie gehackt wordt.</p>
+  <% end %>
+</div>
+<label class="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg cursor-pointer" data-threshold-target="ackRow" hidden>
+  <input type="checkbox" name="acknowledge_risk" value="1" data-threshold-target="ack" data-action="threshold#update" class="mt-1 w-4 h-4 flex-shrink-0">
+  <span class="text-sm text-yellow-900">Ik begrijp dit risico en wil toch deze instelling.</span>
+</label>

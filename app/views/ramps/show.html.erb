@@ -1,0 +1,35 @@
+<% content_for :title, "Geld in en uit je fonds - FundTogether" %>
+<%= render layout: "shared/app_layout" do %>
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Geld in en uit je fonds</h2>
+      <p class="text-gray-600 mt-1"><%= @account.name %></p>
+      <% if @guide.usable? %>
+        <p class="text-sm text-gray-600 mt-2" data-ramp-network>
+          Netwerk: <span class="font-semibold text-gray-900"><%= @guide.guide.network_label %></span>.
+          Token: <span class="font-semibold text-gray-900"><%= @guide.chain.token.symbol %></span>.
+        </p>
+      <% end %>
+    </div>
+
+    <%= render "ramps/promise" %>
+
+    <% if @guide.usable? %>
+      <% unless @can_act %>
+        <%= render "ramps/notice", tone: :info, text: "Je hebt leesrechten in dit fonds. Je kunt hier alles lezen; de acties zijn voor members en admins." %>
+      <% end %>
+
+      <%= render "ramps/tabs" %>
+
+      <% if @guide.testnet? %>
+        <%= render "ramps/testnet" %>
+      <% elsif @direction == "off" %>
+        <%= render "ramps/off_ramp" %>
+      <% else %>
+        <%= render "ramps/on_ramp" %>
+      <% end %>
+    <% else %>
+      <%= render "ramps/empty_state" %>
+    <% end %>
+  </div>
+<% end %>

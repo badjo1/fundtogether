@@ -1,0 +1,18 @@
+<%# Locals: proposal, account, chain. Wat je kunt doen zonder ons te vertrouwen. Eerlijk over de grens: deze pagina komt ook van onze server. %>
+<% cast = "cast call #{checksum_address(account.safe_address)} \"getTransactionHash(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)(bytes32)\" #{checksum_address(proposal.to)} #{proposal.value.to_i} #{proposal.data} 0 0 0 0 #{Chain::Address::ZERO} #{Chain::Address::ZERO} #{proposal.nonce.to_i} --rpc-url #{chain.public_rpc_urls.first}" %>
+<section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3" aria-labelledby="hash-titel" data-testid="independent-check">
+  <h3 id="hash-titel" class="text-lg font-bold text-gray-900">Zelf controleren</h3>
+  <%= render 'shared/copy_field', value: proposal.safe_tx_hash, label: "safeTxHash" %>
+  <p class="text-sm text-gray-600">Dit is de vingerafdruk van precies dit voorstel. Klopt hij niet met wat je wallet of een andere bron laat zien? Niet ondertekenen, want dan zou je iets anders goedkeuren dan hier staat.</p>
+  <details class="text-sm text-gray-700">
+    <summary class="font-medium text-gray-900 cursor-pointer">Zo controleer je dit zonder FundTogether</summary>
+    <ol class="list-decimal list-inside space-y-2 mt-2">
+      <li><strong>Lees je wallet.</strong> Vergelijk het doeladres, de waarde, de data en het volgnummer met wat je wallet toont. Dat scherm komt niet van ons. Gebruik voor echt geld een hardware wallet, die dit op een eigen schermpje laat zien.</li>
+      <li><strong>Vraag de Safe zelf.</strong> De Safe berekent deze hash op de blockchain, met een eigen functie. Dat kan op de <%= link_to "explorer", "#{explorer_address_url(chain, account.safe_address)}#readProxyContract", target: "_blank", rel: "noopener noreferrer", class: "underline font-medium" %> bij <span class="font-mono text-xs">getTransactionHash</span>, of op je eigen computer met Foundry:
+        <div class="mt-2"><%= render 'shared/copy_field', value: cast, label: "Commando" %></div>
+      </li>
+      <li><strong>Vergelijk via een ander kanaal.</strong> Stuur de hash aan een andere ondertekenaar, bijvoorbeeld per telefoon of berichtenapp, en laat die hem vergelijken met wat hun wallet laat zien.</li>
+    </ol>
+    <p class="mt-2 text-gray-600">Let op: deze uitleg en dit commando komen ook van onze server. Controleer daarom of de waarden in het commando kloppen met wat jij wilt goedkeuren, en stel als het om veel geld gaat dit commando zelf samen. Meer op <%= link_to "de transparantiepagina", account_transparency_path(account), class: "underline font-medium" %>.</p>
+  </details>
+</section>

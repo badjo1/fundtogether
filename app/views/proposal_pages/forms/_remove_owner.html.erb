@@ -1,0 +1,17 @@
+<% count = @owners.length - 1 %>
+<div class="space-y-5">
+  <%= render layout: 'shared/info_panel', locals: {} do %>
+    <p>Als dit wordt uitgevoerd, kan deze persoon niet meer goedkeuren. Lidmaatschap van het fonds verandert hierdoor niet. Goedkeuringen die hij eerder gaf op openstaande voorstellen tellen dan niet meer mee.</p>
+  <% end %>
+  <% if @owners.length <= 1 %>
+    <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Dit kan niet" } do %>
+      <p>De laatste ondertekenaar kan niet worden verwijderd. Voeg eerst iemand toe.</p>
+    <% end %>
+  <% else %>
+    <div>
+      <label for="owner" class="block text-sm font-medium text-gray-700 mb-2">Wie?</label>
+      <%= select_tag :owner, options_for_select(@owners.map { |owner| [ "#{owner[:name] || 'Onbekend'} (#{checksum_address(owner[:address])})", owner[:address] ] }, params[:owner]), class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+    <%= render 'proposal_pages/forms/threshold_field', count: count, selected: params[:threshold] || [ @snapshot.threshold, count ].min %>
+  <% end %>
+</div>

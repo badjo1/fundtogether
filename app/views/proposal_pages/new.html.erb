@@ -1,0 +1,62 @@
+<% content_for :title, "Nieuw voorstel" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-2xl mx-auto space-y-6">
+    <div>
+      <%= link_to @kind ? new_account_proposal_page_path(@account) : account_proposal_pages_path(@account), class: "text-sm text-gray-500 hover:text-gray-700 inline-flex items-center gap-1" do %>
+        <%= icon :chevron_left, class: "w-4 h-4" %><span>Terug</span>
+      <% end %>
+      <h2 class="text-2xl font-bold text-gray-900 mt-1"><%= @kind ? kind_label(@kind) : "Nieuw voorstel" %></h2>
+    </div>
+
+    <% if @kind.nil? %>
+      <p class="text-sm text-gray-500">Een voorstel verplaatst nog niets. Pas als genoeg ondertekenaars het goedkeuren, kan het worden uitgevoerd.</p>
+      <ul class="space-y-3">
+        <% [
+             [ "transfer_token", :arrow_up, "Geld uitbetalen", "#{@chain.token.symbol} uit het fonds naar een lid of ander adres." ],
+             [ "add_owner", :plus, "Ondertekenaar toevoegen", "Een lid met een gekoppelde wallet mag ook goedkeuren." ],
+             [ "remove_owner", :x_circle, "Ondertekenaar verwijderen", "Iemand kan niet meer goedkeuren." ],
+             [ "swap_owner", :switch, "Ondertekenaar vervangen", "Voor een nieuwe, kwijtgeraakte of gehackte wallet." ],
+             [ "change_threshold", :check_circle, "Aantal goedkeuringen wijzigen", "Hoeveel ondertekenaars akkoord moeten zijn." ]
+           ].each do |kind, icon_name, title, body| %>
+          <li>
+            <%= link_to new_account_proposal_page_path(@account, kind: kind), class: "flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow" do %>
+              <span class="p-3 rounded-lg bg-blue-100 flex-shrink-0"><%= icon icon_name, class: "w-5 h-5 text-blue-600" %></span>
+              <span class="flex-1 min-w-0">
+                <span class="block font-medium text-gray-900"><%= title %></span>
+                <span class="block text-sm text-gray-500"><%= body %></span>
+              </span>
+              <%= icon :chevron_right, class: "w-5 h-5 text-gray-400 flex-shrink-0" %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+      <p class="text-sm text-gray-500">Staat er <%= @chain.native_symbol %> in de Safe, bijvoorbeeld per ongeluk gestuurd? <%= link_to "Stel voor om dat terug te sturen", new_account_proposal_page_path(@account, kind: "transfer_native"), class: "text-blue-600 hover:text-blue-700 font-medium" %>.</p>
+    <% else %>
+      <% if @error %>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3" role="alert">
+          <%= icon :x_circle, class: "w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" %>
+          <p class="text-sm text-red-800"><%= @error %></p>
+        </div>
+      <% end %>
+      <% owner_form = %w[add_owner remove_owner swap_owner change_threshold].include?(@kind) %>
+      <% if owner_form && @snapshot.nil? %>
+        <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Dit kan nu niet" } do %>
+          <p>Om dit voorstel te maken moeten we de huidige ondertekenaars van de blockchain lezen, en die is nu niet bereikbaar. Probeer het straks opnieuw.</p>
+        <% end %>
+      <% else %>
+        <% count_after = { "add_owner" => @owners.length + 1, "remove_owner" => @owners.length - 1, "change_threshold" => @owners.length }[@kind] %>
+        <%= form_with url: account_proposal_pages_path(@account), method: :post, class: "bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-5",
+              data: (count_after ? { controller: "threshold", threshold_count_value: count_after } : {}) do %>
+          <%= hidden_field_tag :kind, @kind %>
+          <%= render "proposal_pages/forms/#{@kind}" %>
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Waarom? <span class="font-normal text-gray-500">(wordt getoond aan de groep)</span></label>
+            <%= text_field_tag :title, params[:title], required: true, maxlength: SafeProposal::TITLE_MAX, class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+          <button type="submit" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" <%= 'data-threshold-target=submit' if owner_form %> <%= 'disabled' if @kind == 'swap_owner' && @new_owner_options.empty? %>>Voorstel maken</button>
+          <p class="text-xs text-gray-500 text-center">Dit kost niets en verplaatst nog niets. De groep ziet het voorstel en kan het controleren.</p>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

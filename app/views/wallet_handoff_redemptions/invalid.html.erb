@@ -1,0 +1,8 @@
+<% content_for :title, "Link werkt niet meer" %>
+<%= render layout: 'shared/public_layout' do %>
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 space-y-4 text-center">
+    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto"><%= icon :x_circle, class: "w-8 h-8 text-gray-400" %></div>
+    <h1 class="text-2xl font-bold text-gray-900">Deze link werkt niet meer</h1>
+    <p class="text-sm text-gray-600"><%= @message %> Een link werkt één keer en is 5 minuten geldig. Maak een nieuwe QR-code bij 'Mijn wallets'.</p>
+  </div>
+<% end %>

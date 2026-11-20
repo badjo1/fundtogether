@@ -3,6 +3,9 @@ class Invitation < ApplicationRecord
   belongs_to :account
   belongs_to :invited_by, class_name: "User"
 
+  normalizes :email, with: ->(e) { e.strip.downcase.presence }
+  normalizes :invitee_name, with: ->(value) { SafeText.clean(value) }
+
   # Email alleen required als verified (niet bij creatie - voor WhatsApp/QR/Link flows)
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_nil: true
   validates :status, presence: true,
@@ -35,8 +38,9 @@ class Invitation < ApplicationRecord
     email.present? && email_verified? && pending? && !expired?
   end
 
+  # A token only verifies the address it was mailed to, and only the latest one counts.
   def generate_email_verification_token
-    self.email_verification_token = signed_token_for(:email_verification)
+    self.email_verification_token = signed_verification_token
     self.email_verification_sent_at = Time.current
   end
 
@@ -45,20 +49,65 @@ class Invitation < ApplicationRecord
   end
 
   def self.find_by_email_verification_token(token)
-    verifier = Rails.application.message_verifier(:email_verification)
-    invitation_id = verifier.verify(token, purpose: :email_verification)
-    find_by(id: invitation_id)
+    payload = Rails.application.message_verifier(:email_verification).verify(token, purpose: :email_verification)
+    invitation = find_by(id: payload["id"])
+    return unless invitation&.email.present? && invitation.email == payload["email"]
+    return unless ActiveSupport::SecurityUtils.secure_compare(invitation.email_verification_token.to_s, token)
+
+    invitation
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     nil
   end
 
-  def accept!(user)
-    return false if expired?
-    return false unless ready_to_accept?
+  # Link holder names their address and has to prove it by mail. Refused once verified.
+  def claim_email(address)
+    return false if email_verified?
 
-    account.add_member(user, role: "member")
-    update!(status: "accepted")
-    user
+    self.email = address
+    return false if email.blank?
+
+    generate_email_verification_token
+    save
+  end
+
+  # An admin names the addressee directly; only that address can then accept.
+  def address_to(address)
+    self.email = address
+    return false if email.blank?
+
+    self.email_verified_at = Time.current
+    self.email_verification_token = nil
+    save
+  end
+
+  def email_matches?(user)
+    email.present? && email.casecmp?(user.email_address)
+  end
+
+  def accept!(user)
+    with_lock do
+      next false unless ready_to_accept? && email_matches?(user) && user.email_confirmed?
+
+      membership = account.account_memberships.find_by(user: user)
+      if membership.nil?
+        account.add_member(user, role: "member")
+      elsif !membership.active?
+        membership.update!(active: true, role: "member")
+      end
+
+      update!(status: "accepted")
+      user
+    end
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+    false
+  end
+
+  # An unclaimed link can be declined by whoever holds it. Once an address is verified,
+  # only that person or an admin of the fund can, so a forwarded link cannot cancel it.
+  def rejectable_by?(user)
+    return true unless email_verified?
+
+    user.present? && (email_matches?(user) || account.active_admin?(user))
   end
 
   def reject!
@@ -88,9 +137,12 @@ class Invitation < ApplicationRecord
 
   private
 
-  def signed_token_for(purpose)
-    verifier = Rails.application.message_verifier(purpose)
-    verifier.generate(id, purpose: purpose, expires_in: 2.hours)
+  def signed_verification_token
+    Rails.application.message_verifier(:email_verification).generate(
+      { "id" => id, "email" => email },
+      purpose: :email_verification,
+      expires_in: 2.hours
+    )
   end
 
   def set_defaults

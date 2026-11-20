@@ -1,0 +1,28 @@
+<% item = "rounded-lg border border-gray-200 p-4" %>
+<details class="<%= item %>">
+  <summary class="font-medium text-gray-900 cursor-pointer flex items-center justify-between gap-2"><span>Op de computer: Rabby</span><%= icon :chevron_down, class: "w-4 h-4 text-gray-400 details-chevron flex-shrink-0" %></summary>
+  <ol class="list-decimal list-inside text-sm text-gray-600 mt-3 space-y-1">
+    <li>Installeer de browser-extensie via <%= link_to "rabby.io", "https://rabby.io", target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-700 font-medium" %>. Typ het adres zelf in en klik niet op advertenties.</li>
+    <li>Kies "Create new address" en schrijf je herstelzin op papier.</li>
+    <li>Kom hier terug en vernieuw de pagina. Rabby staat dan bij "Kies je wallet".</li>
+  </ol>
+</details>
+<details class="<%= item %>">
+  <summary class="font-medium text-gray-900 cursor-pointer flex items-center justify-between gap-2"><span>Op je telefoon: MetaMask</span><%= icon :chevron_down, class: "w-4 h-4 text-gray-400 details-chevron flex-shrink-0" %></summary>
+  <ol class="list-decimal list-inside text-sm text-gray-600 mt-3 space-y-1">
+    <li>Installeer MetaMask uit de App Store of Google Play, via de link op <%= link_to "metamask.io", "https://metamask.io/download/", target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-700 font-medium" %>. Let op namaak-apps.</li>
+    <li>Maak een nieuwe wallet en schrijf je herstelzin op papier.</li>
+    <li>Maak hierboven een QR-code en scan die met de scanner in MetaMask, of open de link daar.</li>
+  </ol>
+</details>
+<details class="<%= item %>">
+  <summary class="font-medium text-gray-900 cursor-pointer flex items-center justify-between gap-2"><span>Wat is een herstelzin?</span><%= icon :chevron_down, class: "w-4 h-4 text-gray-400 details-chevron flex-shrink-0" %></summary>
+  <div class="text-sm text-gray-600 mt-3 space-y-2">
+    <p>Een herstelzin (seed phrase) is een reeks van 12 of 24 woorden. Dat is de sleutel tot je wallet. Wie de woorden heeft, heeft je wallet. Ook zonder je telefoon of wachtwoord.</p>
+    <p>Schrijf hem op papier en bewaar hem veilig. Geen foto, geen notitie-app, geen cloud.</p>
+  </div>
+</details>
+<%= render layout: 'shared/info_panel', locals: { tone: "danger", title: "Deel je herstelzin nooit" } do %>
+  <p>Niet met ons, niet met een helpdesk, niet met je groep, niet op een website. FundTogether vraagt er nooit om. Wie erom vraagt, wil je geld stelen.</p>
+  <p>Kwijt is kwijt: wij kunnen hem niet terughalen. Staat je wallet in een Safe met anderen, dan kunnen zij hem hooguit vervangen.</p>
+<% end %>

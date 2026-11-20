@@ -1,0 +1,45 @@
+<% token = @chain.token %>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <section class="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="saldo-titel">
+    <div class="flex items-center justify-between gap-3">
+      <h3 id="saldo-titel" class="text-sm font-medium text-gray-600">Saldo van het fonds</h3>
+      <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 font-medium"><%= token.symbol %> op <%= @chain.name %></span>
+    </div>
+    <%= render layout: 'shared/live_frame', locals: { id: "balance_hero", src: account_live_balance_path(@account, size: "hero", frame: "balance_hero"), interval: 60_000 } do %>
+      <div class="animate-pulse mt-3 space-y-2">
+        <div class="h-9 w-48 bg-gray-200 rounded"></div>
+        <div class="h-3 w-40 bg-gray-200 rounded"></div>
+        <span class="sr-only">Saldo van de blockchain ophalen</span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="inleg-titel">
+    <h3 id="inleg-titel" class="text-sm font-medium text-gray-600">Jouw inleg, vóór uitbetalingen</h3>
+    <p class="text-2xl font-bold text-gray-900 mt-3 tabular-nums"><%= money(@contribution[:final], token) %></p>
+    <p class="text-sm text-gray-500 mt-1">definitief op de blockchain</p>
+    <% if @contribution[:pending].positive? %>
+      <p class="text-sm text-yellow-700 mt-1 tabular-nums">+ <%= money(@contribution[:pending], token) %> in behandeling</p>
+    <% end %>
+  </section>
+</div>
+
+<%= render layout: 'shared/live_frame', locals: { id: "attention", src: account_live_attention_path(@account) } do %>
+  <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100"><%= render 'shared/skeleton', label: "Controleren of er iets op je wacht" %></div>
+<% end %>
+
+<section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="recent-titel">
+  <div class="flex items-center justify-between gap-4 mb-4">
+    <h3 id="recent-titel" class="text-lg font-bold text-gray-900">Recente activiteit</h3>
+    <%= link_to "Alles bekijken", account_activity_path(@account), class: "text-sm text-blue-600 hover:text-blue-700 font-medium" %>
+  </div>
+  <% if @recent_events.any? %>
+    <ul class="divide-y divide-gray-100">
+      <% @recent_events.each do |event| %>
+        <%= render 'activity_pages/event_row', event: event, chain: @chain %>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-sm text-gray-500">Nog niets gebeurd op de blockchain. Zodra iemand inlegt, zie je dat hier, met een link naar het bewijs.</p>
+  <% end %>
+</section>

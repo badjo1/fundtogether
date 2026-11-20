@@ -1,0 +1,10 @@
+<%# Voor pagina's die een actieve Safe nodig hebben. Locals: account, title, body. %>
+<%= render layout: 'shared/empty_state', locals: { icon_name: :shield, title: title, body: body } do %>
+  <% if account.safe_deploying? %>
+    <%= link_to "Bekijk de voortgang", account_safe_setup_path(account), class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" %>
+  <% elsif current_membership&.admin? %>
+    <%= link_to "Fonds instellen", account_safe_setup_path(account), class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" %>
+  <% else %>
+    <p class="text-sm text-gray-500">Een admin van dit fonds moet dit nog doen.</p>
+  <% end %>
+<% end %>

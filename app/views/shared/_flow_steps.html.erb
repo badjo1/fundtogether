@@ -1,0 +1,9 @@
+<%# Locals: steps: [[label, "step names"], ...]. flow-ui zet per stap data-state. %>
+<ol class="space-y-2">
+  <% steps.each do |label, names| %>
+    <li class="flow-step" data-flow-ui-target="step" data-steps="<%= names %>" data-state="pending">
+      <span class="flow-dot" aria-hidden="true"></span>
+      <span><%= label %></span>
+    </li>
+  <% end %>
+</ol>

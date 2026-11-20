@@ -1,0 +1,10 @@
+<%# Locals: routes. Standing block: never collapsed, so nobody leaves without having had the chance to read it. %>
+<section class="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 space-y-4" data-ramp-disclosure>
+  <h3 class="text-lg font-semibold text-gray-900">Kosten, limieten en verantwoordelijkheid</h3>
+  <p class="text-sm text-gray-700">
+    De provider of exchange is verantwoordelijk voor de identiteitscontrole, voor je geld en voor de uiteindelijke prijs. Die zie je pas bij de provider.
+    FundTogether is geen partij, houdt niets vast en neemt geen vergoeding. Dit is geen aanbeveling en geen financieel advies.
+    Onderstaande gegevens zijn een momentopname; bij verschil geldt wat de provider zegt.
+  </p>
+  <%= render partial: "ramps/disclosure_entry", collection: routes, as: :route %>
+</section>

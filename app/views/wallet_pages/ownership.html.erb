@@ -1,0 +1,12 @@
+<turbo-frame id="wallet_ownership_<%= @wallet.id %>">
+  <% owner_of = @funds.select { |fund| fund[:owner] } %>
+  <% unknown = @funds.select { |fund| fund[:owner].nil? } %>
+  <% if owner_of.any? %>
+    <p class="text-xs text-gray-700">Ondertekenaar van: <%= safe_join(owner_of.map { |fund| link_to(fund[:name], account_transparency_path(fund[:account_id]), class: "text-blue-600 hover:text-blue-700 font-medium") }, ", ") %></p>
+  <% elsif unknown.empty? %>
+    <p class="text-xs text-gray-500">Geen ondertekenaar van een actieve Safe.</p>
+  <% end %>
+  <% if unknown.any? %>
+    <p class="text-xs text-yellow-800">Kon nu niet controleren voor: <%= unknown.map { |fund| fund[:name] }.join(", ") %>. De blockchain is niet bereikbaar.</p>
+  <% end %>
+</turbo-frame>

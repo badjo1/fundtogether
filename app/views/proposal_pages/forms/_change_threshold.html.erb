@@ -1,0 +1,7 @@
+<% count = @owners.length %>
+<div class="space-y-5">
+  <%= render layout: 'shared/info_panel', locals: {} do %>
+    <p>Nu: <strong><%= threshold_sentence(@snapshot.threshold, count) %></strong>. Let op: bij een lager aantal kunnen oudere voorstellen die al goedkeuringen hebben meteen uitvoerbaar worden.</p>
+  <% end %>
+  <%= render 'proposal_pages/forms/threshold_field', count: count, selected: params[:threshold] || @snapshot.threshold %>
+</div>

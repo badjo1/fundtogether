@@ -1,0 +1,11 @@
+<%# Locals: account, address, label. %>
+<div>
+  <dt class="text-sm text-gray-500"><%= label %></dt>
+  <dd>
+    <% if (name = member_name_for(account, address)) %><span class="block font-medium text-gray-900"><bdi><%= name %></bdi></span><% end %>
+    <span class="block font-mono text-sm text-gray-900 break-hash"><%= checksum_address(address) %></span>
+    <% if name && account.duplicate_member_names.include?(SafeText.comparable(name)) %>
+      <span class="block text-xs text-red-700 mt-1" data-testid="duplicate-name">Er zijn meer leden met deze naam. Kijk naar het adres.</span>
+    <% end %>
+  </dd>
+</div>

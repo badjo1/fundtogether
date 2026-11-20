@@ -1,0 +1,10 @@
+<p class="text-sm text-gray-700">
+  Een voorstel verplaatst nog geen geld. Genoeg eigenaren van de Safe moeten het eerst met hun eigen wallet ondertekenen.
+  Daarna kan iemand het uitvoeren, en die persoon betaalt daarvoor het gas.
+</p>
+<% if @account.safe_threshold && @account.safe_owners.present? %>
+  <p class="text-sm text-gray-700" data-ramp-threshold>
+    Bij het aanmaken van de Safe is gekozen voor <strong><%= @account.safe_threshold %> van de <%= @account.safe_owners.size %></strong> handtekeningen.
+    De actuele stand staat bij het voorstel, want de blockchain beslist.
+  </p>
+<% end %>

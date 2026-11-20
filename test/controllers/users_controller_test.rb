@@ -11,7 +11,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       @account.account_memberships.create!(
         user: @user,
         role: "admin",
-        balance_cents: 15000, # €150.00
         active: true,
         joined_at: 1.month.ago
       )
@@ -33,7 +32,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       @account.account_memberships.create!(
         user: other_user,
         role: "member",
-        balance_cents: 25000, # €250.00
         active: true,
         joined_at: 2.weeks.ago
       )
@@ -42,35 +40,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get users_path
     assert_response :success
 
-    # Check total members count is displayed (at least 1)
-    assert_select ".text-3xl.font-bold.text-gray-900"
-
-    # Check average balance is displayed with euro symbol
-    assert_select ".text-3xl.font-bold.text-gray-900", text: /€/
-  end
-
-  test "should display user balances correctly" do
-    # Update balance to known value
-    membership = @account.account_memberships.find_by(user: @user)
-    membership.update(balance_cents: 12345) # €123.45
-
-    get users_path
-    assert_response :success
-
-    # Check balance is displayed
-    assert_select ".text-lg.font-bold", text: /€123\.45/
-  end
-
-  test "should show negative balances in red" do
-    # Set negative balance
-    membership = @account.account_memberships.find_by(user: @user)
-    membership.update(balance_cents: -5000) # -€50.00
-
-    get users_path
-    assert_response :success
-
-    # Check negative balance has red styling
-    assert_select ".text-red-600", text: /€-50\.00/
+    # Check total members count is displayed, each member counted once
+    assert_select ".text-3xl.font-bold.text-gray-900", text: "2"
   end
 
   test "should display user role badges" do
@@ -81,26 +52,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select ".bg-purple-100.text-purple-800", text: "Admin"
   end
 
-  test "should show transaction count per user" do
-    # Create some transactions
-    3.times do
-      @account.transactions.create!(
-        from_user: @user,
-        transaction_type: "deposit",
-        amount_cents: 10000,
-        description: "Test deposit",
-        token: "EURe",
-        status: "confirmed"
-      )
-    end
-
-    get users_path
-    assert_response :success
-
-    # Check transaction count is displayed
-    assert_select ".text-lg.font-bold.text-gray-900", text: "3"
-  end
-
   test "should mark current user with (Jij)" do
     get users_path
     assert_response :success
@@ -109,14 +60,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select "span.text-gray-500", text: "(Jij)"
   end
 
-  test "should show empty state when no members" do
-    # Remove all memberships
+  test "should not open the page once the user has no membership left" do
     @account.account_memberships.destroy_all
 
     get users_path
-    assert_response :success
-
-    assert_select "p.text-gray-500", text: "Nog geen leden in dit account"
+    assert_redirected_to new_account_path
   end
 
   test "should display pending invitations count" do
@@ -138,11 +86,18 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select "span.bg-yellow-100.text-yellow-800", text: /2 In behandeling/
   end
 
-  test "should redirect to new account if no current account" do
-    @user.update(current_account: nil)
+  test "should redirect to new account if the user has no fund" do
+    sign_in_as create_user("zonderfonds")
 
     get users_path
     assert_redirected_to new_account_path
     assert_equal "Maak eerst een account aan om te beginnen", flash[:alert]
+  end
+
+  test "should use a fund the user is active in when none is selected" do
+    @user.update(current_account: nil)
+
+    get users_path
+    assert_response :success
   end
 end

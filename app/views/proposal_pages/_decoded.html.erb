@@ -1,0 +1,27 @@
+<%# Locals: proposal, account, chain. Getypte parameters, nooit de titel als bron van waarheid. %>
+<% params = proposal.params %>
+<dl class="space-y-3">
+  <% case proposal.kind %>
+  <% when "transfer_token" %>
+    <div><dt class="text-sm text-gray-500">Bedrag</dt><dd class="text-3xl font-bold text-gray-900 tabular-nums break-words"><%= money(params["amount"], chain.token) %></dd></div>
+    <%= render 'proposal_pages/person', account: account, address: params["recipient"], label: "Naar" %>
+    <div><dt class="text-sm text-gray-500">Netwerk</dt><dd class="font-medium text-gray-900"><%= chain.name %></dd></div>
+  <% when "transfer_native" %>
+    <div><dt class="text-sm text-gray-500">Bedrag</dt><dd class="text-3xl font-bold text-gray-900 tabular-nums break-words"><%= native_money(params["amount"], chain) %></dd></div>
+    <%= render 'proposal_pages/person', account: account, address: params["recipient"], label: "Naar" %>
+    <div><dt class="text-sm text-gray-500">Netwerk</dt><dd class="font-medium text-gray-900"><%= chain.name %></dd></div>
+  <% when "add_owner" %>
+    <%= render 'proposal_pages/person', account: account, address: params["owner"], label: "Nieuwe ondertekenaar" %>
+    <div><dt class="text-sm text-gray-500">Goedkeuringen daarna</dt><dd class="font-medium text-gray-900 tabular-nums"><%= params["threshold"] %></dd></div>
+  <% when "remove_owner" %>
+    <%= render 'proposal_pages/person', account: account, address: params["owner"], label: "Verwijdert ondertekenaar" %>
+    <div><dt class="text-sm text-gray-500">Goedkeuringen daarna</dt><dd class="font-medium text-gray-900 tabular-nums"><%= params["threshold"] %></dd></div>
+  <% when "swap_owner" %>
+    <%= render 'proposal_pages/person', account: account, address: params["old_owner"], label: "Oude ondertekenaar" %>
+    <%= render 'proposal_pages/person', account: account, address: params["new_owner"], label: "Nieuwe ondertekenaar" %>
+  <% when "change_threshold" %>
+    <div><dt class="text-sm text-gray-500">Goedkeuringen voortaan</dt><dd class="text-3xl font-bold text-gray-900 tabular-nums"><%= params["threshold"] %></dd></div>
+  <% when "rejection" %>
+    <div><dt class="text-sm text-gray-500">Effect</dt><dd class="text-gray-900">Verplaatst geen geld. Als dit wordt uitgevoerd, vervallen alle andere voorstellen met volgnummer <span class="tabular-nums"><%= params["nonce"] %></span>.</dd></div>
+  <% end %>
+</dl>

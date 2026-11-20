@@ -1,0 +1,25 @@
+<% content_for :title, @proposal.title %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-2xl mx-auto space-y-6">
+    <div>
+      <%= link_to account_proposal_pages_path(@account), class: "text-sm text-gray-500 hover:text-gray-700 inline-flex items-center gap-1" do %>
+        <%= icon :chevron_left, class: "w-4 h-4" %><span>Alle voorstellen</span>
+      <% end %>
+      <p class="text-sm font-medium text-gray-500 mt-2"><%= kind_label(@proposal.kind) %> · volgnummer <span class="tabular-nums"><%= @proposal.nonce.to_i %></span></p>
+      <h2 class="text-2xl font-bold text-gray-900 break-words"><bdi><%= @proposal.title %></bdi></h2>
+      <p class="text-xs text-gray-500 mt-1">Deze titel is tekst van de indiener. Wat het voorstel echt doet staat hieronder.</p>
+      <p class="text-sm text-gray-500 mt-1">Voorgesteld door <bdi><%= @proposal.proposer.display_name %></bdi> op <%= nl_datetime(@proposal.created_at) %></p>
+    </div>
+
+    <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4" aria-labelledby="actie-titel">
+      <h3 id="actie-titel" class="text-lg font-bold text-gray-900">Wat dit voorstel doet</h3>
+      <%= render 'proposal_pages/decoded', proposal: @proposal, account: @account, chain: @chain %>
+    </section>
+
+    <%= render layout: 'shared/live_frame', locals: { id: "proposal_live", src: live_account_proposal_page_path(@account, @proposal) } do %>
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100"><%= render 'shared/skeleton', label: "Goedkeuringen controleren tegen de blockchain" %></div>
+    <% end %>
+
+    <%= render 'proposal_pages/independent_check', proposal: @proposal, account: @account, chain: @chain %>
+  </div>
+<% end %>

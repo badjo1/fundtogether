@@ -1,57 +1,40 @@
-<!-- app/views/members/index.html.erb -->
+<% content_for :title, "Groepsleden" %>
     <%= render layout: 'shared/app_layout' do %>
       <div class="space-y-6">
         <div class="flex items-center justify-between flex-wrap gap-4">
           <h2 class="text-2xl font-bold text-gray-900">Groepsleden</h2>
-          <%= button_to invitations_path, method: :post, class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2" do %>
+          <% if current_membership.admin? %>
+          <%= button_to invitations_path, method: :post, params: { account_id: @account.id }, class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2" do %>
             <%= icon :plus, class: "w-4 h-4" %>
             <span>Lid Uitnodigen</span>
           <% end %>
+          <% end %>
         </div>
 
-        <!-- Group Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-gray-600">Totaal Leden</p>
-                <p class="text-3xl font-bold text-gray-900 mt-1"><%= @total_members %></p>
+                <p class="text-3xl font-bold text-gray-900 mt-1 tabular-nums"><%= @total_members %></p>
               </div>
               <div class="p-3 rounded-lg bg-blue-100">
                 <%= icon :users, class: "w-6 h-6 text-blue-600" %>
               </div>
             </div>
           </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-600">Gemiddeld Saldo</p>
-                <p class="text-3xl font-bold text-gray-900 mt-1">€<%= sprintf('%.2f', @average_balance) %></p>
-              </div>
-              <div class="p-3 rounded-lg bg-green-100">
-                <%= icon :dollar, class: "w-6 h-6 text-green-600" %>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-600">Actieve Leden</p>
-                <p class="text-3xl font-bold text-gray-900 mt-1"><%= @active_members %></p>
-              </div>
-              <div class="p-3 rounded-lg bg-purple-100">
-                <%= icon :check_circle, class: "w-6 h-6 text-purple-600" %>
-              </div>
-            </div>
-          </div>
         </div>
+
+        <% if @account.safe_active? %>
+          <%= render layout: 'shared/live_frame', locals: { id: "attention", src: account_live_attention_path(@account, gaps: "1") } do %>
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100"><%= render 'shared/skeleton', label: "Ondertekenaars controleren" %></div>
+          <% end %>
+        <% end %>
 
         <!-- Members Grid -->
         <%
           # Generate consistent colors for user avatars
-          avatar_colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFA07A', '#98D8C8', '#6C5CE7', '#FDA7DF']
+          avatar_colors = %w[bg-[#FF6B6B] bg-[#4ECDC4] bg-[#45B7D1] bg-[#96CEB4] bg-[#FFA07A] bg-[#98D8C8] bg-[#6C5CE7] bg-[#FDA7DF]]
         %>
 
         <% if @users.any? %>
@@ -59,48 +42,66 @@
             <% @users.each_with_index do |user, index| %>
               <% membership = user.account_memberships.find_by(account: @account) %>
               <% next unless membership %>
-              <% user_transactions_count = @account.transactions.where(from_user: user).count %>
               <% avatar_color = avatar_colors[index % avatar_colors.length] %>
 
               <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                <div class="flex items-start justify-between mb-4">
-                  <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background-color: <%= avatar_color %>">
-                      <%= user.name[0].upcase %>
+                <div class="flex items-start justify-between gap-2 mb-4">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-lg <%= avatar_color %>">
+                      <%= user.display_name[0].to_s.upcase %>
                     </div>
-                    <div>
-                      <h3 class="font-semibold text-gray-900 text-lg">
-                        <%= user.name %>
+                    <div class="min-w-0">
+                      <h3 class="font-semibold text-gray-900 text-lg break-words">
+                        <bdi><%= user.display_name %></bdi>
                         <% if user == current_user %>
                           <span class="text-sm font-normal text-gray-500">(Jij)</span>
                         <% end %>
                       </h3>
-                      <p class="text-sm text-gray-500"><%= user.email_address %></p>
+                      <p class="text-sm text-gray-500 break-all"><%= user.email_address %></p>
                     </div>
                   </div>
-                  <span class="px-2 py-1 text-xs rounded-full <%= membership.admin? ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %> font-medium">
-                    <%= membership.admin? ? 'Admin' : 'Lid' %>
+                  <span class="px-2 py-1 text-xs rounded-full flex-shrink-0 <%= membership.admin? ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' %> font-medium">
+                    <%= { "admin" => "Admin", "member" => "Lid", "viewer" => "Kijker" }[membership.role] %>
                   </span>
                 </div>
+                <% unless user.email_confirmed? %>
+                  <p class="text-xs text-yellow-800 mb-3">E-mailadres nog niet bevestigd: kan nog geen wallet koppelen of ondertekenaar worden.</p>
+                <% end %>
+                <% if @duplicate_names.include?(SafeText.comparable(user.name)) %>
+                  <p class="text-xs text-red-700 mb-3" data-testid="duplicate-name">Er is nog een lid met deze naam. Kijk naar het adres en controleer buiten FundTogether wie wie is.</p>
+                <% end %>
 
-                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
-                  <div>
-                    <p class="text-xs text-gray-500">Saldo</p>
-                    <p class="text-lg font-bold <%= membership.balance_cents >= 0 ? 'text-gray-900' : 'text-red-600' %>">
-                      €<%= sprintf('%.2f', membership.balance_euros) %>
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs text-gray-500">Transacties</p>
-                    <p class="text-lg font-bold text-gray-900"><%= user_transactions_count %></p>
-                  </div>
+                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
                   <div>
                     <p class="text-xs text-gray-500">Lid sinds</p>
-                    <p class="text-sm font-medium text-gray-900">
-                      <%= membership.joined_at&.strftime('%b %Y') || membership.created_at.strftime('%b %Y') %>
-                    </p>
+                    <p class="text-sm font-medium text-gray-900"><%= nl_date(membership.joined_at || membership.created_at) %></p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-500">Wallet</p>
+                    <% wallet = user.wallets.select(&:active?).min_by(&:id) %>
+                    <% if wallet %>
+                      <p class="text-xs font-medium text-gray-900 font-mono break-hash"><%= checksum_address(wallet.address) %></p>
+                    <% else %>
+                      <p class="text-sm text-yellow-700">Nog geen wallet</p>
+                    <% end %>
                   </div>
                 </div>
+                <% if current_membership.admin? %>
+                  <%= form_with url: user_path(user), method: :patch, class: "pt-3 mt-3 border-t border-gray-100 flex items-end gap-2 flex-wrap" do %>
+                    <%= hidden_field_tag :account_id, @account.id, id: nil %>
+                    <div class="flex-1 min-w-[10rem]">
+                      <label for="role_<%= user.id %>" class="block text-xs text-gray-500 mb-1">Rol in dit fonds</label>
+                      <%= select_tag :role, options_for_select([ [ "Admin: mag ook beheren", "admin" ], [ "Lid: mag inleggen en voorstellen", "member" ], [ "Kijker: mag alleen lezen", "viewer" ] ], membership.role), id: "role_#{user.id}", class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+                    </div>
+                    <button type="submit" class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium">Opslaan</button>
+                  <% end %>
+                <% end %>
+                <% if current_membership.admin? && user != current_user %>
+                  <div class="pt-3 mt-3 border-t border-gray-100 text-right">
+                    <%= button_to "Verwijderen uit fonds", user_path(user), method: :delete, params: { account_id: @account.id }, class: "text-sm text-red-600 hover:text-red-700 font-medium",
+                          data: { turbo_confirm: "#{user.display_name} verwijderen uit dit fonds? Dit haalt het lidmaatschap weg, niet de macht op de blockchain: is dit lid ondertekenaar, dan moet de groep dat apart wijzigen met een voorstel." } %>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           </div>
@@ -109,19 +110,21 @@
             <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <%= icon :users, class: "w-8 h-8 text-gray-400" %>
             </div>
-            <p class="text-gray-500 mb-4">Nog geen leden in dit account</p>
-            <%= button_to invitations_path, method: :post, class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-flex items-center gap-2" do %>
+            <p class="text-gray-500 mb-4">Nog geen leden in dit fonds</p>
+            <% if current_membership.admin? %>
+            <%= button_to invitations_path, method: :post, params: { account_id: @account.id }, class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-flex items-center gap-2" do %>
               <%= icon :plus, class: "w-5 h-5" %>
               <span>Lid Uitnodigen</span>
+            <% end %>
             <% end %>
           </div>
         <% end %>
 
         <!-- Pending Invitations -->
         <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
             <h3 class="text-lg font-bold text-gray-900">Uitstaande Uitnodigingen</h3>
-            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium">
+            <span class="flex-shrink-0 px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium">
               <%= @pending_invitations.count %> In behandeling
             </span>
           </div>
@@ -129,29 +132,31 @@
           <% if @pending_invitations.any? %>
             <div class="space-y-3">
               <% @pending_invitations.each do |invitation| %>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div class="flex items-center gap-3 flex-1">
-                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                <div class="flex items-center justify-between flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
+                  <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <div class="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center">
                       <%= icon :user, class: "w-5 h-5 text-gray-600" %>
                     </div>
-                    <div class="flex-1">
-                      <p class="font-medium text-gray-900"><%= invitation.email %></p>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium text-gray-900 break-all"><%= invitation.email.presence || "Uitnodiging via link" %></p>
                       <p class="text-sm text-gray-500">
-                        Uitgenodigd op <%= invitation.created_at.strftime('%d %b %Y om %H:%M') %>
+                        Uitgenodigd op <%= nl_datetime(invitation.created_at) %>
                       </p>
                       <% if invitation.time_remaining > 0 %>
                         <p class="text-xs text-yellow-600 mt-1">
                           <%= icon :warning, class: "w-3 h-3 inline" %>
-                          Verloopt over <%= distance_of_time_in_words(invitation.time_remaining) %>
+                          Verloopt op <%= nl_datetime(invitation.expires_at) %>
                         </p>
                       <% end %>
                     </div>
                   </div>
-                  <%= button_to invitation_path(invitation),
+                  <% if current_membership.admin? %>
+                  <%= button_to invitation_path(invitation), params: { account_id: @account.id },
                       method: :delete,
                       class: "px-3 py-1 text-sm text-red-600 hover:text-red-700 font-medium",
                       data: { turbo_confirm: "Weet je zeker dat je deze uitnodiging wilt annuleren?" } do %>
                     Annuleren
+                  <% end %>
                   <% end %>
                 </div>
               <% end %>
@@ -162,9 +167,11 @@
                 <%= icon :user, class: "w-8 h-8 text-gray-400" %>
               </div>
               <p class="text-gray-500 mb-4">Geen uitstaande uitnodigingen</p>
-              <%= button_to invitations_path, method: :post, class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-flex items-center gap-2" do %>
+              <% if current_membership.admin? %>
+              <%= button_to invitations_path, method: :post, params: { account_id: @account.id }, class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-flex items-center gap-2" do %>
                 <%= icon :plus, class: "w-5 h-5" %>
                 <span>Lid Uitnodigen</span>
+              <% end %>
               <% end %>
             </div>
           <% end %>
@@ -173,37 +180,39 @@
         <!-- Rejected/Cancelled Invitations -->
         <% if @rejected_invitations.any? %>
           <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
               <h3 class="text-lg font-bold text-gray-900">Geannuleerde Uitnodigingen</h3>
-              <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 font-medium">
+              <span class="flex-shrink-0 px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 font-medium">
                 <%= @rejected_invitations.count %> Geannuleerd
               </span>
             </div>
 
             <div class="space-y-3">
               <% @rejected_invitations.each do |invitation| %>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div class="flex items-center gap-3 flex-1">
-                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                <div class="flex items-center justify-between flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
+                  <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <div class="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center">
                       <%= icon :x_circle, class: "w-5 h-5 text-gray-600" %>
                     </div>
-                    <div class="flex-1">
-                      <p class="font-medium text-gray-900">
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium text-gray-900 break-all">
                         <%= invitation.email.present? ? invitation.email : "Geen email opgegeven" %>
                       </p>
                       <p class="text-sm text-gray-500">
-                        Geannuleerd op <%= invitation.updated_at.strftime('%d %b %Y om %H:%M') %>
+                        Geannuleerd op <%= nl_datetime(invitation.updated_at) %>
                       </p>
                       <p class="text-xs text-gray-400 mt-1">
                         Oorspronkelijk uitgenodigd door <%= invitation.invited_by.name %>
                       </p>
                     </div>
                   </div>
-                  <%= button_to invitation_path(invitation),
+                  <% if current_membership.admin? %>
+                  <%= button_to invitation_path(invitation), params: { account_id: @account.id },
                       method: :delete,
                       class: "px-3 py-1 text-sm text-red-600 hover:text-red-700 font-medium",
                       data: { turbo_confirm: "Weet je zeker dat je deze geannuleerde uitnodiging permanent wilt verwijderen?" } do %>
                     Verwijderen
+                  <% end %>
                   <% end %>
                 </div>
               <% end %>

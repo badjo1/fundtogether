@@ -1,0 +1,29 @@
+<li class="p-4 bg-gray-50 rounded-lg space-y-2" data-controller="modal">
+  <div class="flex items-start justify-between gap-3 flex-wrap">
+    <div class="min-w-0">
+      <p class="font-mono text-sm text-gray-900 break-hash"><%= checksum_address(wallet.address) %></p>
+      <p class="text-xs text-gray-500 mt-1"><%= wallet.label.presence || "Gewone wallet" %> · gekoppeld op <%= nl_date(wallet.verified_at) %></p>
+    </div>
+    <button type="button" data-action="modal#open" class="text-sm text-red-600 hover:text-red-700 font-medium">Ontkoppelen</button>
+  </div>
+  <%= render layout: 'shared/live_frame', locals: { id: "wallet_ownership_#{wallet.id}", src: wallet_page_ownership_path(wallet) } do %>
+    <p class="text-xs text-gray-500 animate-pulse">Controleren bij welke fondsen deze wallet ondertekenaar is…</p>
+  <% end %>
+
+  <div data-modal-target="modal" data-action="click->modal#clickOutside" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="ontkoppel-<%= wallet.id %>">
+    <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-3 rounded-full bg-yellow-100"><%= icon :warning, class: "w-6 h-6 text-yellow-600" %></div>
+        <h3 id="ontkoppel-<%= wallet.id %>" class="text-lg font-bold text-gray-900">Wallet ontkoppelen?</h3>
+      </div>
+      <div class="text-sm text-gray-600 space-y-2 mb-6">
+        <p><strong>Dit verandert niets op de blockchain.</strong> Is deze wallet ondertekenaar van een Safe, dan blijft hij dat, en wie de sleutel heeft kan nog steeds goedkeuren.</p>
+        <p>Is je wallet gehackt of kwijt? Ontkoppel hem, en laat de groep hem vervangen met een voorstel 'Ondertekenaar vervangen'.</p>
+      </div>
+      <div class="flex gap-3">
+        <button type="button" data-action="modal#close" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">Annuleren</button>
+        <div class="flex-1"><%= button_to "Ontkoppelen", wallet_page_unlink_path(wallet), method: :delete, class: "w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium" %></div>
+      </div>
+    </div>
+  </div>
+</li>

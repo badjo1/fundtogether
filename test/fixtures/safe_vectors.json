@@ -1,0 +1,3043 @@
+{
+  "version": 1,
+  "about": "Shared Ruby/JS vectors for FundTogether's Safe layer. Amounts and nonces are decimal strings; hex is lowercase and 0x-prefixed. Real rows were read from public chains on 2026-11-09 and recomputed; rows marked synthetic are computed locally. Test keys are the publicly known private keys 1..4: never fund them. Policy checks run in this order and the first failure is the code: operation, safe_tx_gas, base_gas, gas_price, gas_token, refund_receiver, nonce, target rules.",
+  "constants": {
+    "domain_typehash": "0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218",
+    "safe_tx_typehash": "0xbb8310d486368db6bd6f849402fdd73ad53d316b5a4b2644ad6efe0f941286d8",
+    "singleton_l2": "0x29fcb43b46531bca003ddc8fcb67ffe91900c762",
+    "factory": "0x4e1dcf7ad4e460cfd30791ccc4f9c8a4f820ec67",
+    "fallback_handler": "0xfd0732dc9e303f09fcef3a7388ad10a83459ec99",
+    "zero_address": "0x0000000000000000000000000000000000000000",
+    "sentinel": "0x0000000000000000000000000000000000000001",
+    "guard_slot": "0x4a204f620c8c5ccdca3fd54d003badd85ba500436a431f0cbda4f558c93c34c8",
+    "fallback_slot": "0x6c9a6c4a39284e37ed1cf53d337577d14212a4870fb976a4366c693b939918d5",
+    "proxy_creation_code": "0x608060405234801561001057600080fd5b506040516101e63803806101e68339818101604052602081101561003357600080fd5b8101908080519060200190929190505050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1614156100ca576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260228152602001806101c46022913960400191505060405180910390fd5b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505060ab806101196000396000f3fe608060405273ffffffffffffffffffffffffffffffffffffffff600054167fa619486e0000000000000000000000000000000000000000000000000000000060003514156050578060005260206000f35b3660008037600080366000845af43d6000803e60008114156070573d6000fd5b3d6000f3fea264697066735822122003d1488ee65e08fa41e58e888a9865554c535f2c77126a82cb4c0f917f31441364736f6c63430007060033496e76616c69642073696e676c65746f6e20616464726573732070726f7669646564",
+    "proxy_creation_code_keccak": "0x1856e0ee08399d74e0ea0b03adca210aeade6f748969ac023cdcb4dd62dcaf5f",
+    "selectors": {
+      "get_owners": {
+        "signature": "getOwners()",
+        "selector": "0xa0e67e2b"
+      },
+      "get_threshold": {
+        "signature": "getThreshold()",
+        "selector": "0xe75235b8"
+      },
+      "nonce": {
+        "signature": "nonce()",
+        "selector": "0xaffed0e0"
+      },
+      "master_copy": {
+        "signature": "masterCopy()",
+        "selector": "0xa619486e"
+      },
+      "setup": {
+        "signature": "setup(address[],uint256,address,bytes,address,address,uint256,address)",
+        "selector": "0xb63e800d"
+      },
+      "create_proxy_with_nonce": {
+        "signature": "createProxyWithNonce(address,bytes,uint256)",
+        "selector": "0x1688f0b9"
+      },
+      "proxy_creation_code": {
+        "signature": "proxyCreationCode()",
+        "selector": "0x53e5d935"
+      },
+      "exec_transaction": {
+        "signature": "execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)",
+        "selector": "0x6a761202"
+      },
+      "add_owner_with_threshold": {
+        "signature": "addOwnerWithThreshold(address,uint256)",
+        "selector": "0x0d582f13"
+      },
+      "remove_owner": {
+        "signature": "removeOwner(address,address,uint256)",
+        "selector": "0xf8dc5dd9"
+      },
+      "swap_owner": {
+        "signature": "swapOwner(address,address,address)",
+        "selector": "0xe318b52b"
+      },
+      "change_threshold": {
+        "signature": "changeThreshold(uint256)",
+        "selector": "0x694e80c3"
+      },
+      "transfer": {
+        "signature": "transfer(address,uint256)",
+        "selector": "0xa9059cbb"
+      },
+      "balance_of": {
+        "signature": "balanceOf(address)",
+        "selector": "0x70a08231"
+      },
+      "enable_module": {
+        "signature": "enableModule(address)",
+        "selector": "0x610b5925"
+      },
+      "disable_module": {
+        "signature": "disableModule(address,address)",
+        "selector": "0xe009cfde"
+      },
+      "set_guard": {
+        "signature": "setGuard(address)",
+        "selector": "0xe19a9dd9"
+      },
+      "set_fallback_handler": {
+        "signature": "setFallbackHandler(address)",
+        "selector": "0xf08a0323"
+      }
+    },
+    "topics": {
+      "ExecutionSuccess": {
+        "signature": "ExecutionSuccess(bytes32,uint256)",
+        "topic": "0x442e715f626346e8c54381002da614f62bee8d27386535b2521ec8540898556e"
+      },
+      "ExecutionFailure": {
+        "signature": "ExecutionFailure(bytes32,uint256)",
+        "topic": "0x23428b18acfb3ea64b08dc0c1d296ea9c09702c09083ca5272e64d115b687d23"
+      },
+      "SafeReceived": {
+        "signature": "SafeReceived(address,uint256)",
+        "topic": "0x3d0ce9bfc3ed7d6862dbb28b2dea94561fe714a1b4d019aa8af39730d1ad7c3d"
+      },
+      "AddedOwner": {
+        "signature": "AddedOwner(address)",
+        "topic": "0x9465fa0c962cc76958e6373a993326400c1c94f8be2fe3a952adfa7f60b2ea26"
+      },
+      "RemovedOwner": {
+        "signature": "RemovedOwner(address)",
+        "topic": "0xf8d49fc529812e9a7c5c50e69c20f0dccc0db8fa95c98bc58cc9a4f1c1299eaf"
+      },
+      "ChangedThreshold": {
+        "signature": "ChangedThreshold(uint256)",
+        "topic": "0x610f7ff2b304ae8903c3de74c60c6ab1f7d6226b3f52c5161905bb5ad4039c93"
+      },
+      "Transfer": {
+        "signature": "Transfer(address,address,uint256)",
+        "topic": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+      },
+      "ProxyCreation": {
+        "signature": "ProxyCreation(address,address)",
+        "topic": "0x4f51faf6c4561ff95f067657e43439f0f856d97c04d9ec9070a6199ad418e235"
+      }
+    }
+  },
+  "test_keys": [
+    {
+      "address": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      "private_key": "0x0000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "address": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+      "private_key": "0x0000000000000000000000000000000000000000000000000000000000000002"
+    },
+    {
+      "address": "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+      "private_key": "0x0000000000000000000000000000000000000000000000000000000000000003"
+    },
+    {
+      "address": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+      "private_key": "0x0000000000000000000000000000000000000000000000000000000000000004"
+    }
+  ],
+  "safe_tx_hashes": [
+    {
+      "name": "gnosis real tx nonce 48",
+      "source": "gnosis mainnet tx 0xbf13e29d0b9a23148d331da17788eb2e60c4fa7828048765b27e8b3553ae10b8, read live 2026-11-09; hash equals ExecutionSuccess log topic",
+      "chain_id": 100,
+      "safe": "0x2c4b4f48aab6dadf711ea139a5c09f0295707e93",
+      "to": "0x489d7543b9b72bcad70b6e8e81a79f85a2abf171",
+      "value": "0",
+      "data": "0x468721a7000000000000000000000000420ca0f9b9b604ce0fd9c18ef134c705e5fa34300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044a9059cbb0000000000000000000000002c4b4f48aab6dadf711ea139a5c09f0295707e930000000000000000000000000000000000000000000000001a919dfcd867950a00000000000000000000000000000000000000000000000000000000",
+      "operation": 0,
+      "safe_tx_gas": "0",
+      "base_gas": "0",
+      "gas_price": "0",
+      "gas_token": "0x0000000000000000000000000000000000000000",
+      "refund_receiver": "0x0000000000000000000000000000000000000000",
+      "nonce": "48",
+      "domain_separator": "0xd03c790251cce830ea6e34ca656047dadaed855e3145373f465b64637b12b1b3",
+      "struct_hash": "0xfdb525f34dc2492a15e00d6d10b79ac044afaae18b60c1da8b3ed4bfb3b4f0c1",
+      "safe_tx_hash": "0x88aa0a6a00dad85ba6ad66cb3910f79c22cb165a33ad285b8e874956ef67cc60",
+      "tx_hash": "0xbf13e29d0b9a23148d331da17788eb2e60c4fa7828048765b27e8b3553ae10b8"
+    },
+    {
+      "name": "gnosis real tx nonce 19377",
+      "source": "gnosis mainnet tx 0x0ec9f383de546e2425e6f6f3f3020ba3c219e16cbbcc9e614dc369aec13a83dc, read live 2026-11-09; hash equals ExecutionSuccess log topic",
+      "chain_id": 100,
+      "safe": "0xd739addd4fbee12a9157683247f28b864d8275b6",
+      "to": "0xb4bfedad42a14c30bd9c1fdbf3e11916fc719e6c",
+      "value": "0",
+      "data": "0x4783f0ef54a50e745823644eb6f15b4da862d8b81f606e0b92db4fceb8ca4f32a77cc9fd",
+      "operation": 0,
+      "safe_tx_gas": "0",
+      "base_gas": "0",
+      "gas_price": "0",
+      "gas_token": "0x0000000000000000000000000000000000000000",
+      "refund_receiver": "0x0000000000000000000000000000000000000000",
+      "nonce": "19377",
+      "domain_separator": "0xab8af25c02b5c2e414b42fd9d5632a03595b20be31a4aad79c6040c1273ce3f5",
+      "struct_hash": "0x456ed9b674d5af13ca0234000397d5f1642dafd5859d1c3b17eae24d3d8ea98c",
+      "safe_tx_hash": "0x6d0ab12fc076000f8e01451354e7990ac37eec4b772bb72ec3f7780302d6e5a9",
+      "tx_hash": "0x0ec9f383de546e2425e6f6f3f3020ba3c219e16cbbcc9e614dc369aec13a83dc"
+    },
+    {
+      "name": "rejection at nonce 7",
+      "source": "synthetic, recomputed locally",
+      "chain_id": 11155111,
+      "safe": "0x1111111111111111111111111111111111111111",
+      "to": "0x1111111111111111111111111111111111111111",
+      "value": "0",
+      "data": "0x",
+      "operation": 0,
+      "safe_tx_gas": "0",
+      "base_gas": "0",
+      "gas_price": "0",
+      "gas_token": "0x0000000000000000000000000000000000000000",
+      "refund_receiver": "0x0000000000000000000000000000000000000000",
+      "nonce": "7",
+      "domain_separator": "0xc6733c0928edbae256c68c60f094464cc27845147092bc929b1d868a03d5e3dc",
+      "struct_hash": "0x5c42f2af67b8cef1733d8a371903afaea7002eeed96a2f51ed5079329ab3046a",
+      "safe_tx_hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad"
+    },
+    {
+      "name": "large value native transfer",
+      "source": "synthetic, recomputed locally",
+      "chain_id": 11155111,
+      "safe": "0x1111111111111111111111111111111111111111",
+      "to": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      "value": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "data": "0x",
+      "operation": 0,
+      "safe_tx_gas": "0",
+      "base_gas": "0",
+      "gas_price": "0",
+      "gas_token": "0x0000000000000000000000000000000000000000",
+      "refund_receiver": "0x0000000000000000000000000000000000000000",
+      "nonce": "18446744073709551616",
+      "domain_separator": "0xc6733c0928edbae256c68c60f094464cc27845147092bc929b1d868a03d5e3dc",
+      "struct_hash": "0xec8f951222b47e8e4297eb10b599a670bf3cd46c83a6e2feb013d7adaf0a21da",
+      "safe_tx_hash": "0xee781857b981d32db71afdfb1df3350dd3a416174645ef06b2f3b63250f5277c"
+    }
+  ],
+  "create2": [
+    {
+      "name": "real deployment chain 100",
+      "source": "gnosis tx 0x13128f8550b5e824e4f24c80aa351e8a5ab5a67ebe29567977b03afd6a800077, ProxyCreation log equals prediction",
+      "chain_id": 100,
+      "factory": "0x4e1dcf7ad4e460cfd30791ccc4f9c8a4f820ec67",
+      "singleton": "0x29fcb43b46531bca003ddc8fcb67ffe91900c762",
+      "owners": [
+        "0xecad91e095e6edb360b5193a6f8ae4a2066180e4"
+      ],
+      "threshold": 1,
+      "fallback_handler": "0xa581c4a4db7175302464ff3c06380bc3270b4037",
+      "salt_nonce": "0",
+      "initializer": "0xb63e800d000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000010000000000000000000000008ecd4ec46d4d2a6b64fe960b3d64e8b94b2234eb0000000000000000000000000000000000000000000000000000000000000140000000000000000000000000a581c4a4db7175302464ff3c06380bc3270b40370000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000ecad91e095e6edb360b5193a6f8ae4a2066180e400000000000000000000000000000000000000000000000000000000000000648d0dc49f00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a581c4a4db7175302464ff3c06380bc3270b403700000000000000000000000000000000000000000000000000000000",
+      "predicted_address": "0x5cbe483d178e62f6afa3075095984ed5391d28eb",
+      "tx_hash": "0x13128f8550b5e824e4f24c80aa351e8a5ab5a67ebe29567977b03afd6a800077"
+    },
+    {
+      "name": "real deployment chain 11155111",
+      "source": "sepolia tx 0xe664469976b9e42434eaa1f0f13671c4f55402b2de712f8afd7305885a4e3e72, ProxyCreation log equals prediction",
+      "chain_id": 11155111,
+      "factory": "0x4e1dcf7ad4e460cfd30791ccc4f9c8a4f820ec67",
+      "singleton": "0x29fcb43b46531bca003ddc8fcb67ffe91900c762",
+      "owners": [
+        "0x8bd14da4570916c9a90e20d9ab01bdf5223157da"
+      ],
+      "threshold": 1,
+      "fallback_handler": "0xfd0732dc9e303f09fcef3a7388ad10a83459ec99",
+      "salt_nonce": "17658153855748229698",
+      "initializer": "0xb63e800d0000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000fd0732dc9e303f09fcef3a7388ad10a83459ec9900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000008bd14da4570916c9a90e20d9ab01bdf5223157da0000000000000000000000000000000000000000000000000000000000000000",
+      "predicted_address": "0x9cd26fca10660d4e2b207be5693a605150eb6243",
+      "tx_hash": "0xe664469976b9e42434eaa1f0f13671c4f55402b2de712f8afd7305885a4e3e72"
+    },
+    {
+      "name": "fundtogether 2-of-3 canonical setup",
+      "source": "synthetic; initializer checked against an independent hand encoding",
+      "chain_id": 11155111,
+      "factory": "0x4e1dcf7ad4e460cfd30791ccc4f9c8a4f820ec67",
+      "singleton": "0x29fcb43b46531bca003ddc8fcb67ffe91900c762",
+      "owners": [
+        "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
+      ],
+      "threshold": 2,
+      "fallback_handler": "0xfd0732dc9e303f09fcef3a7388ad10a83459ec99",
+      "group_uuid": "3f2c1d9e-7a64-4b1e-9c55-0d8e6a2b7f10",
+      "salt_nonce": "74446596005926920539083238782502545704555942381596351389660510163269407274033",
+      "initializer": "0xb63e800d0000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000180000000000000000000000000fd0732dc9e303f09fcef3a7388ad10a83459ec9900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030000000000000000000000002b5ad5c4795c026514f8317c7a215e218dccd6cf0000000000000000000000006813eb9362372eef6200f3b1dbc3f819671cba690000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000000000000000000000000000000000000000000000",
+      "predicted_address": "0xd2548516739c18ac730a9499a89de5d37944bc6b"
+    },
+    {
+      "name": "fundtogether 1-of-1 on another chain id",
+      "source": "synthetic",
+      "chain_id": 8453,
+      "factory": "0x4e1dcf7ad4e460cfd30791ccc4f9c8a4f820ec67",
+      "singleton": "0x29fcb43b46531bca003ddc8fcb67ffe91900c762",
+      "owners": [
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
+      ],
+      "threshold": 1,
+      "fallback_handler": "0xfd0732dc9e303f09fcef3a7388ad10a83459ec99",
+      "group_uuid": "3f2c1d9e-7a64-4b1e-9c55-0d8e6a2b7f10",
+      "salt_nonce": "75332080753710403206592734124368543346126937317131666358958032217808949704558",
+      "initializer": "0xb63e800d0000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000fd0732dc9e303f09fcef3a7388ad10a83459ec9900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000000000000000000000000000000000000000000000",
+      "predicted_address": "0xdd55934b847b5f30be1e967416c95b9b4ffe6cd9"
+    }
+  ],
+  "calldata": [
+    {
+      "name": "token transfer",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "1000000"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "expected": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa71800000000000000000000000000000000000000000000000000000000000f4240",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x72577f4530c3afd4a26946c75e8e14806ad4d8d0c8b88a3c0ade5da2a01b2edd"
+      }
+    },
+    {
+      "name": "token transfer max uint256",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "6",
+      "expected": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa718ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x87231b9ca06ddce03babae220db45f6d6ddf4b014af442c59f7526714636d9fc"
+      }
+    },
+    {
+      "name": "native transfer",
+      "kind": "transfer_native",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "1000000000000000"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "expected": {
+        "to": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "value": "1000000000000000",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x937a60d0a3e5384a766dee3234442c3cd01303029f1aee8fdd886e713e9c7f88"
+      }
+    },
+    {
+      "name": "add owner",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "threshold": 2
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x0d582f130000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000002",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x2e4c4d6bf6f3a1f2cf6107b77b3bf46891e1f7e801cf7be4345ca4fc66164bfe"
+      }
+    },
+    {
+      "name": "add owner raises threshold",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "threshold": 3
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x0d582f130000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000003",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x078106c9d4232e2fc9c8fea9986d5d3df8d60af549a5223dbe909c12cbb2fdcb"
+      }
+    },
+    {
+      "name": "remove head owner uses sentinel",
+      "kind": "remove_owner",
+      "params": {
+        "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "threshold": 2
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "prev_owner": "0x0000000000000000000000000000000000000001",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xf8dc5dd900000000000000000000000000000000000000000000000000000000000000010000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000000000000000000000000000000000000000000002",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0xc4e218074827c61400a626cd6ef6d6e357c23facb05d010e92367af2a4803b7b"
+      }
+    },
+    {
+      "name": "remove middle owner",
+      "kind": "remove_owner",
+      "params": {
+        "owner": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "threshold": 1
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "prev_owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xf8dc5dd90000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000002b5ad5c4795c026514f8317c7a215e218dccd6cf0000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0xbc4a38758e0f8ffc12c3bc22bf8550da8a3740e7f2600f31b4646095d6f5a7ca"
+      }
+    },
+    {
+      "name": "remove tail owner",
+      "kind": "remove_owner",
+      "params": {
+        "owner": "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+        "threshold": 2
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "prev_owner": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xf8dc5dd90000000000000000000000002b5ad5c4795c026514f8317c7a215e218dccd6cf0000000000000000000000006813eb9362372eef6200f3b1dbc3f819671cba690000000000000000000000000000000000000000000000000000000000000002",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x5c31f05bf031858dc37ef72476c5f3767bebb47fd9f2f683ce3a931590f5b74d"
+      }
+    },
+    {
+      "name": "swap head owner",
+      "kind": "swap_owner",
+      "params": {
+        "old_owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "new_owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "prev_owner": "0x0000000000000000000000000000000000000001",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xe318b52b00000000000000000000000000000000000000000000000000000000000000010000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x7a261d2369b13d96d8826e5f3f481d8aadd2d642654e8b284d037cd530485fb0"
+      }
+    },
+    {
+      "name": "swap tail owner",
+      "kind": "swap_owner",
+      "params": {
+        "old_owner": "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+        "new_owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "prev_owner": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xe318b52b0000000000000000000000002b5ad5c4795c026514f8317c7a215e218dccd6cf0000000000000000000000006813eb9362372eef6200f3b1dbc3f819671cba690000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0xe165c12d86030443a8847ae0cc83469c4b641db22ca4c4fb807aed4019f276a2"
+      }
+    },
+    {
+      "name": "change threshold",
+      "kind": "change_threshold",
+      "params": {
+        "threshold": 3
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "5",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x694e80c30000000000000000000000000000000000000000000000000000000000000003",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x586e179c8738e596f012ce8526c9047d75c2473b7dab24aa8ec6cd485025b45f"
+      }
+    },
+    {
+      "name": "rejection targets a nonce",
+      "kind": "rejection",
+      "params": {
+        "nonce": "7"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "nonce": "7",
+      "expected": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "safe_tx_hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad"
+      }
+    }
+  ],
+  "build_refusals": [
+    {
+      "name": "unknown kind",
+      "kind": "exec_raw",
+      "params": {},
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "unknown_kind"
+    },
+    {
+      "name": "raw calldata is not a param",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "1",
+        "data": "0xdeadbeef"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "unexpected_param"
+    },
+    {
+      "name": "to is not a param",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "1",
+        "to": "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "unexpected_param"
+    },
+    {
+      "name": "operation is not a param",
+      "kind": "transfer_native",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "1",
+        "operation": 1
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "unexpected_param"
+    },
+    {
+      "name": "prev_owner is never client supplied",
+      "kind": "remove_owner",
+      "params": {
+        "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "threshold": 2,
+        "prev_owner": "0x0000000000000000000000000000000000000001"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "unexpected_param"
+    },
+    {
+      "name": "missing recipient",
+      "kind": "transfer_token",
+      "params": {
+        "amount": "1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_address"
+    },
+    {
+      "name": "malformed recipient",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1234",
+        "amount": "1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_address"
+    },
+    {
+      "name": "bad checksum recipient",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x7e5F4552091A69125d5DfCb7b8C2659029395Bdf",
+        "amount": "1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_address"
+    },
+    {
+      "name": "zero recipient",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x0000000000000000000000000000000000000000",
+        "amount": "1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "recipient_forbidden"
+    },
+    {
+      "name": "sentinel recipient",
+      "kind": "transfer_native",
+      "params": {
+        "recipient": "0x0000000000000000000000000000000000000001",
+        "amount": "1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "recipient_forbidden"
+    },
+    {
+      "name": "recipient is the safe (token)",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1111111111111111111111111111111111111111",
+        "amount": "1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "recipient_forbidden"
+    },
+    {
+      "name": "recipient is the safe (native)",
+      "kind": "transfer_native",
+      "params": {
+        "recipient": "0x1111111111111111111111111111111111111111",
+        "amount": "1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "recipient_forbidden"
+    },
+    {
+      "name": "recipient is the token",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "amount": "1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "recipient_forbidden"
+    },
+    {
+      "name": "amount zero",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "0"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_amount"
+    },
+    {
+      "name": "amount negative",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "-1"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_amount"
+    },
+    {
+      "name": "amount fractional",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "1.5"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_amount"
+    },
+    {
+      "name": "amount hex",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "0x10"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_amount"
+    },
+    {
+      "name": "amount json number",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": 1
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_amount"
+    },
+    {
+      "name": "amount above uint256",
+      "kind": "transfer_token",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "115792089237316195423570985008687907853269984665640564039457584007913129639936"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_amount"
+    },
+    {
+      "name": "native amount zero",
+      "kind": "transfer_native",
+      "params": {
+        "recipient": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "amount": "0"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_amount"
+    },
+    {
+      "name": "add existing owner",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "threshold": 2
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "owner_exists"
+    },
+    {
+      "name": "add sentinel",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x0000000000000000000000000000000000000001",
+        "threshold": 2
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "owner_forbidden"
+    },
+    {
+      "name": "add zero",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x0000000000000000000000000000000000000000",
+        "threshold": 2
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "owner_forbidden"
+    },
+    {
+      "name": "add safe itself",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x1111111111111111111111111111111111111111",
+        "threshold": 2
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "owner_forbidden"
+    },
+    {
+      "name": "add threshold zero",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "threshold": 0
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "threshold_out_of_range"
+    },
+    {
+      "name": "add threshold above owner count",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "threshold": 5
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "threshold_out_of_range"
+    },
+    {
+      "name": "threshold not an integer",
+      "kind": "add_owner",
+      "params": {
+        "owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "threshold": "two"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "threshold_out_of_range"
+    },
+    {
+      "name": "remove unknown owner",
+      "kind": "remove_owner",
+      "params": {
+        "owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "threshold": 1
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "owner_unknown"
+    },
+    {
+      "name": "remove leaves threshold too high",
+      "kind": "remove_owner",
+      "params": {
+        "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "threshold": 3
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "threshold_out_of_range"
+    },
+    {
+      "name": "remove threshold zero",
+      "kind": "remove_owner",
+      "params": {
+        "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "threshold": 0
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "threshold_out_of_range"
+    },
+    {
+      "name": "remove last owner",
+      "kind": "remove_owner",
+      "params": {
+        "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "threshold": 1
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
+        ],
+        "threshold": 1,
+        "current_nonce": "5"
+      },
+      "code": "last_owner"
+    },
+    {
+      "name": "swap unknown old owner",
+      "kind": "swap_owner",
+      "params": {
+        "old_owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "new_owner": "0x0000000000000000000000000000000000000abc"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "owner_unknown"
+    },
+    {
+      "name": "swap to existing owner",
+      "kind": "swap_owner",
+      "params": {
+        "old_owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "new_owner": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "owner_exists"
+    },
+    {
+      "name": "swap to sentinel",
+      "kind": "swap_owner",
+      "params": {
+        "old_owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "new_owner": "0x0000000000000000000000000000000000000001"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "owner_forbidden"
+    },
+    {
+      "name": "change threshold zero",
+      "kind": "change_threshold",
+      "params": {
+        "threshold": 0
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "threshold_out_of_range"
+    },
+    {
+      "name": "change threshold too high",
+      "kind": "change_threshold",
+      "params": {
+        "threshold": 4
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "threshold_out_of_range"
+    },
+    {
+      "name": "change threshold unchanged",
+      "kind": "change_threshold",
+      "params": {
+        "threshold": 2
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "threshold_unchanged"
+    },
+    {
+      "name": "rejection below current nonce",
+      "kind": "rejection",
+      "params": {
+        "nonce": "4"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "nonce_too_low"
+    },
+    {
+      "name": "rejection nonce malformed",
+      "kind": "rejection",
+      "params": {
+        "nonce": "abc"
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_nonce"
+    },
+    {
+      "name": "rejection nonce json number",
+      "kind": "rejection",
+      "params": {
+        "nonce": 7
+      },
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "owners": [
+          "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+          "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+          "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+        ],
+        "threshold": 2,
+        "current_nonce": "5"
+      },
+      "code": "invalid_nonce"
+    }
+  ],
+  "threshold_rules": [
+    {
+      "owner_count": 1,
+      "threshold": 1,
+      "acknowledge_risk": false,
+      "code": null
+    },
+    {
+      "owner_count": 2,
+      "threshold": 1,
+      "acknowledge_risk": false,
+      "code": "risk_not_acknowledged"
+    },
+    {
+      "owner_count": 2,
+      "threshold": 1,
+      "acknowledge_risk": true,
+      "code": null
+    },
+    {
+      "owner_count": 2,
+      "threshold": 2,
+      "acknowledge_risk": false,
+      "code": "risk_not_acknowledged"
+    },
+    {
+      "owner_count": 2,
+      "threshold": 2,
+      "acknowledge_risk": true,
+      "code": null
+    },
+    {
+      "owner_count": 3,
+      "threshold": 2,
+      "acknowledge_risk": false,
+      "code": null
+    },
+    {
+      "owner_count": 3,
+      "threshold": 1,
+      "acknowledge_risk": false,
+      "code": "risk_not_acknowledged"
+    },
+    {
+      "owner_count": 3,
+      "threshold": 1,
+      "acknowledge_risk": true,
+      "code": null
+    },
+    {
+      "owner_count": 3,
+      "threshold": 3,
+      "acknowledge_risk": false,
+      "code": "risk_not_acknowledged"
+    },
+    {
+      "owner_count": 3,
+      "threshold": 3,
+      "acknowledge_risk": true,
+      "code": null
+    },
+    {
+      "owner_count": 3,
+      "threshold": 0,
+      "acknowledge_risk": true,
+      "code": "threshold_out_of_range"
+    },
+    {
+      "owner_count": 3,
+      "threshold": 4,
+      "acknowledge_risk": true,
+      "code": "threshold_out_of_range"
+    },
+    {
+      "owner_count": 1,
+      "threshold": 0,
+      "acknowledge_risk": false,
+      "code": "threshold_out_of_range"
+    }
+  ],
+  "policy_refusals": [
+    {
+      "name": "delegatecall",
+      "code": "operation_not_call",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 1,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "delegatecall to MultiSendCallOnly is not used in v1",
+      "code": "operation_not_call",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x9641d764fc13c8b624c04430c7356c1c7c8102e2",
+        "value": "0",
+        "data": "0x8d80ff0a00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000",
+        "operation": 1,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "unknown operation value",
+      "code": "operation_not_call",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 2,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "safeTxGas non-zero",
+      "code": "safe_tx_gas_nonzero",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "1",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "baseGas non-zero",
+      "code": "base_gas_nonzero",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "1",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "gasPrice non-zero",
+      "code": "gas_price_nonzero",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "1",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "gasToken non-zero",
+      "code": "gas_token_nonzero",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "refundReceiver non-zero",
+      "code": "refund_receiver_nonzero",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "nonce below current",
+      "code": "nonce_too_low",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "4"
+      }
+    },
+    {
+      "name": "enableModule self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x610b59250000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "disableModule self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xe009cfde00000000000000000000000000000000000000000000000000000000000000010000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "setGuard self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xe19a9dd90000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "setFallbackHandler self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xf08a03230000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "changeMasterCopy self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x7de7edef0000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "setup self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xb63e800d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "approveHash self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xd4d9bdcd0000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "execTransaction self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x6a7612020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "unknown selector self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xdeadbeef",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "short data self-call",
+      "code": "self_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x0d58",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "self-call carrying value",
+      "code": "self_call_value",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "1",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "owner call carrying value",
+      "code": "self_call_value",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "1",
+        "data": "0x694e80c30000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "owner call truncated",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x0d582f130000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "owner call trailing bytes",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x694e80c3000000000000000000000000000000000000000000000000000000000000000100",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "owner call dirty address padding",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x0d582f13ffffffffffffffffffffffff7e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "owner call threshold zero",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x694e80c30000000000000000000000000000000000000000000000000000000000000000",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "owner call adds sentinel",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x0d582f1300000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "owner call adds zero address",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x0d582f1300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token approve",
+      "code": "token_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0x095ea7b30000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token transferFrom",
+      "code": "token_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0x23b872dd0000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token call empty data",
+      "code": "token_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token transfer carrying value",
+      "code": "token_call_value",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "1",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token transfer truncated",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token transfer trailing bytes",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa718000000000000000000000000000000000000000000000000000000000000000100",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token transfer dirty address padding",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbbffffffffffffffffffffffff1eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token transfer to zero",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "token transfer of zero",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000000",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "calldata to an unknown target",
+      "code": "unknown_target_data",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "multisend call",
+      "code": "unknown_target_data",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x9641d764fc13c8b624c04430c7356c1c7c8102e2",
+        "value": "0",
+        "data": "0x8d80ff0a00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "empty zero-value call to another address",
+      "code": "empty_call",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "value": "0",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "native transfer to zero address",
+      "code": "to_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x0000000000000000000000000000000000000000",
+        "value": "1",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "native transfer to sentinel",
+      "code": "to_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x0000000000000000000000000000000000000001",
+        "value": "1",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "native transfer to token",
+      "code": "token_call_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "1",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "malformed data hex",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xzz",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "odd length data hex",
+      "code": "malformed_calldata",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xabc",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "malformed to",
+      "code": "to_forbidden",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1234",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    }
+  ],
+  "policy_allowed": [
+    {
+      "name": "token transfer",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "native transfer",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "value": "1",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "rejection",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "add owner",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x0d582f130000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000002",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "remove owner",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xf8dc5dd900000000000000000000000000000000000000000000000000000000000000010000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000000000000000000000000000000000000000000002",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "swap owner",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0xe318b52b00000000000000000000000000000000000000000000000000000000000000010000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "change threshold",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x1111111111111111111111111111111111111111",
+        "value": "0",
+        "data": "0x694e80c30000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "5"
+      }
+    },
+    {
+      "name": "queued nonce above current",
+      "context": {
+        "chain_id": 11155111,
+        "safe": "0x1111111111111111111111111111111111111111",
+        "token": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "current_nonce": "5"
+      },
+      "tx": {
+        "to": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+        "value": "0",
+        "data": "0xa9059cbb0000000000000000000000001eff47bc3a10a45d4b230b5d10e37751fe6aa7180000000000000000000000000000000000000000000000000000000000000001",
+        "operation": 0,
+        "safe_tx_gas": "0",
+        "base_gas": "0",
+        "gas_price": "0",
+        "gas_token": "0x0000000000000000000000000000000000000000",
+        "refund_receiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "99"
+      }
+    }
+  ],
+  "signatures": {
+    "recover": [
+      {
+        "name": "eip712 by key 1",
+        "kind": "eip712",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c",
+        "signer": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "normalized": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c"
+      },
+      {
+        "name": "eip712 by key 2",
+        "kind": "eip712",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0xf04654b1183b1518a0cbba4772bf3315d1f4276215cc3192d3c76e91cc50a69f393e95b64b0404fd785f1a182ad622fa7d44342d9773e8c1287dbdfa96051c5c1b",
+        "signer": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "normalized": "0xf04654b1183b1518a0cbba4772bf3315d1f4276215cc3192d3c76e91cc50a69f393e95b64b0404fd785f1a182ad622fa7d44342d9773e8c1287dbdfa96051c5c1b"
+      },
+      {
+        "name": "eip712 by key 3",
+        "kind": "eip712",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x6033282762021ff485e91fc6409a069bd995c9a29f6f46c5c02b71e92c9195dd448c1df761bd757d76a1d98d77e2ebe3f1bfb17df81af6193d529ebccbf835131c",
+        "signer": "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+        "normalized": "0x6033282762021ff485e91fc6409a069bd995c9a29f6f46c5c02b71e92c9195dd448c1df761bd757d76a1d98d77e2ebe3f1bfb17df81af6193d529ebccbf835131c"
+      },
+      {
+        "name": "v 0/1 normalised",
+        "kind": "eip712",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc801",
+        "signer": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "normalized": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c"
+      },
+      {
+        "name": "uppercase hex normalised",
+        "kind": "eip712",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332F2C1D705038D852AA1170DC0E4566BCACFAB580E9E1876037851BE58A8C0A73D9B5557DBBD82AB32C3B1EFE5235548EE60AF467E29493053692690F45BDC81C",
+        "signer": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "normalized": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c"
+      },
+      {
+        "name": "personal_sign wallet message",
+        "kind": "personal",
+        "message": "fundtogether.test wants you to sign in with your Ethereum account:\n0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf\n\nKoppel deze wallet.\n\nURI: https://fundtogether.test/wallets\nVersion: 1\nChain ID: 11155111\nNonce: abcdefghijklmnopqrstuvwxyz012345\nIssued At: 2026-11-09T12:00:00Z\nExpiration Time: 2026-11-09T12:10:00Z",
+        "signature": "0x4652c7936faec272195e6b3f2bffde048e2b1f3845729a5f1ecb547709871abf45c8589c35c5985cab6757b7e12d2ab991a08d8aa08c252e420a560949e42eb71c",
+        "signer": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "normalized": "0x4652c7936faec272195e6b3f2bffde048e2b1f3845729a5f1ecb547709871abf45c8589c35c5985cab6757b7e12d2ab991a08d8aa08c252e420a560949e42eb71c"
+      },
+      {
+        "name": "real eth_sign signature 0 of 0xbf13e29d",
+        "source": "gnosis tx 0xbf13e29d0b9a23148d331da17788eb2e60c4fa7828048765b27e8b3553ae10b8; isOwner(signer)=true at that block, read live",
+        "kind": "safe_eth_sign",
+        "hash": "0x88aa0a6a00dad85ba6ad66cb3910f79c22cb165a33ad285b8e874956ef67cc60",
+        "signature": "0x28584e55c23499696fac3920cb5b6c236a1d5306590e5e6a9b42896e830bbe82486211c8deefff6339e8e78f180cf99240a438514b6fa582bc139cafd82e2df220",
+        "signer": "0xd2c10d667d0b450bfdcd8acc11ed7f99432cb7d8"
+      },
+      {
+        "name": "real eip712 signature 0 of 0x0ec9f383",
+        "source": "gnosis tx 0x0ec9f383de546e2425e6f6f3f3020ba3c219e16cbbcc9e614dc369aec13a83dc; isOwner(signer)=true at that block, read live",
+        "kind": "eip712",
+        "hash": "0x6d0ab12fc076000f8e01451354e7990ac37eec4b772bb72ec3f7780302d6e5a9",
+        "signature": "0x7a367322829f939dec0d646fae0396ae0f0d69d5b7f55662a97d93ffc52eb2c9607da584ac7ebfcc210e2c8bb515115313f97dd01ba213fb11a29c259f0c4b3d1b",
+        "signer": "0xe5f797ab47043d336ad2d3ca28f07fb588e8fc47"
+      }
+    ],
+    "rejected": [
+      {
+        "name": "high-s malleated copy",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a8c264aaa824427d54cd3c4e101adcaaa2bc8d1f247660ba8ba9bcc23c0f083791b",
+        "code": "high_s"
+      },
+      {
+        "name": "v 26",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81a",
+        "code": "bad_v"
+      },
+      {
+        "name": "v 29",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81d",
+        "code": "bad_v"
+      },
+      {
+        "name": "v 2",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc802",
+        "code": "bad_v"
+      },
+      {
+        "name": "v 31 is eth_sign, refused for FundTogether signing",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81f",
+        "code": "bad_v"
+      },
+      {
+        "name": "v 32 is eth_sign, refused for FundTogether signing",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc820",
+        "code": "bad_v"
+      },
+      {
+        "name": "v 255",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc8ff",
+        "code": "bad_v"
+      },
+      {
+        "name": "64 bytes",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc8",
+        "code": "malformed"
+      },
+      {
+        "name": "66 bytes",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c00",
+        "code": "malformed"
+      },
+      {
+        "name": "no prefix",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c",
+        "code": "malformed"
+      },
+      {
+        "name": "non-hex",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc8zz",
+        "code": "malformed"
+      },
+      {
+        "name": "empty",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x",
+        "code": "malformed"
+      },
+      {
+        "name": "r zero",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x000000000000000000000000000000000000000000000000000000000000000073d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c",
+        "code": "bad_r"
+      },
+      {
+        "name": "r equals order",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036414173d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c",
+        "code": "bad_r"
+      },
+      {
+        "name": "r not on the curve",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x000000000000000000000000000000000000000000000000000000000000000573d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c",
+        "code": "bad_r"
+      },
+      {
+        "name": "s zero",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a00000000000000000000000000000000000000000000000000000000000000001c",
+        "code": "bad_s"
+      },
+      {
+        "name": "s equals order",
+        "hash": "0x4572c179ceb4053af98fbb973ac1b5bbf728ae33cb6195374eacf3ab111c52ad",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0afffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd03641411c",
+        "code": "bad_s"
+      }
+    ],
+    "wrong_hash": [
+      {
+        "name": "signature for another hash recovers a different address",
+        "hash": "0xee781857b981d32db71afdfb1df3350dd3a416174645ef06b2f3b63250f5277c",
+        "signature": "0x332f2c1d705038d852aa1170dc0e4566bcacfab580e9e1876037851be58a8c0a73d9b5557dbbd82ab32c3b1efe5235548ee60af467e29493053692690f45bdc81c",
+        "must_not_recover": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
+      }
+    ],
+    "order": {
+      "signers": [
+        "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718"
+      ],
+      "sorted_ascending": [
+        "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
+      ],
+      "note": "numeric order of the 20-byte address, never checksummed strings"
+    }
+  },
+  "prev_owner": [
+    {
+      "owners": [
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+      ],
+      "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      "prev_owner": "0x0000000000000000000000000000000000000001"
+    },
+    {
+      "owners": [
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+      ],
+      "owner": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+      "prev_owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
+    },
+    {
+      "owners": [
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+      ],
+      "owner": "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+      "prev_owner": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf"
+    },
+    {
+      "owners": [
+        "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+        "0x6813eb9362372eef6200f3b1dbc3f819671cba69"
+      ],
+      "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      "prev_owner": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718"
+    },
+    {
+      "owners": [
+        "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
+      ],
+      "owner": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      "prev_owner": "0x0000000000000000000000000000000000000001"
+    }
+  ],
+  "checksums": [
+    {
+      "lower": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      "checksummed": "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf"
+    },
+    {
+      "lower": "0x2b5ad5c4795c026514f8317c7a215e218dccd6cf",
+      "checksummed": "0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF"
+    },
+    {
+      "lower": "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+      "checksummed": "0x6813Eb9362372EEF6200f3b1dbC3f819671cBA69"
+    },
+    {
+      "lower": "0x1eff47bc3a10a45d4b230b5d10e37751fe6aa718",
+      "checksummed": "0x1efF47bc3a10a45D4B230B5d10E37751FE6AA718"
+    },
+    {
+      "lower": "0x1111111111111111111111111111111111111111",
+      "checksummed": "0x1111111111111111111111111111111111111111"
+    },
+    {
+      "lower": "0x08210f9170f89ab7658f0b5e3ff39b0e03c594d4",
+      "checksummed": "0x08210F9170F89Ab7658F0B5E3fF39b0E03C594D4"
+    },
+    {
+      "lower": "0x29fcb43b46531bca003ddc8fcb67ffe91900c762",
+      "checksummed": "0x29fcB43b46531BcA003ddC8FCB67FFE91900C762"
+    },
+    {
+      "lower": "0x4e1dcf7ad4e460cfd30791ccc4f9c8a4f820ec67",
+      "checksummed": "0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67"
+    }
+  ]
+}

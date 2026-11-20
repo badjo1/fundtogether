@@ -1,0 +1,8 @@
+<% styles = { info: "bg-blue-50 text-blue-700", warning: "bg-yellow-50 text-yellow-800", danger: "bg-red-50 text-red-700" } %>
+<% icons = { info: :info, warning: :warning, danger: :exclamation } %>
+<div class="p-3 rounded-lg <%= styles.fetch(tone) %>">
+  <div class="flex items-start gap-2">
+    <%= icon icons.fetch(tone), class: "w-5 h-5 mt-0.5 shrink-0" %>
+    <p class="text-sm min-w-0"><%= text %></p>
+  </div>
+</div>

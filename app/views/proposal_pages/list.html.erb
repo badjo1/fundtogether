@@ -1,0 +1,42 @@
+<turbo-frame id="proposal_list">
+  <div class="space-y-4">
+    <% if @snapshot.nil? %>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Live status niet beschikbaar" } do %>
+        <p>De blockchain is nu niet bereikbaar. Hieronder staan de opgeslagen voorstellen, maar we kunnen nu niet zeggen wat er klaar staat. Probeer het straks opnieuw.</p>
+      <% end %>
+    <% end %>
+
+    <% counts = @counts %>
+    <% views = @open_views + @closed_views %>
+    <nav class="flex gap-2 flex-wrap" aria-label="Filter voorstellen">
+      <%= link_to "Alles (#{counts.values.sum})", account_proposal_pages_path(@account), class: "px-3 py-1.5 rounded-full text-sm font-medium #{@filter.nil? ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}", "aria-current": (@filter.nil? ? "page" : nil) %>
+      <% ProposalPagesController::FILTERS.each do |filter| %>
+        <% next if counts[filter].to_i.zero? && filter != @filter %>
+        <%= link_to "#{bucket_label(filter)} (#{counts[filter].to_i})", account_proposal_pages_path(@account, filter: filter), class: "px-3 py-1.5 rounded-full text-sm font-medium #{@filter == filter ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}", "aria-current": (@filter == filter ? "page" : nil) %>
+      <% end %>
+    </nav>
+
+    <% rows = @filter ? views.select { |view| view.bucket == @filter } : views %>
+    <% if rows.any? %>
+      <ul class="bg-white rounded-xl px-4 sm:px-6 shadow-sm border border-gray-100 divide-y divide-gray-100">
+        <% rows.each do |view| %>
+          <%= render 'proposal_pages/row', view: view, account: @account, chain: @chain %>
+        <% end %>
+      </ul>
+      <% if @page > 1 || @next_page %>
+        <div class="flex justify-between text-sm">
+          <% if @page > 1 %><%= link_to "Nieuwer", list_account_proposal_pages_path(@account, filter: @filter, page: @page - 1), class: "text-blue-600 hover:text-blue-700 font-medium" %><% else %><span></span><% end %>
+          <% if @next_page %><%= link_to "Ouder", list_account_proposal_pages_path(@account, filter: @filter, page: @page + 1), class: "text-blue-600 hover:text-blue-700 font-medium" %><% end %>
+        </div>
+      <% end %>
+    <% elsif counts.values.sum.positive? %>
+      <p class="text-sm text-gray-500 p-4">Geen voorstellen in deze categorie.</p>
+    <% else %>
+      <%= render layout: 'shared/empty_state', locals: { icon_name: :document, title: "Nog geen voorstellen", body: "Wil je geld uitbetalen of iemand toevoegen als ondertekenaar? Dan doe je een voorstel. Pas na genoeg goedkeuringen kan het worden uitgevoerd." } do %>
+        <% unless @membership.viewer? %>
+          <%= link_to "Doe het eerste voorstel", new_account_proposal_page_path(@account), class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</turbo-frame>

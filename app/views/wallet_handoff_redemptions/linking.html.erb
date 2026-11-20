@@ -1,0 +1,36 @@
+<% content_for :title, "Wallet koppelen" %>
+<%= render layout: 'shared/public_layout' do %>
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 space-y-4"
+       data-controller="wallet-link flow-ui"
+       data-wallet-link-challenges-url-value="<%= wallet_challenges_path %>"
+       data-wallet-link-wallets-url-value="<%= wallets_path %>"
+       data-action="wallet-link:step->flow-ui#step wallet-link:error->flow-ui#error">
+    <h1 class="text-2xl font-bold text-gray-900">Wallet koppelen</h1>
+    <p class="text-sm text-gray-600">Voor het account van <strong><bdi><%= @user.display_name %></bdi></strong> (<span class="break-all"><%= @user.email_address %></span>). Dit kost niets en verplaatst geen geld.</p>
+    <%= tag.div class: "space-y-3", data: { controller: "wallet", wallet_user_id_value: @user.id.to_s, wallet_linked_addresses_value: @user.wallets.active.pluck(:address).to_json, wallet_checksums_value: @user.wallets.active.pluck(:address).to_h { |address| [ address, checksum_address(address) ] }.to_json, wallet_chain_value: "{}", wallet_requires_chain_value: "false" } do %>
+      <p class="text-sm text-gray-500" data-show-wallet="idle">Wallet zoeken…</p>
+      <div data-show-wallet="disconnected" class="space-y-2">
+        <div class="grid gap-2" data-wallet-target="providerList"></div>
+        <template data-wallet-target="providerTemplate">
+          <button type="button" data-action="wallet#connectWallet" class="w-full flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium">
+            <img data-wallet-icon alt="" class="w-5 h-5"><span data-wallet-name></span>
+          </button>
+        </template>
+      </div>
+      <p class="text-sm text-gray-700" data-show-wallet="requesting_accounts awaiting_signature submitting wallet_busy">Open je wallet om verder te gaan.</p>
+      <p class="font-mono text-xs text-gray-900 break-hash" data-show-wallet="ready unlinked address_mismatch" data-wallet-target="field" data-field="address"></p>
+      <button type="button" data-show-wallet="unlinked address_mismatch" data-action="wallet-link#link" data-flow-ui-target="button" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50">Deze wallet koppelen</button>
+      <p class="text-sm text-gray-700 flex items-center gap-2" data-show-wallet="ready"><%= icon :check_circle, class: "w-5 h-5 text-green-600 flex-shrink-0" %><span>Deze wallet is gekoppeld. Je kunt terug naar je computer en daar de pagina vernieuwen.</span></p>
+      <p class="flow-message" data-wallet-target="message" aria-live="polite"></p>
+    <% end %>
+    <div data-flow-ui-target="panel" hidden class="p-4 bg-gray-50 rounded-lg" aria-live="polite">
+      <%= render 'shared/flow_steps', steps: [ [ "Koppelvraag ophalen", "challenge" ], [ "Onderteken in je wallet (gratis)", "sign_message" ], [ "Koppeling opslaan", "saving_link" ], [ "Gekoppeld", "linked" ] ] %>
+    </div>
+    <p class="flow-message" data-wallet-link-target="message" aria-live="polite"></p>
+    <p class="text-xs text-gray-500">Deze browser heeft nog tot 15 minuten na bevestiging toegang tot koppelen, en verder nergens toe.</p>
+    <%= render layout: 'shared/info_panel', locals: { title: "Ook vanaf deze telefoon ondertekenen?" } do %>
+      <p>Daarvoor log je in deze wallet-browser in met je e-mailadres en wachtwoord. Een koppellink geeft geen toegang tot voorstellen, zodat een link die uitlekt niet genoeg is om iets te zien of te doen.</p>
+      <p><%= link_to "Inloggen in deze browser", new_session_path, class: "font-medium underline" %></p>
+    <% end %>
+  </div>
+<% end %>

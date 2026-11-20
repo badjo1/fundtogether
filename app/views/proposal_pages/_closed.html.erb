@@ -1,0 +1,23 @@
+<% case proposal.state %>
+<% when "executed" %>
+  <%= render layout: 'shared/info_panel', locals: { title: "Uitgevoerd op de blockchain" } do %>
+    <% if proposal.executed_at %><p>Op <%= nl_datetime(proposal.executed_at) %>.</p><% end %>
+    <% if proposal.execution_tx_hash %><p><%= link_to "Bekijk de transactie op de explorer", explorer_tx_url(chain, proposal.execution_tx_hash), target: "_blank", rel: "noopener noreferrer", class: "font-medium underline" %></p><% end %>
+  <% end %>
+<% when "failed" %>
+  <%= render layout: 'shared/info_panel', locals: { tone: "danger", title: "Mislukt" } do %>
+    <p>De Safe voerde dit voorstel niet uit, en het volgnummer is daarmee verbruikt. Er is geen geld verplaatst. Maak zo nodig een nieuw voorstel.</p>
+    <% if proposal.execution_tx_hash %><p><%= link_to "Bekijk de transactie op de explorer", explorer_tx_url(chain, proposal.execution_tx_hash), target: "_blank", rel: "noopener noreferrer", class: "font-medium underline" %></p><% end %>
+  <% end %>
+<% when "cancelled" %>
+  <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Ingetrokken" } do %>
+    <p>Dit voorstel is ingetrokken<% if proposal.cancelled_by %> door <bdi><%= proposal.cancelled_by.display_name %></bdi><% end %><% if proposal.cancelled_at %> op <%= nl_datetime(proposal.cancelled_at) %><% end %>. Het staat niet meer in de wachtrij.</p>
+    <% if proposal.safe_signatures.any? %>
+      <p>Er stonden al handtekeningen onder. Die blijven op de blockchain geldig totdat volgnummer <span class="tabular-nums"><%= proposal.nonce.to_i %></span> voorbij is.</p>
+    <% end %>
+  <% end %>
+<% when "superseded" %>
+  <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Vervallen" } do %>
+    <p>Een ander voorstel met hetzelfde volgnummer is uitgevoerd. Dit voorstel kan daardoor nooit meer worden uitgevoerd.</p>
+  <% end %>
+<% end %>

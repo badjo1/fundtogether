@@ -1,14 +1,15 @@
-<!-- app/views/settings/index.html.erb -->
-
+<% content_for :title, "Instellingen" %>
 <%= render layout: 'shared/app_layout' do %>
   <div class="space-y-6" data-controller="confirm-modal">
     <h2 class="text-2xl font-bold text-gray-900">Instellingen</h2>
 
     <!-- Group Settings -->
+    <% if current_membership.admin? %>
     <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <h3 class="text-lg font-bold text-gray-900 mb-6">Accountinstellingen</h3>
+      <h3 class="text-lg font-bold text-gray-900 mb-6">Fondsinstellingen</h3>
 
       <%= form_with model: @account, url: settings_path, method: :patch, local: true do |f| %>
+        <%= hidden_field_tag :account_id, @account.id %>
         <% if @account.errors.any? %>
           <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
             <div class="flex items-start gap-3">
@@ -29,111 +30,59 @@
 
         <div class="space-y-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Accountnaam</label>
+            <label for="account_name" class="block text-sm font-medium text-gray-700 mb-2">Naam van het fonds</label>
             <%= f.text_field :name,
               class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
               required: true
             %>
-            <p class="text-xs text-gray-500 mt-1">De naam van je account zoals andere deze zien</p>
+            <p class="text-xs text-gray-500 mt-1">De naam zoals andere leden die zien</p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Accountbeschrijving</label>
+            <label for="account_description" class="block text-sm font-medium text-gray-700 mb-2">Waar is het voor?</label>
             <%= f.text_area :description,
               rows: 3,
               class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             %>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Standaard splitsmethode</label>
-            <%= f.select :split_method,
-              [
-                ['Gelijk verdelen', 'equal'],
-                ['Op basis van saldo', 'proportional'],
-                ['Handmatig', 'manual'],
-                ['Op basis van percentage', 'percentage']
-              ],
-              {},
-              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            %>
-            <p class="text-xs text-gray-500 mt-1">Hoe uitgaven standaard worden verdeeld</p>
-          </div>
-
-          <div class="flex gap-3">
+          <div class="flex flex-col sm:flex-row gap-3">
             <%= f.submit 'Wijzigingen Opslaan',
               class: "flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium transition-colors"
             %>
             <%= link_to 'Annuleren', settings_path,
-              class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              class: "text-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
             %>
           </div>
         </div>
       <% end %>
     </div>
-
-    <!-- Smart Contract Settings (READ-ONLY) -->
+    <% else %>
     <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <h3 class="text-lg font-bold text-gray-900 mb-6">Smart Contract Instellingen</h3>
+      <h3 class="text-lg font-bold text-gray-900 mb-6">Fondsinstellingen</h3>
+      <p class="font-medium text-gray-900"><%= @account.name %></p>
+      <% if @account.description.present? %>
+        <p class="text-sm text-gray-500 mt-1"><%= @account.description %></p>
+      <% end %>
+      <p class="text-xs text-gray-500 mt-4">Alleen admins kunnen deze instellingen wijzigen.</p>
+    </div>
+    <% end %>
 
-      <div class="space-y-4">
-        <div class="p-4 bg-blue-50 rounded-lg">
-          <div class="flex items-start gap-3">
-            <%= icon :info, class: "w-5 h-5 text-blue-600 mt-0.5" %>
-            <div class="flex-1">
-              <p class="font-medium text-blue-900">Blockchain functionaliteit uitgeschakeld</p>
-              <p class="text-sm text-blue-700 mt-1">
-                Web3 features zijn momenteel niet actief. Alle transacties worden in de database opgeslagen.
-                Smart contract koppelingen zijn alleen voor weergave.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Wallet Address (read-only) -->
-        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg opacity-60">
-          <div class="flex items-center gap-3">
-            <%= icon :shield, class: "w-5 h-5 text-gray-600" %>
-            <div>
-              <p class="font-medium text-gray-900">Account Wallet Address</p>
-              <% if @account.wallet_address.present? %>
-                <p class="text-sm text-gray-700 font-mono"><%= @account.wallet_address[0..9] %>...<%=@account.wallet_address[-6..-1] %></p>
-              <% else %>
-                <p class="text-sm text-gray-500">Niet verbonden</p>
-              <% end %>
-            </div>
-          </div>
-          <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-sm font-medium">
-            Read-only
-          </span>
-        </div>
-
-        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg opacity-60">
-          <div class="flex items-center gap-3">
-            <%= icon :shield, class: "w-5 h-5 text-gray-600" %>
-            <div>
-              <p class="font-medium text-gray-900">Gnosis Safe Multisig</p>
-              <p class="text-sm text-gray-500">Niet geconfigureerd</p>
-            </div>
-          </div>
-          <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-sm font-medium">
-            Disabled
-          </span>
-        </div>
-
-        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg opacity-60">
-          <div class="flex items-center gap-3">
-            <%= icon :dollar, class: "w-5 h-5 text-gray-600" %>
-            <div>
-              <p class="font-medium text-gray-900">Monerium EURe Token</p>
-              <p class="text-sm text-gray-500">Niet verbonden</p>
-            </div>
-          </div>
-          <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-sm font-medium">
-            Disabled
-          </span>
-        </div>
-      </div>
+    <!-- De Safe van dit fonds -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <h3 class="text-lg font-bold text-gray-900 mb-4">Safe</h3>
+      <% if @account.safe_active? %>
+        <p class="text-sm text-gray-600">Dit fonds is een Safe op de blockchain. Het netwerk, de munt en het adres liggen vast. Ondertekenaars en goedkeuringen wijzig je met een voorstel.</p>
+        <%= link_to "Bekijk de Safe en wie er mag ondertekenen", account_transparency_path(@account), class: "inline-block mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium" %>
+      <% elsif @account.safe_deploying? %>
+        <p class="text-sm text-gray-600">De Safe wordt aangemaakt.</p>
+        <%= link_to "Bekijk de voortgang", account_safe_setup_path(@account), class: "inline-block mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium" %>
+      <% else %>
+        <p class="text-sm text-gray-600">Dit fonds heeft nog geen Safe. Er kan dus nog geen geld in.</p>
+        <% if current_membership.admin? %>
+          <%= link_to "Fonds instellen", account_safe_setup_path(@account), class: "inline-block mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium" %>
+        <% end %>
+      <% end %>
     </div>
 
     <!-- Danger Zone -->
@@ -141,68 +90,66 @@
       <h3 class="text-lg font-bold text-red-900 mb-6">Gevarenzone</h3>
 
       <div class="space-y-4">
-        <!-- Account Verlaten -->
-        <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
-          <div>
-            <p class="font-medium text-gray-900">Account verlaten</p>
-            <p class="text-sm text-gray-500">Je verlaat deze account permanent</p>
+        <!-- Fonds Verlaten -->
+        <div class="flex items-center justify-between flex-wrap gap-3 p-4 border border-red-200 rounded-lg">
+          <div class="min-w-0">
+            <p class="font-medium text-gray-900">Fonds verlaten</p>
+            <p class="text-sm text-gray-500">Je verliest toegang tot dit fonds in FundTogether</p>
           </div>
           <button
             type="button"
             data-action="click->confirm-modal#openLeave"
             class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium"
           >
-            Account Verlaten
+            Fonds Verlaten
           </button>
         </div>
 
-        <!-- Account Verwijderen -->
-        <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
-          <div>
-            <p class="font-medium text-gray-900">Account verwijderen</p>
-            <p class="text-sm text-gray-500">Permanent verwijderen van deze account (alleen admin)</p>
+        <% if current_membership.admin? %>
+        <!-- Fonds Verwijderen -->
+        <div class="flex items-center justify-between flex-wrap gap-3 p-4 border border-red-200 rounded-lg">
+          <div class="min-w-0">
+            <p class="font-medium text-gray-900">Fonds verwijderen</p>
+            <p class="text-sm text-gray-500">Kan alleen zolang er geen Safe op de blockchain is</p>
           </div>
           <button
             type="button"
             data-action="click->confirm-modal#openDelete"
             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium"
           >
-            Account Verwijderen
+            Fonds Verwijderen
           </button>
         </div>
+        <% end %>
       </div>
     </div>
 
     <!-- Leave Account Modal -->
     <div
       data-confirm-modal-target="leaveModal"
-      class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
     >
       <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
         <div class="flex items-center gap-3 mb-4">
           <div class="p-3 bg-yellow-100 rounded-full">
             <%= icon :warning, class: "w-6 h-6 text-yellow-600" %>
           </div>
-          <h3 class="text-lg font-bold text-gray-900">Account Verlaten</h3>
+          <h3 class="text-lg font-bold text-gray-900">Fonds Verlaten</h3>
         </div>
 
         <p class="text-gray-600 mb-4">
-          Weet je zeker dat je dit account wilt verlaten? Je verliest toegang tot:
+          Weet je zeker dat je dit fonds wilt verlaten?
         </p>
 
         <ul class="text-sm text-gray-600 mb-6 space-y-2">
           <li class="flex items-center gap-2">
             <%= icon :warning, class: "w-4 h-4 text-yellow-500" %>
-            <span>Alle groepstransacties en -geschiedenis</span>
-          </li>
-          <li class="flex items-center gap-2">
-            <%= icon :warning, class: "w-4 h-4 text-yellow-500" %>
-            <span>Je saldo binnen dit account</span>
+            <span>Je verliest toegang tot de gegevens in FundTogether. Ben je ondertekenaar, dan blijf je dat op de blockchain tot de groep dat wijzigt.</span>
           </li>
         </ul>
 
         <p class="text-sm text-gray-500 mb-6">
-          Het account blijft bestaan voor andere leden.
+          Het fonds blijft bestaan voor de andere leden.
         </p>
 
         <div class="flex gap-3">
@@ -216,28 +163,29 @@
           <%= button_to leave_account_path(@account),
               method: :delete,
               class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium" do %>
-            Ja, verlaat account
+            Ja, verlaat fonds
           <% end %>
         </div>
       </div>
     </div>
 
+    <% if current_membership.admin? %>
     <!-- Delete Account Modal -->
     <div
       data-confirm-modal-target="deleteModal"
-      class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
     >
       <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
         <div class="flex items-center gap-3 mb-4">
           <div class="p-3 bg-red-100 rounded-full">
             <%= icon :trash, class: "w-6 h-6 text-red-600" %>
           </div>
-          <h3 class="text-lg font-bold text-gray-900">Account Permanent Verwijderen</h3>
+          <h3 class="text-lg font-bold text-gray-900">Fonds Permanent Verwijderen</h3>
         </div>
 
         <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
           <p class="text-red-800 text-sm font-medium">
-            ⚠️ Let op: Deze actie kan niet ongedaan worden gemaakt!
+            Let op: Deze actie kan niet ongedaan worden gemaakt!
           </p>
         </div>
 
@@ -248,20 +196,16 @@
         <ul class="text-sm text-gray-600 mb-6 space-y-2">
           <li class="flex items-center gap-2">
             <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
-            <span>Alle transacties en financiële geschiedenis</span>
+            <span>Alle ledengegevens en uitnodigingen</span>
           </li>
           <li class="flex items-center gap-2">
             <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
-            <span>Alle ledengegevens en saldi</span>
-          </li>
-          <li class="flex items-center gap-2">
-            <%= icon :x_circle, class: "w-4 h-4 text-red-500" %>
-            <span>Alle accountinstellingen</span>
+            <span>Alle instellingen van dit fonds</span>
           </li>
         </ul>
 
         <p class="text-sm text-red-600 font-medium mb-6">
-          Alle leden verliezen toegang tot dit account.
+          Alle leden verliezen toegang tot dit fonds.
         </p>
 
         <div class="flex gap-3">
@@ -280,5 +224,6 @@
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 <% end %>

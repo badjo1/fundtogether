@@ -1,5 +1,5 @@
 <!-- app/views/invitations/_form.html.erb -->
-<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50" data-action="click->modal#clickOutside">
+<div class="fixed inset-0 bg-gray-600/50 overflow-y-auto h-full w-full flex items-center justify-center z-50" data-action="click->modal#clickOutside">
   <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
     <!-- Header -->
     <div class="flex items-center justify-between p-6 border-b border-gray-200">
@@ -12,6 +12,7 @@
     <!-- Body -->
     <div class="p-6">
       <%= form_with model: invitation, url: invitations_path, method: :post do |f| %>
+        <%= hidden_field_tag :account_id, invitation.account_id %>
         <div class="space-y-4">
           <!-- Email Field (Optional) -->
           <div>

@@ -1,0 +1,35 @@
+<% routes = @guide.routes("off") %>
+<% providers = routes.reject(&:own_exchange?) %>
+<% exchanges = routes.select(&:own_exchange?) %>
+<ol class="space-y-4" data-ramp-stepper="off">
+  <%= render layout: "ramps/step", locals: { number: 1, title: "Maak een uitbetalingsvoorstel naar je eigen wallet" } do %>
+    <%= render "ramps/payout_step" %>
+  <% end %>
+
+  <%= render layout: "ramps/step", locals: { number: 2, title: "Wacht op goedkeuring" } do %>
+    <%= render "ramps/approvals" %>
+  <% end %>
+
+  <%= render layout: "ramps/step", locals: { number: 3, title: "Zorg voor gas" } do %>
+    <%= render "ramps/gas" %>
+  <% end %>
+
+  <%= render layout: "ramps/step", locals: { number: 4, title: "Wissel om bij een provider" } do %>
+    <p class="text-sm text-gray-700">
+      Pas als de <%= @guide.chain.token.symbol %> op je eigen wallet staat, kun je omwisselen naar euro's op je eigen rekening.
+    </p>
+    <% if @guide.guide.route_note %>
+      <%= render "ramps/notice", tone: :info, text: @guide.guide.route_note %>
+    <% end %>
+    <%= render partial: "ramps/route_card", collection: providers, as: :route %>
+    <% if exchanges.any? %>
+      <h4 class="font-medium text-gray-900">Of via je eigen exchange</h4>
+      <%= render partial: "ramps/route_card", collection: exchanges, as: :route %>
+    <% end %>
+    <% if routes.empty? %>
+      <p class="text-sm text-gray-600" data-ramp-empty="routes">We hebben nu geen route voor deze combinatie van netwerk en token.</p>
+    <% end %>
+  <% end %>
+</ol>
+<%= render "ramps/fiat_statement" %>
+<%= render "ramps/disclosure", routes: routes %>

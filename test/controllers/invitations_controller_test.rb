@@ -16,7 +16,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   # CREATE action
   test "should create invitation without email (button click flow)" do
     assert_difference("Invitation.count", 1) do
-      post invitations_path
+      post invitations_path, params: { account_id: @account.id }
     end
 
     invitation = Invitation.last
@@ -30,6 +30,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   test "should create invitation with email when provided" do
     assert_difference("Invitation.count", 1) do
       post invitations_path, params: {
+        account_id: @account.id,
         invitation: { email: "test@example.com" }
       }
     end
@@ -43,6 +44,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   test "should not create invitation with invalid email" do
     assert_no_difference("Invitation.count") do
       post invitations_path, params: {
+        account_id: @account.id,
         invitation: { email: "invalid-email" }
       }
     end
@@ -53,6 +55,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_no_difference("Invitation.count") do
       post invitations_path, params: {
+        account_id: @account.id,
         invitation: { email: "test@example.com" }
       }
     end
@@ -90,8 +93,18 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
 
   # ACCEPT action - logged in user
   test "should accept invitation for logged in user" do
-    # Skip - integration test needs different session handling
-    skip "Integration test requires proper session handling - works in actual app"
+    invitee = create_user("invitee", email: @pending_invitation.email)
+    sign_in_as invitee
+
+    assert_difference("AccountMembership.count", 1) do
+      post process_invitation_path(@pending_invitation.token)
+    end
+
+    assert_redirected_to dashboard_path
+    assert @pending_invitation.reload.accepted?
+    assert_equal "member", @account.account_memberships.find_by!(user: invitee).role
+    follow_redirect!
+    assert_response :success
   end
 
   test "should not accept expired invitation" do
@@ -164,6 +177,9 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     get open_invitation_path(invitation_no_email.token)
 
     assert_redirected_to accept_invitation_path(invitation_no_email.token)
+    follow_redirect!
+    assert_response :success
+    assert_select "form[action='#{request_email_verification_invitation_path(invitation_no_email.token)}']"
   end
 
   test "should redirect to accept page for verified invitation" do
@@ -172,6 +188,9 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     get open_invitation_path(@pending_invitation.token)
 
     assert_redirected_to accept_invitation_path(@pending_invitation.token)
+    follow_redirect!
+    assert_response :success
+    assert_select "form[action='#{process_invitation_path(@pending_invitation.token)}']"
   end
 
   test "should redirect to accept page for unverified invitation with email" do
@@ -185,6 +204,9 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     get open_invitation_path(unverified_invitation.token)
 
     assert_redirected_to accept_invitation_path(unverified_invitation.token)
+    follow_redirect!
+    assert_response :success
+    assert_select "h3", text: "Controleer je email"
   end
 
   # REQUEST_EMAIL_VERIFICATION action
@@ -243,9 +265,8 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
 
     @pending_invitation.reload
     assert_equal "directemail@example.com", @pending_invitation.email
-    assert_not_nil @pending_invitation.email_verification_token
-    assert @pending_invitation.email_verified?, "Email should be auto-verified for direct email flow"
-    assert_redirected_to users_path
+    assert @pending_invitation.email_verified?, "An address named by an admin counts as verified"
+    assert_redirected_to users_path(account_id: @account.id)
     assert_match /verstuurd/i, flash[:notice]
   end
 
@@ -263,7 +284,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
     invitation_no_email.reload
     assert_equal "newemail@example.com", invitation_no_email.email
     assert invitation_no_email.email_verified?
-    assert_redirected_to users_path
+    assert_redirected_to users_path(account_id: @account.id)
   end
 
   test "should show error when no email provided to send_email" do
@@ -284,6 +305,7 @@ class InvitationsControllerTest < ActionDispatch::IntegrationTest
   test "should show success page with share options" do
     # Simulate the create action setting session values
     post invitations_path, params: {
+        account_id: @account.id,
       invitation: { email: "newsuccess@example.com" }
     }
 

@@ -1,0 +1,37 @@
+<section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4"
+         aria-labelledby="sign-titel"
+         data-controller="proposal-sign flow-ui"
+         data-proposal-sign-proposal-url-value="<%= account_proposal_path(@account, @proposal) %>"
+         data-proposal-sign-signatures-url-value="<%= account_proposal_signatures_path(@account, @proposal) %>"
+         data-proposal-sign-chain-value="<%= @chain.browser_config.to_json %>"
+         data-proposal-sign-safe-address-value="<%= @account.safe_address %>"
+         data-proposal-sign-linked-addresses-value="<%= @linked_addresses.to_json %>"
+         data-flow-ui-reload-delay-value="800"
+         data-action="proposal-sign:step->flow-ui#step proposal-sign:error->flow-ui#error proposal-sign:signed->flow-ui#reload">
+  <div>
+    <h3 id="sign-titel" class="text-lg font-bold text-gray-900">Goedkeuren</h3>
+    <p class="text-sm text-gray-600 mt-1">Je browser rekent eerst zelf na wat er ondertekend wordt, los van onze server. Goedkeuren kost niets: pas het uitvoeren kost netwerkkosten.</p>
+  </div>
+  <%= render layout: 'shared/wallet_panel', locals: { chain: @chain, requires_chain: true } do %>
+    <button type="button" data-show-wallet="ready wrong_network unlinked address_mismatch disconnected no_wallet" data-action="proposal-sign#review" data-flow-ui-target="button" class="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Voorstel controleren</button>
+  <% end %>
+
+  <div data-flow-ui-target="reveal" data-on="reviewed" hidden class="space-y-4">
+    <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+      <p class="font-medium text-blue-900">Door je eigen browser berekend</p>
+      <p class="text-sm text-gray-900 tabular-nums break-hash" data-proposal-sign-target="field" data-field="summary"></p>
+      <dl class="space-y-2 text-sm">
+        <% [ [ "Ontvanger", "recipient" ], [ "Bedrag", "amount" ], [ "Munt", "symbol" ], [ "Ondertekenaar in voorstel", "owner" ], [ "Netwerk", "network" ], [ "Safe", "safeAddress" ],
+             [ "Volgnummer", "nonce" ], [ "Bewerking (CALL = gewone aanroep)", "operation" ], [ "Doel van de aanroep", "to" ], [ "Domain hash", "domainHash" ], [ "Message hash", "messageHash" ], [ "safeTxHash", "safeTxHash" ] ].each do |label, field| %>
+          <div class="review-row">
+            <dt class="text-gray-500"><%= label %></dt>
+            <dd class="font-mono text-xs text-gray-900 break-hash field-value" data-proposal-sign-target="field" data-field="<%= field %>"></dd>
+          </div>
+        <% end %>
+      </dl>
+      <p class="text-sm text-blue-800">Vergelijk dit met wat je wallet laat zien, en controleer de safeTxHash via een ander kanaal of een onafhankelijke hashcontrole. Klopt er iets niet? Stop en waarschuw je groep.</p>
+    </div>
+    <button type="button" data-action="proposal-sign#sign" data-flow-ui-target="button" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Ondertekenen in mijn wallet</button>
+  </div>
+  <p class="flow-message" data-proposal-sign-target="message" aria-live="polite"></p>
+</section>

@@ -1,0 +1,20 @@
+<% content_for :title, "Voorstellen" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900">Voorstellen</h2>
+        <p class="text-sm text-gray-500 mt-1">Alles wat geld verplaatst of de regels verandert, gaat via een voorstel en goedkeuringen.</p>
+      </div>
+      <% unless @membership.viewer? %>
+        <%= link_to new_account_proposal_page_path(@account), class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 font-medium" do %>
+          <%= icon :plus, class: "w-4 h-4" %><span>Nieuw voorstel</span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%= render layout: 'shared/live_frame', locals: { id: "proposal_list", src: list_account_proposal_pages_path(@account, filter: @filter) } do %>
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100"><%= render 'shared/skeleton', label: "Voorstellen controleren tegen de blockchain" %></div>
+    <% end %>
+  </div>
+<% end %>

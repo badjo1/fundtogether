@@ -1,0 +1,17 @@
+<%# Locals: view, account, chain. %>
+<% proposal = view.proposal %>
+<li>
+  <%= link_to account_proposal_page_path(account, proposal), class: "block py-4 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors" do %>
+    <div class="flex items-start justify-between gap-3">
+      <p class="font-medium text-gray-900 min-w-0 break-words"><bdi><%= proposal.title %></bdi></p>
+      <span class="px-2 py-1 text-xs rounded-full font-medium flex-shrink-0 <%= bucket_class(view.bucket) %>"><%= bucket_label(view.bucket) %></span>
+    </div>
+    <p class="text-sm text-gray-600 mt-1 tabular-nums break-words"><%= proposal_summary(account, proposal, chain) %></p>
+    <p class="text-xs text-gray-500 mt-1">
+      <%= kind_label(proposal.kind) %> · door <bdi><%= proposal.proposer.display_name %></bdi> · <%= nl_date(proposal.created_at) %>
+      <% if view.live? && view.open? %>
+        · <span class="tabular-nums"><%= view.live[:valid_signature_count] %> van <%= view.live[:threshold] %></span> goedkeuringen
+      <% end %>
+    </p>
+  <% end %>
+</li>

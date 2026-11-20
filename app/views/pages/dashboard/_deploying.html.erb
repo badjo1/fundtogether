@@ -1,0 +1,4 @@
+<%= render layout: 'shared/info_panel', locals: { title: "De Safe wordt aangemaakt" } do %>
+  <p>De transactie is verstuurd. We controleren op de blockchain of de Safe precies zo is aangemaakt als gekozen. Stuur nog geen geld.</p>
+  <p><%= link_to "Bekijk de voortgang", account_safe_setup_path(@account), class: "font-medium underline" %></p>
+<% end %>

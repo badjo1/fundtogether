@@ -1,0 +1,12 @@
+<turbo-frame id="contribute_recent">
+  <% if @recent.any? %>
+    <ul class="divide-y divide-gray-100">
+      <% @recent.each do |event| %>
+        <%= render 'activity_pages/event_row', event: event, chain: @chain %>
+      <% end %>
+    </ul>
+    <p class="text-xs text-gray-500 mt-2">Bijgewerkt om <%= clock_time(Time.current) %>.</p>
+  <% else %>
+    <p class="text-sm text-gray-500">Nog geen inleg van jou gezien op de blockchain.</p>
+  <% end %>
+</turbo-frame>

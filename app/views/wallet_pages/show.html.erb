@@ -1,0 +1,66 @@
+<% content_for :title, "Mijn wallets" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-2xl mx-auto space-y-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Mijn wallets</h2>
+      <p class="text-sm text-gray-500 mt-1">Met een wallet keur je uitgaven goed en leg je in. Koppelen bewijst dat de wallet van jou is. Je logt er niet mee in, en het kost niets.</p>
+    </div>
+
+    <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="gekoppeld-titel">
+      <h3 id="gekoppeld-titel" class="text-lg font-bold text-gray-900 mb-4">Gekoppelde wallets</h3>
+      <% if @wallets.any? %>
+        <ul class="space-y-3">
+          <% @wallets.each do |wallet| %>
+            <%= render 'wallet_pages/wallet_row', wallet: wallet %>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-gray-500">Nog geen wallet gekoppeld. Zonder wallet kun je niet inleggen en geen ondertekenaar worden.</p>
+      <% end %>
+    </section>
+
+    <% if current_user.email_confirmed? %>
+    <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4"
+             aria-labelledby="koppelen-titel"
+             data-controller="wallet-link flow-ui"
+             data-wallet-link-challenges-url-value="<%= wallet_challenges_path %>"
+             data-wallet-link-wallets-url-value="<%= wallets_path %>"
+             data-wallet-link-handoffs-url-value="<%= wallet_handoffs_path %>"
+             data-flow-ui-reload-delay-value="600"
+             data-action="wallet-link:step->flow-ui#step wallet-link:error->flow-ui#error wallet-link:linked->flow-ui#reload">
+      <h3 id="koppelen-titel" class="text-lg font-bold text-gray-900">Een wallet koppelen</h3>
+      <%= render layout: 'shared/wallet_panel', locals: { chain: nil, on_wallet_page: true } do %>
+        <button type="button" data-show-wallet="unlinked address_mismatch" data-action="wallet-link#link" data-flow-ui-target="button" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Deze wallet koppelen</button>
+        <p class="text-sm text-gray-700 flex items-center gap-2" data-show-wallet="ready"><%= icon :check_circle, class: "w-5 h-5 text-green-600 flex-shrink-0" %><span>Deze wallet is gekoppeld aan je account.</span></p>
+      <% end %>
+      <div data-flow-ui-target="panel" hidden class="p-4 bg-gray-50 rounded-lg" aria-live="polite">
+        <%= render 'shared/flow_steps', steps: [ [ "Koppelvraag ophalen", "challenge" ], [ "Onderteken in je wallet (gratis)", "sign_message" ], [ "Koppeling opslaan", "saving_link" ], [ "Gekoppeld", "linked" ] ] %>
+      </div>
+      <p class="flow-message" data-wallet-link-target="message" aria-live="polite"></p>
+    </section>
+    <% else %>
+      <%= render layout: 'shared/info_panel', locals: { tone: "warning", title: "Bevestig eerst je e-mailadres" } do %>
+        <p>Een wallet koppelen kan pas als we weten dat <span class="break-all"><%= current_user.email_address %></span> echt van jou is. Dan weet je groep wie er achter een ondertekenaar zit.</p>
+        <p><%= link_to "Naar de bevestiging", email_confirmation_pending_path, class: "font-medium underline" %></p>
+      <% end %>
+    <% end %>
+
+    <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4" aria-labelledby="telefoon-titel">
+      <div>
+        <h3 id="telefoon-titel" class="text-lg font-bold text-gray-900">Wallet op je telefoon?</h3>
+        <p class="text-sm text-gray-500 mt-1">Een wallet-app heeft een eigen browser, en daar ben je niet ingelogd. Met een eenmalige link koppel je toch, zonder je wachtwoord daar in te typen.</p>
+      </div>
+      <div id="handoff-result">
+        <%= button_to wallet_page_handoff_path, class: "inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium" do %>
+          <%= icon :phone, class: "w-4 h-4" %><span>Maak een QR-code</span>
+        <% end %>
+      </div>
+    </section>
+
+    <section id="geen-wallet" class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3" aria-labelledby="gids-titel">
+      <h3 id="gids-titel" class="text-lg font-bold text-gray-900">Nog geen wallet?</h3>
+      <p class="text-sm text-gray-500">Een wallet is een app die je sleutels bewaart. Die sleutels zijn van jou: FundTogether kan er niet bij en kan ze ook niet terughalen.</p>
+      <%= render 'wallet_pages/guide' %>
+    </section>
+  </div>
+<% end %>

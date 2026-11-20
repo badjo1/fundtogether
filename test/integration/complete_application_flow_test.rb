@@ -11,7 +11,6 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
       @account.account_memberships.create!(
         user: @user,
         role: "admin",
-        balance_cents: 0,
         active: true
       )
     end
@@ -37,12 +36,13 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
   test "login form submission works" do
     post login_path, params: {
       email_address: @user.email_address,
-      password: "password123"
+      password: "password"
     }
 
-    # Should redirect after successful login
+    # Should redirect after successful login, to a page only a logged-in user can open
     assert_response :redirect
-    follow_redirect!
+    assert cookies["session_id"].present?
+    get settings_path
     assert_response :success
   end
 
@@ -58,7 +58,9 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :redirect
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_redirected_to new_account_path, "the new user is logged in and has no fund yet"
   end
 
   test "all authenticated pages load successfully" do
@@ -68,21 +70,6 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select "h2", text: "Dashboard"
-
-    # Transactions index
-    get transactions_path
-    assert_response :success
-    assert_select "h2", text: "Alle Transacties"
-
-    # Transaction new - deposit
-    get new_transaction_path(type: "deposit")
-    assert_response :success
-    assert_select "h2", text: "Nieuwe Storting"
-
-    # Transaction new - expense
-    get new_transaction_path(type: "expense")
-    assert_response :success
-    assert_select "h2", text: "Nieuwe Uitgave"
 
     # Users/Members index
     get users_path
@@ -99,117 +86,14 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     assert_select "h1,h2" # Just check a heading exists
   end
 
-  test "transaction filters work" do
-    sign_in_as(@user)
-
-    # Create test transactions
-    @account.transactions.create!(
-      from_user: @user,
-      transaction_type: "deposit",
-      amount_cents: 10000,
-      description: "Test deposit",
-      token: "EURe",
-      status: "confirmed"
-    )
-
-    @account.transactions.create!(
-      from_user: @user,
-      transaction_type: "expense",
-      amount_cents: 5000,
-      description: "Test expense",
-      token: "DUMMY",
-      status: "confirmed"
-    )
-
-    # Filter by type
-    get transactions_path(type: "deposit")
-    assert_response :success
-    assert_select "h2", text: "Alle Transacties"
-
-    # Filter by status
-    get transactions_path(status: "confirmed")
-    assert_response :success
-
-    # Filter by token
-    get transactions_path(token: "EURe")
-    assert_response :success
-  end
-
-  test "deposit form submission creates transaction and updates balance" do
-    sign_in_as(@user)
-
-    initial_balance = @account.user_balance(@user)
-
-    assert_difference("Transaction.count", 1) do
-      post transactions_path, params: {
-        transaction: {
-          amount_euros: "100.50",
-          description: "Test deposit",
-          transaction_type: "deposit",
-          token: "EURe"
-        }
-      }
-    end
-
-    assert_response :redirect
-    follow_redirect!
-    assert_response :success
-
-    # Check balance was updated
-    @account.reload
-    expected_balance = initial_balance + 100.50 # 100.50 euros in cents
-    assert_equal expected_balance, @account.user_balance(@user)
-  end
-
-  test "expense form submission creates transaction and splits among members" do
-    sign_in_as(@user)
-
-    # Add another user to the account if not already a member
-    other_user = users(:two)
-    unless @account.account_memberships.exists?(user: other_user)
-      @account.account_memberships.create!(
-        user: other_user,
-        role: "member",
-        balance_cents: 0,
-        active: true
-      )
-    end
-
-    # Set initial balances
-    @account.account_memberships.find_by(user: @user).update(balance_cents: 10000)
-    @account.account_memberships.find_by(user: other_user).update(balance_cents: 10000)
-
-    assert_difference("Transaction.count", 1) do
-      post transactions_path, params: {
-        transaction: {
-          amount_euros: "60.00",
-          description: "Test expense",
-          transaction_type: "expense",
-          token: "EURe"
-        }
-      }
-    end
-
-    assert_response :redirect
-
-    # Check expense was split equally between 2 members (30 euros each)
-    @account.reload
-    user_membership = @account.account_memberships.find_by(user: @user)
-    other_membership = @account.account_memberships.find_by(user: other_user)
-
-    # Each should have lost 3000 cents (30 euros)
-    assert_equal 7000, user_membership.balance_cents
-    assert_equal 7000, other_membership.balance_cents
-  end
-
   test "account settings form submission updates account" do
     sign_in_as(@user)
 
     patch settings_path, params: {
+      account_id: @account.id,
       account: {
         name: "Updated Account Name",
-        description: "Updated description",
-        split_method: "proportional"
+        description: "Updated description"
       }
     }
 
@@ -220,7 +104,6 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     @account.reload
     assert_equal "Updated Account Name", @account.name
     assert_equal "Updated description", @account.description
-    assert_equal "proportional", @account.split_method
   end
 
   test "account creation form works" do
@@ -231,8 +114,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
         post accounts_path, params: {
           account: {
             name: "New Test Account",
-            description: "Test description",
-            split_method: "equal"
+            description: "Test description"
           }
         }
       end
@@ -253,6 +135,7 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
 
     assert_difference("Invitation.count", 1) do
       post invitations_path, params: {
+        account_id: @account.id,
         invitation: {
           email: "invitee@example.com"
         }
@@ -260,76 +143,5 @@ class CompleteApplicationFlowTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-  end
-
-  test "dashboard shows correct stats with real data" do
-    sign_in_as(@user)
-
-    # Set known balance
-    @account.account_memberships.find_by(user: @user).update(balance_cents: 15000)
-
-    # Create transactions
-    @account.transactions.create!(
-      from_user: @user,
-      transaction_type: "deposit",
-      amount_cents: 10000,
-      description: "Deposit",
-      token: "EURe",
-      status: "confirmed",
-      created_at: Time.current
-    )
-
-    @account.transactions.create!(
-      from_user: @user,
-      transaction_type: "expense",
-      amount_cents: 5000,
-      description: "Expense",
-      token: "EURe",
-      status: "confirmed",
-      created_at: Time.current
-    )
-
-    get dashboard_path
-    assert_response :success
-
-    # Check stats are displayed
-    assert_select ".text-2xl.font-bold.text-gray-900", text: /€/
-  end
-
-  test "transaction new form validates amount" do
-    sign_in_as(@user)
-
-    # Try to create transaction with invalid amount
-    assert_no_difference("Transaction.count") do
-      post transactions_path, params: {
-        transaction: {
-          amount_euros: "-10",
-          description: "Test",
-          transaction_type: "deposit",
-          token: "EURe"
-        }
-      }
-    end
-
-    # Should render the form again with errors
-    assert_response :unprocessable_entity
-  end
-
-  test "transaction new form validates description" do
-    sign_in_as(@user)
-
-    # Try to create transaction without description
-    assert_no_difference("Transaction.count") do
-      post transactions_path, params: {
-        transaction: {
-          amount_euros: "10",
-          description: "",
-          transaction_type: "deposit",
-          token: "EURe"
-        }
-      }
-    end
-
-    assert_response :unprocessable_entity
   end
 end

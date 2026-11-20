@@ -1,0 +1,25 @@
+<% content_for :title, "Sessies" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-2xl mx-auto space-y-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Waar je bent ingelogd</h2>
+      <p class="text-sm text-gray-500 mt-1">Een sessie stopt na <%= Session::IDLE_LIMIT.in_days.to_i %> dagen zonder gebruik, en altijd na <%= Session::ABSOLUTE_LIMIT.in_days.to_i %> dagen. Herken je er een niet? Beëindig hem en wijzig je wachtwoord.</p>
+    </div>
+    <ul class="bg-white rounded-xl px-4 sm:px-6 shadow-sm border border-gray-100 divide-y divide-gray-100">
+      <% @sessions.each do |row| %>
+        <li class="py-4 flex items-start justify-between gap-3 flex-wrap">
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-gray-900 break-words"><%= row.user_agent.presence&.truncate(80) || "Onbekend apparaat" %><% if row.id == Current.session.id %> <span class="font-normal text-gray-500">(deze sessie)</span><% end %></p>
+            <p class="text-xs text-gray-500"><%= row.ip_address %> · laatst gebruikt <%= nl_datetime(row.last_seen_at || row.created_at) %></p>
+          </div>
+          <% unless row.id == Current.session.id %>
+            <%= button_to "Beëindigen", session_revoke_path(row), method: :delete, class: "text-sm text-red-600 hover:text-red-700 font-medium" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <% if @sessions.size > 1 %>
+      <%= button_to "Overal uitloggen behalve hier", sessions_revoke_others_path, method: :delete, class: "px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium" %>
+    <% end %>
+  </div>
+<% end %>

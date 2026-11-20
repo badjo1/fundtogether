@@ -1,0 +1,59 @@
+<%# Locals: event, chain. Elke rij linkt naar het bewijs op de explorer. %>
+<%
+  labels = { "owner_added" => "Ondertekenaar toegevoegd", "owner_removed" => "Ondertekenaar verwijderd", "threshold_changed" => "Goedkeuringen gewijzigd",
+             "execution_success" => "Voorstel uitgevoerd", "execution_failure" => "Voorstel mislukt", "native_in" => "Inleg (#{chain.native_symbol})" }
+  label = labels[event.kind] || ChainEvent::LABELS.fetch(event.kind)
+  incoming = ChainEvent::CONTRIBUTION_KINDS.include?(event.kind)
+  chip = case event.kind
+         when "token_in", "native_in" then [ :arrow_down, "bg-green-100", "w-4 h-4 text-green-600" ]
+         when "token_out" then [ :arrow_up, "bg-red-100", "w-4 h-4 text-red-600" ]
+         when "execution_failure" then [ :warning, "bg-red-100", "w-4 h-4 text-red-600" ]
+         when "execution_success" then [ :check, "bg-blue-100", "w-4 h-4 text-blue-600" ]
+         else [ :users, "bg-purple-100", "w-4 h-4 text-purple-600" ]
+         end
+  payout = event.kind == "execution_success" ? execution_payout(event, chain) : nil
+  who = if incoming
+          event.user ? event.user.display_name : "Onbekende afzender"
+        elsif event.kind == "token_out"
+          # event.user was decided when it happened. A wallet moving later does not rewrite history.
+          event.user ? "naar #{event.user.display_name} (#{short_address(event.to_address)})" : "naar #{short_address(event.to_address)}"
+        elsif payout
+          payout[:known] ? "naar #{checksum_address(payout[:recipient])}, volgens de gegevens uit het voorstel" : payout[:note]
+        elsif event.kind == "owner_added"
+          recipient_label(event.account, event.to_address)
+        elsif event.kind == "owner_removed"
+          recipient_label(event.account, event.from_address)
+        elsif event.kind == "threshold_changed"
+          "Voortaan #{event.amount.to_i} nodig"
+        end
+  amount = case event.kind
+           when "token_in", "token_out" then money(event.amount.to_i, chain.token)
+           when "native_in" then native_money(event.amount.to_i, chain)
+           else payout && payout[:known] ? payout[:amount] : nil
+           end
+  outgoing = event.kind == "token_out" || (payout && payout[:known])
+%>
+<li class="py-3 flex items-start gap-3">
+  <span class="p-2 rounded-lg flex-shrink-0 <%= chip[1] %>"><%= icon chip[0], class: chip[2] %></span>
+  <div class="flex-1 min-w-0">
+    <div class="flex items-start justify-between gap-3">
+      <p class="font-medium text-gray-900 text-sm min-w-0"><%= label %></p>
+      <% if amount %>
+        <p class="font-bold text-sm tabular-nums text-right <%= outgoing ? 'text-red-600' : 'text-green-600' %>"><%= outgoing ? '−' : '+' %><%= amount %></p>
+      <% end %>
+    </div>
+    <p class="text-sm text-gray-500 break-words">
+      <bdi><%= who %></bdi><% if incoming && event.user.nil? %> <span class="font-mono text-xs break-hash block" data-testid="unknown-sender-address"><%= checksum_address(event.from_address) %></span><% end %>
+    </p>
+    <% if incoming && event.user.nil? && (lookalike = lookalike_of(event.account, event.from_address)) %>
+      <p class="text-xs text-red-700 mt-1" data-testid="lookalike-warning">Let op: dit adres lijkt op dat van <bdi><%= lookalike %></bdi>, maar het is een ander adres. Kopieer nooit een adres uit deze lijst.</p>
+    <% end %>
+    <div class="flex items-center gap-x-3 gap-y-1 flex-wrap mt-1 text-xs text-gray-500">
+      <span><%= nl_datetime(event.occurred_at) %></span>
+      <span class="px-2 py-0.5 rounded-full font-medium <%= event.finalized ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>"><%= event.finalized ? "Definitief" : "In behandeling" %></span>
+      <%= link_to explorer_tx_url(chain, event.tx_hash), target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-700 inline-flex items-center gap-1" do %>
+        <span>Bekijk op explorer</span><%= icon :external_link, class: "w-3 h-3" %>
+      <% end %>
+    </div>
+  </div>
+</li>

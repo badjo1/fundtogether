@@ -1,0 +1,21 @@
+<%= turbo_stream.update "handoff-result" do %>
+  <div class="flex flex-col sm:flex-row gap-6 sm:items-start">
+    <div class="bg-white border-2 border-gray-200 rounded-lg p-3 self-center sm:self-start flex-shrink-0">
+      <%= qr_svg(@url, css_class: "w-48 h-48") %>
+    </div>
+    <div class="min-w-0 flex-1 space-y-3">
+      <ol class="list-decimal list-inside text-sm text-gray-700 space-y-1">
+        <li>Open je wallet-app en kies de scanner.</li>
+        <li>Scan deze code. De link opent in de browser van de wallet.</li>
+        <li>Controleer of daar jouw naam staat en bevestig.</li>
+      </ol>
+      <p class="text-xs text-gray-500">Werkt eenmalig, tot <%= clock_time(@expires_at) %>. Deze link geeft alleen toegang tot wallet koppelen en ondertekenen, 15 minuten lang. Deel hem met niemand.</p>
+      <%= link_to "Open in MetaMask op deze telefoon", "https://link.metamask.io/dapp/#{@url.delete_prefix('https://')}", class: "text-sm text-blue-600 hover:text-blue-700 font-medium sm:hidden block" if @url.start_with?("https://") %>
+      <details class="text-sm text-gray-600">
+        <summary class="cursor-pointer font-medium">Scannen lukt niet?</summary>
+        <div class="mt-2"><%= render 'shared/copy_field', value: @url, label: "Open deze link in de browser van je wallet" %></div>
+      </details>
+      <%= link_to "Klaar? Vernieuw deze pagina", wallet_page_path, class: "text-sm text-blue-600 hover:text-blue-700 font-medium block" %>
+    </div>
+  </div>
+<% end %>

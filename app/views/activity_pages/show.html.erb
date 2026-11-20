@@ -1,0 +1,92 @@
+<% content_for :title, "Activiteit" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900">Activiteit</h2>
+        <p class="text-sm text-gray-500 mt-1">Alles wat er op de blockchain is gebeurd met de Safe van dit fonds.</p>
+      </div>
+      <% if @account.safe_active? && @has_any_event %>
+        <%= link_to account_chain_events_path(@account, format: :csv), data: { turbo: false }, class: "px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center space-x-2 font-medium" do %>
+          <%= icon :download, class: "w-4 h-4" %><span>CSV downloaden</span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if !@account.safe_active? %>
+      <%= render 'shared/safe_needed', account: @account, title: "Nog geen activiteit", body: "Hier komt elke inleg, uitbetaling en wijziging van ondertekenaars te staan, met bewijs op de blockchain. Dat begint zodra de Safe bestaat." %>
+    <% else %>
+      <% if @totals.any? %>
+        <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="totalen">
+          <h3 id="totalen" class="text-lg font-bold text-gray-900 mb-4">Inleg per lid</h3>
+          <ul class="divide-y divide-gray-100">
+            <% @totals.each do |row| %>
+              <li class="py-3 flex items-start justify-between gap-3">
+                <span class="text-sm font-medium min-w-0 <%= row[:user] ? 'text-gray-900' : 'text-gray-500' %>"><%= row[:user]&.display_name || "Onbekende afzenders" %></span>
+                <span class="text-right">
+                  <span class="block font-bold text-sm text-gray-900 tabular-nums"><%= money(row[:final], @chain.token) %></span>
+                  <% if row[:pending].positive? %><span class="block text-xs text-yellow-700 tabular-nums">+ <%= money(row[:pending], @chain.token) %> in behandeling</span><% end %>
+                </span>
+              </li>
+            <% end %>
+          </ul>
+          <p class="text-xs text-gray-500 mt-2">Alleen <%= @chain.token.symbol %>-overboekingen die de blockchain laat zien. "Onbekend" betekent: verstuurd vanaf een adres dat op dat moment niet aan een lid gekoppeld was.</p>
+        </section>
+      <% end %>
+
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <%= form_with url: account_activity_path(@account), method: :get, class: "flex flex-col sm:flex-row gap-3 sm:items-end mb-4", data: { turbo_action: "advance" } do %>
+          <div class="flex-1">
+            <label for="filter" class="block text-sm font-medium text-gray-700 mb-2">Soort</label>
+            <%= select_tag :filter, options_for_select([ [ "Alles", "all" ], [ "Inleg", "in" ], [ "Uitbetalingen", "out" ], [ "Ondertekenaars", "owners" ], [ "Uitvoeringen", "executions" ] ], @filter), class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+          <div class="flex-1">
+            <label for="member" class="block text-sm font-medium text-gray-700 mb-2">Lid</label>
+            <%= select_tag :member, options_for_select([ [ "Iedereen", "" ] ] + @members.map { |user| [ user.display_name, user.id ] } + [ [ "Onbekende afzenders", "unknown" ] ], @member_filter), class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+          <button type="submit" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">Toepassen</button>
+        <% end %>
+
+        <% if @dust_count.positive? %>
+          <p class="text-sm text-gray-600 mb-3 p-3 bg-gray-50 rounded-lg">
+            <% if @show_dust %>
+              Kleine bedragen van onbekende afzenders staan hieronder. Kopieer nooit een adres uit deze lijst: zulke bedragen worden vaak gestuurd om een adres in je geschiedenis te krijgen dat op een bekend adres lijkt.
+              <%= link_to "Verbergen", account_activity_path(@account, filter: @filter, member: @member_filter), class: "text-blue-600 hover:text-blue-700 font-medium" %>
+            <% else %>
+              <%= link_to pluralize_nl(@dust_count, "klein bedrag", "kleine bedragen") + " van onbekende afzenders verborgen. Tonen", account_activity_path(@account, filter: @filter, member: @member_filter, dust: "1"), class: "text-blue-600 hover:text-blue-700 font-medium" %>
+            <% end %>
+          </p>
+        <% end %>
+        <% if @events.any? %>
+          <ul class="divide-y divide-gray-100">
+            <% @events.each do |event| %>
+              <%= render 'activity_pages/event_row', event: event, chain: @chain %>
+            <% end %>
+          </ul>
+          <div class="flex justify-between mt-4 text-sm">
+            <% if @page > 1 %><%= link_to "Nieuwer", account_activity_path(@account, filter: @filter, member: @member_filter, dust: (@show_dust ? "1" : nil), page: @page - 1), class: "text-blue-600 hover:text-blue-700 font-medium" %><% else %><span></span><% end %>
+            <% if @next_page %><%= link_to "Ouder", account_activity_path(@account, filter: @filter, member: @member_filter, dust: (@show_dust ? "1" : nil), page: @page + 1), class: "text-blue-600 hover:text-blue-700 font-medium" %><% end %>
+          </div>
+        <% elsif @has_any_event %>
+          <p class="text-sm text-gray-500 py-4">Niets gevonden met dit filter.</p>
+        <% else %>
+          <div class="text-center py-6">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"><%= icon :clock, class: "w-8 h-8 text-gray-400" %></div>
+            <p class="text-gray-500 text-sm max-w-md mx-auto">Nog niets gezien op de blockchain. De eerste inleg verschijnt hier, met een link naar het bewijs.</p>
+            <% unless @membership.viewer? %>
+              <%= link_to "Inleggen", account_contribute_path(@account), class: "inline-block mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" %>
+            <% end %>
+          </div>
+        <% end %>
+
+        <p class="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-100">
+          <% if @account.synced_at %>
+            Bijgewerkt tot blok <span class="tabular-nums"><%= @account.synced_block %></span>, om <%= nl_datetime(@account.synced_at) %>. Wat daarna gebeurde, verschijnt na de volgende controle.
+          <% else %>
+            Deze lijst is nog niet gesynchroniseerd met de blockchain. Dat gebeurt automatisch.
+          <% end %>
+        </p>
+      </section>
+    <% end %>
+  </div>
+<% end %>

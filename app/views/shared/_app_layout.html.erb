@@ -1,30 +1,35 @@
-<!-- app/views/shared/_app_layout.html.erb -->
-<!-- Wrapper voor alle app pages met sidebar en topbar -->
-
+<%# Wrapper voor alle app pages met sidebar en topbar %>
 <div class="min-h-screen bg-gray-50 flex" data-controller="dapp">
-  <!-- Sidebar -->
   <%= render 'shared/sidebar' %>
 
-  <!-- Mobile Overlay -->
-  <div data-dapp-target="overlay" data-action="click->dapp#toggleSidebar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+  <div data-dapp-target="overlay" data-action="click->dapp#toggleSidebar" class="hidden fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
 
-  <!-- Main Content -->
-  <main class="flex-1 lg:ml-64">
-    <!-- Top Bar -->
-    <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8">
-      <!-- Mobile Menu Button -->
-      <button data-action="click->dapp#toggleSidebar" class="lg:hidden text-gray-600 hover:text-gray-900">
+  <main class="flex-1 min-w-0 lg:ml-64">
+    <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center justify-between gap-2 px-4 lg:px-8">
+      <button type="button" data-action="click->dapp#toggleSidebar" aria-label="Menu openen" class="lg:hidden text-gray-600 hover:text-gray-900 flex-shrink-0">
         <%= icon :menu, class: "w-6 h-6" %>
       </button>
-      
-      <!-- Spacer -->
-      <div class="flex-1"></div>
-      
-      <!-- User Menu (rechtsboven) -->
+
+      <div class="flex-1 min-w-0"></div>
+
+      <%= render 'shared/wallet_pill' %>
       <%= render 'shared/user_menu' %>
     </header>
 
-    <!-- Page Content -->
+    <% if testnet_fund?(current_account) %>
+      <div class="bg-yellow-100 border-b border-yellow-200 px-4 lg:px-8 py-2 flex items-center gap-2 text-sm text-yellow-900" role="note" data-testid="testnet-banner">
+        <%= icon :warning, class: "w-4 h-4 flex-shrink-0 text-yellow-700" %>
+        <p><strong>Testgeld, geen echte waarde.</strong> Dit fonds staat op een testnetwerk.</p>
+      </div>
+    <% end %>
+
+    <% if current_user && !current_user.email_confirmed? %>
+      <div class="bg-yellow-50 border-b border-yellow-200 px-4 lg:px-8 py-2 flex items-center justify-between gap-3 flex-wrap text-sm text-yellow-900" role="note" data-testid="email-unconfirmed">
+        <p class="flex items-center gap-2"><%= icon :mail, class: "w-4 h-4 flex-shrink-0 text-yellow-700" %><span><strong>Bevestig je e-mailadres.</strong> Tot die tijd kun je geen wallet koppelen, niet meedoen via een uitnodiging op dit adres en geen ondertekenaar worden.</span></p>
+        <%= button_to "Mail opnieuw sturen", resend_email_confirmation_path, class: "font-medium underline" %>
+      </div>
+    <% end %>
+
     <div class="p-4 lg:p-8">
       <%= render 'shared/flash_messages' %>
       <%= yield %>

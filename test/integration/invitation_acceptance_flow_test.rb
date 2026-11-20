@@ -54,10 +54,11 @@ class InvitationAcceptanceFlowTest < ActionDispatch::IntegrationTest
       password: "password"
     }
 
-    # Step 3: Should redirect to account page with success message
-    assert_redirected_to account_path(@account)
-    follow_redirect!
+    # Step 3: Should land on a working page with success message
+    assert_redirected_to dashboard_path
     assert_equal "Je bent toegevoegd aan #{@account.name}!", flash[:notice]
+    follow_redirect!
+    assert_response :success
 
     # Step 4: Verify invitation is accepted
     @invitation_existing.reload
@@ -94,10 +95,14 @@ class InvitationAcceptanceFlowTest < ActionDispatch::IntegrationTest
 
     new_user = User.find_by(email_address: "newuser@example.com")
 
-    # Step 3: Should redirect to account page with success message
-    assert_redirected_to account_path(@account)
+    # Step 3: the address has to be proven first (test/integration/email_confirmation_test.rb)
+    assert_redirected_to email_confirmation_pending_path
+    assert_not new_user.email_confirmed?
+    post email_confirmation_path(new_user.generate_token_for(:email_confirmation))
+    assert_redirected_to dashboard_path
+    assert_match "toegevoegd aan #{@account.name}", flash[:notice]
     follow_redirect!
-    assert_equal "Account aangemaakt en toegevoegd aan #{@account.name}!", flash[:notice]
+    assert_response :success
 
     # Step 4: Verify invitation is accepted
     @invitation_new.reload
@@ -135,7 +140,8 @@ class InvitationAcceptanceFlowTest < ActionDispatch::IntegrationTest
     other_user = User.create!(
       name: "Other User",
       email_address: "other@example.com",
-      password: "password"
+      password: "password",
+      email_confirmed_at: Time.current
     )
 
     accepted_invitation = Invitation.create!(
@@ -152,11 +158,6 @@ class InvitationAcceptanceFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
     assert_equal "Deze uitnodiging is al geaccepteerd.", flash[:alert]
   end
-
-  # Note: Testing logged-in user accepting invitation directly is covered
-  # by the "existing user can accept invitation after logging in" test above.
-  # The cookie/session handling in integration tests makes it difficult to
-  # test this scenario separately, but the functionality is working in production.
 
   # Security test: user only gets access to invited account
   test "accepting invitation only grants access to invited account" do
@@ -186,6 +187,7 @@ class InvitationAcceptanceFlowTest < ActionDispatch::IntegrationTest
     }
 
     new_user = User.find_by(email_address: new_user_email)
+    post email_confirmation_path(new_user.generate_token_for(:email_confirmation))
 
     # Verify user has access to invited account (@account = accounts(:two))
     assert_includes @account.users, new_user

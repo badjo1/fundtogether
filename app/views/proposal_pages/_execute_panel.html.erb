@@ -1,0 +1,33 @@
+<section class="bg-white rounded-xl p-6 shadow-sm border border-green-200 space-y-4"
+         aria-labelledby="uitvoeren-titel"
+         data-controller="proposal-execute flow-ui"
+         data-proposal-execute-proposal-url-value="<%= account_proposal_path(@account, @proposal) %>"
+         data-proposal-execute-execution-url-value="<%= account_proposal_execution_path(@account, @proposal) %>"
+         data-proposal-execute-sync-url-value="<%= account_sync_requests_path(@account) %>"
+         data-proposal-execute-chain-value="<%= @chain.browser_config.to_json %>"
+         data-proposal-execute-safe-address-value="<%= @account.safe_address %>"
+         data-flow-ui-explorer-value="<%= @chain.explorer_url %>"
+         data-flow-ui-reload-delay-value="1000"
+         data-action="proposal-execute:step->flow-ui#step proposal-execute:error->flow-ui#error proposal-execute:executed->flow-ui#reload">
+  <div>
+    <h3 id="uitvoeren-titel" class="text-lg font-bold text-gray-900">Klaar om uit te voeren</h3>
+    <p class="text-sm text-gray-600 mt-1">Er zijn genoeg goedkeuringen. Iemand moet het nu versturen en betaalt daarvoor de netwerkkosten in <%= @chain.native_symbol %>, uit de eigen wallet.</p>
+  </div>
+  <%= render layout: 'shared/wallet_panel', locals: { chain: @chain, requires_chain: true } do %>
+    <button type="button" data-show-wallet="ready" data-action="proposal-execute#check" data-flow-ui-target="button" class="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors disabled:opacity-50">Controleren voor het uitvoeren</button>
+    <div data-show-ready>
+      <button type="button" data-show-wallet="ready" data-action="proposal-execute#execute" data-flow-ui-target="button" class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors disabled:opacity-50">Uitvoeren vanuit mijn wallet</button>
+    </div>
+  <% end %>
+  <div data-flow-ui-target="panel" hidden class="p-4 bg-gray-50 rounded-lg space-y-3" aria-live="polite">
+    <%= render 'shared/flow_steps', steps: [
+          [ "Controleren tegen de blockchain", "loading verifying checked" ],
+          [ "Netwerkkosten controleren", "checking_gas" ],
+          [ "Bevestig in je wallet", "confirm_in_wallet" ],
+          [ "Wachten op bevestiging van de blockchain", "saving waiting_receipt" ],
+          [ "Uitgevoerd", "executed" ]
+        ] %>
+    <a href="#" hidden target="_blank" rel="noopener noreferrer" data-flow-ui-target="txLink" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Bekijk de transactie op de explorer</a>
+  </div>
+  <p class="flow-message" data-proposal-execute-target="message" aria-live="polite"></p>
+</section>

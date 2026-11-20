@@ -1,0 +1,111 @@
+<% content_for :title, "Inleggen" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-2xl mx-auto space-y-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Inleggen</h2>
+      <% if @chain %>
+        <p class="text-sm text-gray-500 mt-1">Stuur <%= @chain.token.symbol %> vanuit je eigen wallet naar de Safe van <%= @account.name %>.</p>
+      <% end %>
+    </div>
+
+    <% if !@account.safe_active? %>
+      <%= render 'shared/safe_needed', account: @account, title: "Hier kan nog niets in", body: "Inleggen kan zodra de Safe van dit fonds op de blockchain staat. Tot die tijd is er geen adres om geld naartoe te sturen." %>
+    <% else %>
+      <% token = @chain.token %>
+      <% if @membership.viewer? %>
+        <%= render layout: 'shared/info_panel', locals: { title: "Je hebt leesrechten" } do %>
+          <p>Met leesrechten kun je via deze pagina niet inleggen. Je kunt het fonds wel volgen bij Activiteit.</p>
+        <% end %>
+      <% else %>
+        <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4"
+                 data-controller="contribute flow-ui"
+                 data-contribute-sync-url-value="<%= account_sync_requests_path(@account) %>"
+                 data-contribute-chain-value="<%= @chain.browser_config.to_json %>"
+                 data-contribute-token-address-value="<%= token.address %>"
+                 data-contribute-safe-address-value="<%= @account.safe_address %>"
+                 data-contribute-safe-url-value="<%= account_safe_path(@account) %>"
+                 data-flow-ui-explorer-value="<%= @chain.explorer_url %>"
+                 data-action="contribute:step->flow-ui#step contribute:error->flow-ui#error wallet:state->flow-ui#walletState flow-ui:wallet-changed->contribute#refreshBalances">
+          <dl class="grid grid-cols-2 gap-4 text-sm">
+            <div><dt class="text-gray-500">Munt</dt><dd class="font-medium text-gray-900"><%= token.symbol %></dd></div>
+            <div><dt class="text-gray-500">Netwerk</dt><dd class="font-medium text-gray-900"><%= @chain.name %></dd></div>
+          </dl>
+
+          <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-2 text-sm" data-contribute-target="destination" data-testid="destination">
+            <p class="font-medium text-blue-900">Waar je geld heen gaat</p>
+            <p class="font-mono text-xs text-gray-900 break-hash field-value" data-contribute-target="field" data-field="destinationAddress"><%= checksum_address(@account.safe_address) %></p>
+            <p class="text-gray-700"><span class="field-value" data-contribute-target="field" data-field="destinationStatus">Controleren op de blockchain…</span></p>
+            <dl class="space-y-1">
+              <div><dt class="text-gray-500">Ondertekenaars, gelezen van de blockchain</dt><dd class="font-mono text-xs text-gray-900 break-hash whitespace-pre-line field-value" data-contribute-target="field" data-field="destinationOwners"></dd></div>
+              <div><dt class="text-gray-500">Goedkeuringen nodig</dt><dd class="text-gray-900 field-value" data-contribute-target="field" data-field="destinationThreshold"></dd></div>
+            </dl>
+            <p class="text-xs text-gray-600">Herken je deze adressen? Je browser kan controleren dat dit een echte Safe is, maar niet of dit de juiste mensen zijn. Twijfel je, vergelijk dit adres dan via een ander kanaal met een medelid.</p>
+          </div>
+
+          <%= render layout: 'shared/wallet_panel', locals: { chain: @chain, requires_chain: true } do %>
+            <div data-show-wallet="ready" class="space-y-4">
+              <dl class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <dt class="text-gray-500">In je wallet</dt>
+                  <dd class="font-medium text-gray-900 tabular-nums"><span class="field-value" data-contribute-target="field" data-field="walletBalance"></span> <%= token.symbol %></dd>
+                </div>
+                <div>
+                  <dt class="text-gray-500">Voor netwerkkosten</dt>
+                  <dd class="font-medium text-gray-900 tabular-nums"><span class="field-value" data-contribute-target="field" data-field="gasBalance"></span> <%= @chain.native_symbol %></dd>
+                </div>
+              </dl>
+              <div data-controller="amount-echo" data-amount-echo-decimals-value="<%= token.decimals %>" data-amount-echo-symbol-value="<%= token.symbol %>">
+                <label for="contribute-amount" class="block text-sm font-medium text-gray-700 mb-2">Bedrag</label>
+                <div class="relative">
+                  <input id="contribute-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" data-contribute-target="amount" data-amount-echo-target="input" data-action="input->amount-echo#update" class="w-full pl-4 pr-20 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 tabular-nums text-lg">
+                  <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium"><%= token.symbol %></span>
+                </div>
+                <p class="text-sm font-medium text-gray-900 mt-1" data-amount-echo-target="output" aria-live="polite"></p>
+                <p class="text-xs text-gray-500 mt-1">Je betaalt ook een klein bedrag aan netwerkkosten in <%= @chain.native_symbol %>, uit je eigen wallet. Dat controleren we voordat je wallet opent.</p>
+              </div>
+              <button type="button" data-action="contribute#contribute" data-flow-ui-target="button" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                Inleggen vanuit mijn wallet
+              </button>
+            </div>
+          <% end %>
+
+          <div data-flow-ui-target="panel" hidden class="p-4 bg-gray-50 rounded-lg space-y-3" aria-live="polite">
+            <%= render 'shared/flow_steps', steps: [
+                  [ "Saldo controleren", "checking_balance" ],
+                  [ "Netwerkkosten controleren", "checking_gas" ],
+                  [ "Bevestig in je wallet", "confirm_in_wallet" ],
+                  [ "Wachten op bevestiging van de blockchain", "waiting_receipt" ],
+                  [ "Op de blockchain, in behandeling", "contributed" ]
+                ] %>
+            <a href="#" hidden target="_blank" rel="noopener noreferrer" data-flow-ui-target="txLink" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Bekijk de transactie op de explorer</a>
+          </div>
+          <p class="flow-message" data-contribute-target="message" aria-live="polite"></p>
+        </section>
+      <% end %>
+
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100" aria-labelledby="mijn-inleg">
+        <h3 id="mijn-inleg" class="text-lg font-bold text-gray-900 mb-1">Jouw laatste inleg</h3>
+        <p class="text-sm text-gray-500 mb-3">Alleen wat de blockchain laat zien. Nieuwe inleg staat eerst op "in behandeling" en wordt definitief zodra het netwerk hem niet meer kan terugdraaien.</p>
+        <%= render layout: 'shared/live_frame', locals: { id: "contribute_recent", src: account_contribute_recent_path(@account), interval: 15_000 } do %>
+          <%= render 'shared/skeleton', label: "Laatste inleg ophalen" %>
+        <% end %>
+      </section>
+
+      <section class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4" aria-labelledby="van-elders">
+        <h3 id="van-elders" class="text-lg font-bold text-gray-900">Sturen vanaf een andere plek</h3>
+        <%= render layout: 'shared/info_panel', locals: { tone: "danger", title: "Alleen #{token.symbol} op #{@chain.name}" } do %>
+          <p>Stuur naar dit adres uitsluitend <strong><%= token.symbol %></strong> op het netwerk <strong><%= @chain.name %></strong>. Andere munten of een ander netwerk kunnen voorgoed verloren gaan. Sommige beurzen ondersteunen geen overboeking naar een Safe: test eerst met een klein bedrag.</p>
+        <% end %>
+        <div class="flex flex-col sm:flex-row gap-6 sm:items-start">
+          <div class="bg-white border-2 border-gray-200 rounded-lg p-3 self-center sm:self-start flex-shrink-0">
+            <%= qr_svg(checksum_address(@account.safe_address), css_class: "w-40 h-40") %>
+          </div>
+          <div class="min-w-0 flex-1 space-y-3">
+            <%= render 'shared/copy_field', value: checksum_address(@account.safe_address), label: "Adres van de Safe" %>
+            <p class="text-xs text-gray-500">Vanaf een onbekend adres zien we de inleg wel, maar we weten niet van wie hij is. Hij staat dan als "Onbekende afzender" bij Activiteit.</p>
+          </div>
+        </div>
+      </section>
+    <% end %>
+  </div>
+<% end %>

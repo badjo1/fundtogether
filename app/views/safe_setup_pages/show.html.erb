@@ -1,0 +1,20 @@
+<% content_for :title, "Fonds instellen" %>
+<%= render layout: 'shared/app_layout' do %>
+  <div class="max-w-2xl mx-auto space-y-6">
+    <% if @account.safe_draft? %><%= render 'accounts/wizard_steps', current: 3 %><% end %>
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Fonds instellen</h2>
+      <p class="text-sm text-gray-500 mt-1">Hier leg je vast wie over het geld gaat. Dit gebeurt op de blockchain.</p>
+    </div>
+
+    <% if @account.safe_deploying? %>
+      <%= render 'safe_setup_pages/deploying' %>
+    <% elsif !@membership.admin? %>
+      <%= render layout: 'shared/empty_state', locals: { icon_name: :shield, title: "Nog niet ingesteld", body: "Een admin van dit fonds maakt de Safe aan. Koppel alvast je wallet, dan kan de admin je als ondertekenaar kiezen." } do %>
+        <%= link_to "Naar mijn wallets", wallet_page_path, class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" %>
+      <% end %>
+    <% else %>
+      <%= render 'safe_setup_pages/form' %>
+    <% end %>
+  </div>
+<% end %>
