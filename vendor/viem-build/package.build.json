@@ -1,0 +1,8 @@
+{
+  "name": "fundtogether-viem-vendor",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Dev-only build input for vendor/javascript/viem.js. Not used at runtime.",
+  "dependencies": { "viem": "2.57.11" },
+  "devDependencies": { "esbuild": "0.28.2" }
+}
